@@ -1,6 +1,6 @@
 # mood-tracker
 
-A simple mood tracker web app.
+A simple mood tracker site.
 
 https://mood.zptr.cc/
 
