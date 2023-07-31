@@ -52,42 +52,49 @@ router.post("/register", async (req, res) => {
     typeof req.body.username != "string"
     || typeof req.body.password != "string"
     || typeof req.body["cf-turnstile-response"] != "string"
-  )
+  ) {
     return res.status(400).send("Bad Request");
+  }
 
-  if (!req.body.username.match(/^[a-z0-9_-]{3,32}$/))
+  if (!req.body.username.match(/^[a-z0-9_-]{3,32}$/)) {
     return res.status(400).render("register", {
       error: "Username validation failed",
       turnstile_site_key: config.turnstile.site_key
     });
+  }
 
-  if (config.blacklisted_usernames.includes(req.body.username))
+  if (config.blacklisted_usernames.includes(req.body.username)) {
     return res.status(400).render("register", {
       error: "You cannot use that username",
       turnstile_site_key: config.turnstile.site_key
     });
+  }
 
-  if (await fetch$("select 1 from users where username=$1", [req.body.username]))
+  if (await fetch$("select 1 from users where username=$1", [req.body.username])) {
     return res.status(409).render("register", {
       error: "Username taken",
       turnstile_site_key: config.turnstile.site_key
     });
+  }
 
-  const captcha = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      secret: config.turnstile.secret_key,
-      response: req.body["cf-turnstile-response"],
-      remoteip: req.headers["cf-connecting-ip"]
-    })
-  });
-  
-  if (!(await captcha.json()).success)
-    return res.status(400).render("register", {
-      error: "Captcha failed, retry again please!",
-      turnstile_site_key: config.turnstile.site_key
+  if (config.turnstile.site_key) {
+    const captcha = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        secret: config.turnstile.secret_key,
+        response: req.body["cf-turnstile-response"],
+        remoteip: req.headers["cf-connecting-ip"]
+      })
     });
+    
+    if (!(await captcha.json()).success) {
+      return res.status(401).render("register", {
+        error: "Captcha failed, retry again please!",
+        turnstile_site_key: config.turnstile.site_key
+      });
+    }
+  }
     
   const hash = await bcrypt.hash(req.body.password, 10);
   const token = randomBytes(48).toString("base64url");
