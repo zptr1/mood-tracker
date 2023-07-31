@@ -20,6 +20,7 @@ https://mood.zptr.cc/
     - [ ] Clear mood history
     - [ ] Download my data
     - [ ] Delete the account
+- [ ] Charts/analytics on the profile
 - [ ] API
   - [ ] Fetching history (full or paginated)
   - [ ] Deleting history record(s)
