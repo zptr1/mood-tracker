@@ -53,14 +53,12 @@ body {
 }
 
 main {
-  min-width: 567px;
   padding: 1em;
 }
 
 p {
   padding: 0;
   margin: 0;
-  max-width: 567px;
 }
 
 h1 {

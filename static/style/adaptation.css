@@ -1,12 +1,4 @@
 @media screen and (max-width: 643px) {
-  main {
-    min-width: 420px !important;
-  }
-
-  p {
-    max-width: 420px !important;
-  }
-
   #moods {
     font-size: 0.9rem !important;
   }
@@ -28,14 +20,6 @@
 }
 
 @media screen and (max-width: 500px) {
-  main {
-    min-width: 360px !important;
-  }
-
-  p {
-    max-width: 360px !important;
-  }
-
   #moods {
     font-size: 0.8rem !important;
   }
