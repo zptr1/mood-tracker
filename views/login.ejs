@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="og:site_name" content="mood tracker">
+  <link rel="stylesheet" href="/static/style/index.css">
+  <title>mood tracker | Login</title>
+</head>
+<body>
+  <main>
+    <h1><a href="/">mood tracker</a></h1>
+    <form action="/auth/login" method="post">
+      <label for="username">Username</label>
+      <input name="username" id="username" type="text" placeholder="Username" required>
+      <label for="password">Password</label>
+      <input name="password" id="password" type="password" placeholder="Password" required>
+      <% if (locals.error) { %>
+        <p style="color:#ee5858"><%= error %></p>
+      <% } %>
+
+      <input type="submit" value="Login">
+    </form>
+    <p>Don't have an account? <a href="/auth/register">Create one</a></p>
+  </main>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "port": 4433,
+  "blacklisted_usernames": [
+    "api",
+    "auth",
+    "privacy",
+    "settings",
+    "static"
+  ],
+  "database": {
+    "user": "user",
+    "password": "youshallnotpass",
+    "database": "database",
+    "__comment": "PostgreSQL database configuration"
+  },
+  "turnstile": {
+    "site_key": "A CloudFlare Turnstile site key",
+    "secret_key": "A CloudFlare Turnstile secret key",
+    "__comment": "Set site_key to null to disable captcha"
+  }
+}

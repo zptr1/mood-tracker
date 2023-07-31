@@ -1,0 +1,44 @@
+@keyframes combo {
+  from {
+    transform: scaleY(1.5) rotate(-10deg);
+  }
+
+  to {
+    transform: none;
+  }
+}
+
+@keyframes swag {
+  from {
+    transform: scaleY(1.5) rotate(10deg);
+    background-position-x: 10rem;
+    opacity: 1;
+  }
+
+  to {
+    transform: none;
+    background-position-x: 0;
+    opacity: 0;
+  }
+}
+
+#secret_cookie_clicker {
+  cursor: pointer;
+}
+
+#scc_combo {
+  display: inline-block;
+  transition: .5s opacity;
+  animation: combo .5s cubic-bezier(0,-1.21,.21,1);
+}
+
+#scc_special_text {
+  display: inline-block;
+  animation: swag 5s cubic-bezier(0,-1.21,.21,1);
+  background-image: linear-gradient(90deg, #f88, #ff8, #8f8, #8ff, #88f, #f8f, #f88);
+  background-clip: text;
+  pointer-events: none;
+  user-select: none;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

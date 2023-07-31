@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="og:description" content="mood tracker">
+  <link rel="stylesheet" href="/static/style/index.css">
+  <script src="/static/secret_cookie_clicker/index.js" async></script>
+  <link rel="stylesheet" href="/static/secret_cookie_clicker/index.css">
+  <title>mood tracker</title>
+</head>
+<body>
+  <main>
+    <div>
+      <h1 id="secret_cookie_clicker">mood tracker</h1>
+      <div id="sccs"></div>
+    </div>
+    <p>A simple mood tracker made by <a href="https://zptr.cc">zptr</a></p>
+    <% if (user) { %>
+      <br>
+      <p>
+        You are logged in as <a style="color:var(--color-8)" href="/<%= user.username %>">@<%= user.username %></a>
+         &squarf;
+        <a href="/auth/logout" style="color:var(--secondary-foreground)">log out</a>
+      </p>
+    <% } else { %>
+      <a style="font-size: 1.1em" class="gradient" href="/auth/register">Create your own profile!</a>
+    <% } %>
+    <hr>
+    <p>
+      The site is currently in development and is still unfinished.<br>
+      Any help would be appreciated! >>> <a href="https://github.com/zptr1/mood-tracker">GitHub</a>
+    </p>
+  </main>
+</body>
+</html>

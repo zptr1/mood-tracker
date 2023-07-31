@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="og:site_name" content="mood tracker">
+  <% if (turnstile_site_key) { %>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <% } %>
+  <script src="/static/script/register.js" async defer></script>
+  <link rel="stylesheet" href="/static/style/index.css">
+  <title>mood tracker | Register</title>
+</head>
+<body>
+  <main>
+    <h1><a href="/">mood tracker</a></h1>
+    <form action="/auth/register" method="post">
+      <label for="username">Username</label>
+      <input name="username" id="username" type="text" placeholder="Username" minlength="3" maxlength="32" pattern="^[a-z0-9_-]{3,32}$" required>
+      
+      <label for="password">Password</label>
+      <input name="password" id="password" type="password" placeholder="Password" required>
+      
+      <p id="status_error" style="color:#ee5858"><%= locals.error || "" %></p>
+      
+      <% if (turnstile_site_key) { %>
+        <div class="cf-turnstile" data-sitekey="<%= turnstile_site_key %>"></div>
+      <% } %>
+      
+      <input type="submit" value="Register">
+    </form>
+    <p>Already have an account? <a href="/auth/login">Sign in</a></p>
+  </main>
+</body>
+</html>

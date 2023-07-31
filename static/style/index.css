@@ -1,0 +1,274 @@
+@import url(/static/style/adaptation.css);
+
+@font-face {
+  font-family: 'VT323';
+  src: url(/static/font/VT323.ttf) format('truetype');
+}
+
+:root {
+  --background: #1c1c1c;
+  --secondary-background: #2c2c2c;
+  --foreground: #fff;
+  --secondary-foreground: #888;
+  --color-1: #9b0b00;
+  --color-2: #e64f22;
+  --color-3: #fd5757;
+  --color-4: #fe914b;
+  --color-5: #febd59;
+  --color-6: #ffde59;
+  --color-7: #678ea8;
+  --color-8: #84b2c8;
+  --color-9: #cddde5;
+  --color-10: #c3d194;
+  --color-11: #a0ad7b;
+  --color-12: #6c7b42;
+  --font: 'VT323', monospace
+}
+
+body, html {
+  padding: 0;
+  margin: 0;
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font);
+  font-size: 1.2rem;
+}
+
+*, ::before, ::after {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: var(--foreground);
+  color: var(--background);
+  background-clip: unset !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: var(--background) !important;
+}
+
+body {
+  display: grid;
+  justify-items: center;
+  padding: 64px 0;
+}
+
+main {
+  min-width: 567px;
+  padding: 1em;
+}
+
+p {
+  padding: 0;
+  margin: 0;
+  max-width: 567px;
+}
+
+h1 {
+  padding: 0;
+  margin: 0;
+  margin-bottom: 20px;
+  font-weight: 300;
+  font-size: 1.5em;
+  color: var(--secondary-foreground);
+  user-select: none;
+}
+
+h1 a {
+  text-decoration: none;
+  color: var(--secondary-foreground);
+}
+
+h1 span {
+  color: var(--foreground);
+}
+
+.view_header {
+  user-select: none;
+}
+
+.view_header div {
+  font-size: 0.9em;
+}
+
+html.unauthorized .mood {
+  pointer-events: none;
+}
+
+button, input[type=submit] {
+  width: 100%;
+  display: block;
+  font-family: var(--font);
+  font-size: 1em;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  color: var(--foreground);
+  background: var(--secondary-background);
+  border: 2px solid gray;
+  margin: 8px 0;
+  padding: 4px;
+}
+
+button:hover, input[type=submit]:hover,
+button:focus, input[type=submit]:focus {
+  border-color: white;
+}
+
+.mood {
+  position: relative;
+  width: max-content;
+  padding-left: 0.5em;
+}
+
+#moods {
+  display: grid;
+  user-select: none;
+  cursor: crosshair;
+  position: relative;
+  overflow: hidden;
+  width: fit-content;
+  text-align: center;
+  grid-auto-rows: max-content;
+  width: max-content;
+  gap: 0;
+}
+
+#moods > div {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+  gap: 0;
+}
+
+#moods > div > div {
+  width: 94px;
+  height: 94px;
+  background-color: var(--color);
+  color: #000;
+  display: grid;
+  align-content: center;
+  justify-content: center;
+  border: 1px solid #000;
+  word-break: break-all;
+  text-align: center;
+}
+
+#dot {
+  width: 1rem;
+  height: 1rem;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  background: rgba(0, 0, 0, 0);
+  backdrop-filter: invert(1) blur(20px) brightness(150%);
+  border: 2px solid black;
+  border-radius: 100%;
+  left: var(--left);
+  top: var(--top);
+}
+
+.mood > span {
+  color: var(--secondary-foreground);
+  display: inline-block;
+  text-align: center;
+  user-select: none;
+  font-size: 0.9em;
+  width: 100%;
+}
+
+.mood > span:first-of-type {
+  position: absolute;
+  transform: rotate(-90deg);
+  padding-top: .5em;
+  left: -50%;
+  top: 45%;
+}
+
+label {
+  user-select: none;
+}
+
+input[type=text], input[type=password] {
+  width: 100%;
+  font-family: var(--font);
+  font-size: 1em;
+  border: none;
+  outline: none;
+  color: var(--foreground);
+  background: var(--secondary-background);
+  border: 2px solid gray;
+  margin: 8px 0;
+  padding: 4px;
+}
+
+input[type=text]:hover, input[type=password]:hover,
+input[type=text]:focus, input[type=password]:focus {
+  border-color: white;
+}
+
+input[type=text]:invalid {
+  border-color: #ee5858;
+}
+
+.ss {
+  color: var(--secondary-foreground);
+}
+
+a {
+  color: #fff;
+  text-decoration-style: dashed;
+}
+
+a:hover {
+  text-decoration-style: solid;
+}
+
+hr {
+  padding: 0;
+  margin: 24px 0;
+  border: 1px solid #fff;
+}
+
+@keyframes gradient {
+  from {
+    background-position-x: 100rem;
+  }
+  to {
+    background-position-x: 0;
+  }
+}
+
+.gradient {
+  background-image: linear-gradient(90deg, var(--color-3), var(--color-4), var(--color-5), var(--color-4), var(--color-3));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient 30s linear infinite;
+  transition: .5s filter;
+  text-decoration: none;
+}
+
+.gradient:hover {
+  filter: invert(1) brightness(120%);
+}
+
+#status_error {
+  max-width: 560px;
+  margin-bottom: 0.5em;
+}
+
+#status_error:empty {
+  margin: 0;
+}
+
+@keyframes target_flash {
+  from {
+    background-color: rgb(255, 222, 89, 0.3);
+  }
+  to {
+    background-color: rgb(0, 0, 0, 0);
+  }
+}
+
+:target {
+  animation: target_flash 1s linear;
+}

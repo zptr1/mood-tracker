@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" class="<%= self ? '' : 'unauthorized' %>">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="og:site_name" content="<%= username %>'s mood">
+  <meta name="og:title" content="<%= mood.status %>">
+  <meta name="og:description" content="Pleasantness: <%= Math.floor(mood.pleasantness * 100) %>% | Energy: <%= Math.floor(mood.energy * 100) %>%">
+  <script src="/static/script/view.js" async defer></script>
+  <script src="/static/script/moment.min.js" async defer></script>
+  <link rel="stylesheet" href="/static/style/index.css">
+  <title><%= username %>'s mood</title>
+</head>
+<body>
+  <main style="padding: 0">
+    <div class="view_header">
+      <div>
+        <a href="/">mood tracker</a>
+        <% if (self) { %>
+          &squarf; <a href="/settings">settings</a>
+        <% } %>
+      </div>
+      <h1><span><%= username %></span>'<%= username.endsWith("s") ? "" : "s" %> mood</h1>
+    </div>
+    <div class="mood">
+      <span>Low Energy &lt;-----&gt; High Energy</span>
+      <div id="moods">
+        <div>
+          <div style="--color: var(--color-1)">Enraged</div>
+          <div style="--color: var(--color-2)">Angry</div>
+          <div style="--color: var(--color-3)">Shocked</div>
+          <div style="--color: var(--color-4)">Manic</div>
+          <div style="--color: var(--color-5)">Festive</div>
+          <div style="--color: var(--color-6)">Ecstatic</div>
+        </div>
+        <div>
+          <div style="--color: var(--color-1)">Fuming</div>
+          <div style="--color: var(--color-2)">Stressed</div>
+          <div style="--color: var(--color-3)">Restless</div>
+          <div style="--color: var(--color-4)">Energized</div>
+          <div style="--color: var(--color-5)">Motivated</div>
+          <div style="--color: var(--color-6)">Excited</div>
+        </div>      
+        <div>
+          <div style="--color: var(--color-1)">Anxious</div>
+          <div style="--color: var(--color-2)">Worried</div>
+          <div style="--color: var(--color-3)">Uneasy</div>
+          <div style="--color: var(--color-4)">Pleasant</div>
+          <div style="--color: var(--color-5)">Cheerful</div>
+          <div style="--color: var(--color-6)">Blissful</div>
+        </div>
+        <div>
+          <div style="--color: var(--color-7)">Scared</div>
+          <div style="--color: var(--color-8)">Lonely</div>
+          <div style="--color: var(--color-9)">Apathetic</div>
+          <div style="--color: var(--color-10)">At ease</div>
+          <div style="--color: var(--color-11)">Content</div>
+          <div style="--color: var(--color-12)">Fulfilled</div>
+        </div>      
+        <div>
+          <div style="--color: var(--color-7)">Miserable</div>
+          <div style="--color: var(--color-8)">Sad</div>
+          <div style="--color: var(--color-9)">Tired</div>
+          <div style="--color: var(--color-10)">Relaxed</div>
+          <div style="--color: var(--color-11)">Restful</div>
+          <div style="--color: var(--color-12)">Satisfied</div>
+        </div>      
+        <div>
+          <div style="--color: var(--color-7)">Despair</div>
+          <div style="--color: var(--color-8)">Desolate</div>
+          <div style="--color: var(--color-9)">Drained</div>
+          <div style="--color: var(--color-10)">Sleepy</div>
+          <div style="--color: var(--color-11)">Tranquil</div>
+          <div style="--color: var(--color-12)">Serene</div>
+        </div>
+        <span id="dot" style="--left: <%= (mood.pleasantness + 1) / 2 * 100 %>%; --top: <%= (-mood.energy + 1) / 2 * 100 %>%"></span>
+        <%# Had to use variables instead of setting the properties directly because vscode keeps showing me an error %>
+      </div>
+      <span>Unpleasant &lt;-----&gt; Pleasant</span>
+    </div>
+    <p>Pleasantness: <span id="status_pleasantness"><%= Math.floor(mood.pleasantness * 100) %></span>%</p>
+    <p>Energy: <span id="status_energy"><%= Math.floor(mood.energy * 100) %></span>%</p>
+    <p></p>
+    <p style="color: var(--secondary-foreground)">
+      Last Update: <span id="status_last_update" data-timestamp="<%= mood.timestamp %>">
+        <%= mood.timestamp ? new Date(parseInt(mood.timestamp)).toLocaleString() + " UTC+0" : "-" %>
+      </span>
+    </p>
+    <p></p>
+    <button id="submit" style="display: none">Submit</button>
+  </main>
+</body>
+</html>

@@ -1,0 +1,52 @@
+@media screen and (max-width: 643px) {
+  main {
+    min-width: 420px !important;
+  }
+
+  p {
+    max-width: 420px !important;
+  }
+
+  #moods {
+    font-size: 0.9rem !important;
+  }
+
+  #moods > div > div {
+    font-size: 0.9rem !important;
+    width: 70px !important;
+    height: 70px !important;
+  }
+
+  #dot {
+    width: 0.8rem !important;
+    height: 0.8rem !important;
+  }
+
+  .mood > span {
+    font-size: 0.8rem !important;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  main {
+    min-width: 360px !important;
+  }
+
+  p {
+    max-width: 360px !important;
+  }
+
+  #moods {
+    font-size: 0.8rem !important;
+  }
+
+  #moods > div > div {
+    font-size: 0.8rem !important;
+    width: 60px !important;
+    height: 60px !important;
+  }
+  
+  .mood > span {
+    font-size: 0.7rem !important;
+  }
+}
