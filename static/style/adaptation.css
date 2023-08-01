@@ -1,10 +1,9 @@
 @media screen and (max-width: 643px) {
-  #moods {
-    font-size: 0.9rem !important;
+  .mood {
+    font-size: 0.75rem !important;
   }
 
   #moods > div > div {
-    font-size: 0.9rem !important;
     width: 70px !important;
     height: 70px !important;
   }
@@ -20,12 +19,11 @@
 }
 
 @media screen and (max-width: 500px) {
-  #moods {
-    font-size: 0.8rem !important;
+  .mood {
+    font-size: 0.65rem !important;
   }
 
   #moods > div > div {
-    font-size: 0.8rem !important;
     width: 60px !important;
     height: 60px !important;
   }

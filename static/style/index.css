@@ -1,14 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
 @import url(/static/style/adaptation.css);
-
-@font-face {
-  font-family: 'DinaRemasterII';
-  src: url(/static/font/DinaRemasterII.ttf) format('truetype');
-}
-
-@font-face {
-  font-family: 'DinaRemasterII Bold';
-  src: url(/static/font/DinaRemasterII-Bold.ttf) format('truetype');
-}
 
 :root {
   --background: #1c1c1c;
@@ -27,8 +18,7 @@
   --color-10: #c3d194;
   --color-11: #a0ad7b;
   --color-12: #6c7b42;
-  --font: 'DinaRemasterII', monospace;
-  --font-bold: 'DinaRemasterII Bold', monospace;
+  --font: 'Inter', sans-serif;
 }
 
 body, html {
@@ -37,7 +27,7 @@ body, html {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font);
-  font-size: 1.2rem;
+  font-size: 1.05rem;
 }
 
 *, ::before, ::after {
@@ -62,8 +52,8 @@ main {
   padding: 1em;
 }
 
-b, strong {
-  font-family: var(--font-bold);
+b, strong, .mood {
+  font-weight: 500;
 }
 
 h1, h2, ul, p {
@@ -132,7 +122,8 @@ button:focus, input[type=submit]:focus {
 .mood {
   position: relative;
   width: max-content;
-  padding-left: 0.5em;
+  padding-left: 1em;
+  font-size: 1rem;
 }
 
 #moods {
@@ -193,7 +184,7 @@ button:focus, input[type=submit]:focus {
 .mood > span:first-of-type {
   position: absolute;
   transform: rotate(-90deg);
-  padding-top: .5em;
+  padding-top: 0.5em;
   left: -50%;
   top: 45%;
 }
