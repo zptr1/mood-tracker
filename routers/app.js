@@ -28,7 +28,8 @@ router.get("/:username", getAuth(), async (req, res, next) => {
   res.render("pages/view", {
     self: req.user?.id == user.id,
     username: user.username,
-    mood: await fetchMood(user.id)
+    mood: await fetchMood(user.id),
+    labels: DEFAULT_MOODS
   });
 });
 

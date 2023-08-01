@@ -22,54 +22,13 @@
     <div class="mood">
       <span>Low Energy &lt;-----&gt; High Energy</span>
       <div id="moods">
-        <div>
-          <div style="--color: var(--color-1)">Enraged</div>
-          <div style="--color: var(--color-2)">Angry</div>
-          <div style="--color: var(--color-3)">Shocked</div>
-          <div style="--color: var(--color-4)">Manic</div>
-          <div style="--color: var(--color-5)">Festive</div>
-          <div style="--color: var(--color-6)">Ecstatic</div>
-        </div>
-        <div>
-          <div style="--color: var(--color-1)">Fuming</div>
-          <div style="--color: var(--color-2)">Stressed</div>
-          <div style="--color: var(--color-3)">Restless</div>
-          <div style="--color: var(--color-4)">Energized</div>
-          <div style="--color: var(--color-5)">Motivated</div>
-          <div style="--color: var(--color-6)">Excited</div>
-        </div>      
-        <div>
-          <div style="--color: var(--color-1)">Anxious</div>
-          <div style="--color: var(--color-2)">Worried</div>
-          <div style="--color: var(--color-3)">Uneasy</div>
-          <div style="--color: var(--color-4)">Pleasant</div>
-          <div style="--color: var(--color-5)">Cheerful</div>
-          <div style="--color: var(--color-6)">Blissful</div>
-        </div>
-        <div>
-          <div style="--color: var(--color-7)">Scared</div>
-          <div style="--color: var(--color-8)">Lonely</div>
-          <div style="--color: var(--color-9)">Apathetic</div>
-          <div style="--color: var(--color-10)">At ease</div>
-          <div style="--color: var(--color-11)">Content</div>
-          <div style="--color: var(--color-12)">Fulfilled</div>
-        </div>      
-        <div>
-          <div style="--color: var(--color-7)">Miserable</div>
-          <div style="--color: var(--color-8)">Sad</div>
-          <div style="--color: var(--color-9)">Tired</div>
-          <div style="--color: var(--color-10)">Relaxed</div>
-          <div style="--color: var(--color-11)">Restful</div>
-          <div style="--color: var(--color-12)">Satisfied</div>
-        </div>      
-        <div>
-          <div style="--color: var(--color-7)">Despair</div>
-          <div style="--color: var(--color-8)">Desolate</div>
-          <div style="--color: var(--color-9)">Drained</div>
-          <div style="--color: var(--color-10)">Sleepy</div>
-          <div style="--color: var(--color-11)">Tranquil</div>
-          <div style="--color: var(--color-12)">Serene</div>
-        </div>
+        <% for (let i = 0; i < 6; i++) { %>
+          <div>
+            <% for (let j = 0; j < 6; j++) { %>
+              <div style="--color: var(--color-<%= 6 * (i >= 3) + j + 1 %>)"><%= labels[i * 6 + (5 - j)] %></div>
+            <% } %>
+          </div>
+        <% } %>
         <span id="dot" style="--left: <%= (mood.pleasantness + 1) / 2 * 100 %>%; --top: <%= (-mood.energy + 1) / 2 * 100 %>%"></span>
         <%# Had to use variables instead of setting the properties directly because vscode keeps showing me an error %>
       </div>
