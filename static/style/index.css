@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 @import url(/static/style/adaptation.css);
 
 :root {
@@ -52,8 +52,12 @@ main {
   padding: 1em;
 }
 
-b, strong, .mood {
+.mood {
   font-weight: 500;
+}
+
+b, strong {
+  font-weight: 700;
 }
 
 h1, h2, ul, p {
@@ -70,6 +74,7 @@ h1 {
 }
 
 ul {
+  margin: 10px 0;
   margin-left: 1.5em;
 }
 
