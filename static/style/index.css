@@ -31,7 +31,7 @@ body, html {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font);
-  font-size: 1.05rem;
+  font-size: 1.2rem;
 }
 
 *, ::before, ::after {
@@ -123,7 +123,7 @@ button:focus, input[type=submit]:focus {
 .mood {
   position: relative;
   width: max-content;
-  padding-left: 1em;
+  padding-left: 0.5em;
   font-size: 1rem;
 }
 
