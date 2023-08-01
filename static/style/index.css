@@ -1,8 +1,13 @@
 @import url(/static/style/adaptation.css);
 
 @font-face {
-  font-family: 'VT323';
-  src: url(/static/font/VT323.ttf) format('truetype');
+  font-family: 'DinaRemasterII';
+  src: url(/static/font/DinaRemasterII.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'DinaRemasterII Bold';
+  src: url(/static/font/DinaRemasterII-Bold.ttf) format('truetype');
 }
 
 :root {
@@ -22,7 +27,8 @@
   --color-10: #c3d194;
   --color-11: #a0ad7b;
   --color-12: #6c7b42;
-  --font: 'VT323', monospace
+  --font: 'DinaRemasterII', monospace;
+  --font-bold: 'DinaRemasterII Bold', monospace;
 }
 
 body, html {
@@ -54,6 +60,10 @@ body {
 
 main {
   padding: 1em;
+}
+
+b, strong {
+  font-family: var(--font-bold);
 }
 
 h1, h2, ul, p {
