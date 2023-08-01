@@ -20,7 +20,7 @@
       <h1><span><%= username %></span>'<%= username.endsWith("s") ? "" : "s" %> mood</h1>
     </div>
     <div class="mood">
-      <span>Low Energy &lt;-----&gt; High Energy</span>
+      <span>Low Energy &lt;--&gt; High Energy</span>
       <div id="moods">
         <% for (let i = 0; i < 6; i++) { %>
           <div>
@@ -32,7 +32,7 @@
         <span id="dot" style="--left: <%= (mood.pleasantness + 1) / 2 * 100 %>%; --top: <%= (-mood.energy + 1) / 2 * 100 %>%"></span>
         <%# Had to use variables instead of setting the properties directly because vscode keeps showing me an error %>
       </div>
-      <span>Unpleasant &lt;-----&gt; Pleasant</span>
+      <span>Unpleasant &lt;--&gt; Pleasant</span>
     </div>
     <p>Pleasantness: <span id="status_pleasantness"><%= Math.floor(mood.pleasantness * 100) %></span>%</p>
     <p>Energy: <span id="status_energy"><%= Math.floor(mood.energy * 100) %></span>%</p>
