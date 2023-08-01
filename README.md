@@ -22,8 +22,8 @@ https://mood.zptr.cc/
     - [ ] Delete the account
 - [ ] Charts/analytics on the profile
 - [ ] API
-  - [ ] Fetching history (full or paginated)
-  - [ ] Deleting history record(s)
+  - [x] Fetching history (full or paginated)
+  - [x] Deleting history record(s)
   - [ ] Webhooks: will make a POST request to the configured URL once the mood is updated. Will also support Discord webhooks
   - [x] Prometheus endpoint
 

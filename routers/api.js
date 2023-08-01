@@ -22,6 +22,20 @@ async function getAuth(req, res, next) {
   }  
 }
 
+router.get("/me", getAuth, (req, res) => {
+  res.json({
+    username: req.user.username,
+    created_at: req.user.created_at,
+    total_mood_changes: req.user.stats_mood_sets,
+    settings: {
+      custom_mood_labels: req.user.custom_labels,
+      custom_colors: req.user.custom_colors,
+      is_profile_private: req.user.is_profile_private,
+      is_stats_private: req.user.is_profile_private || req.user.is_stats_private
+    },
+  })
+})
+
 router.get("/mood", getAuth, async (req, res) => {
   res.json({
     status: "ok",
@@ -85,6 +99,25 @@ router.put("/mood", getAuth, async (req, res) => {
   })
 });
 
+router.delete("/mood", getAuth, async (req, res) => {
+  if (!Array.isArray(req.body.timestamps) || req.body.timestamps.find((x) => !Number.isInteger(x))) {
+    return res.status(400).json({
+      status: "error",
+      message: "`timestamps` needs to be an array of integers"
+    });
+  }
+
+  const deleted = await exec$(
+    "delete from mood where user_id=$1 and timestamp=any($2) returning *",
+    [req.user.id, req.body.timestamps]
+  );
+
+  res.json({
+    status: "ok",
+    deleted: deleted.length
+  })
+})
+
 router.get("/history/:user?", getAuth, async (req, res, next) => {
   const username = req.params.user || req.user.username;
   if (!username.match(/^[a-z0-9_-]{3,32}$/))
@@ -115,7 +148,7 @@ router.get("/history/:user?", getAuth, async (req, res, next) => {
     : null
   );
 
-  if (per < 1 || per > 100) {
+  if ((per < 1 || per > 100) && per != -1) {
     return res.json({
       status: "error",
       messge: "`per` must be in range 1..100"
@@ -138,6 +171,7 @@ router.get("/history/:user?", getAuth, async (req, res, next) => {
 
   if (page < 0 || (page && page >= pages)) {
     return res.json({
+      status: "ok",
       entries: [],
       total: user.stats_mood_sets,
       pages: pages
@@ -151,10 +185,11 @@ router.get("/history/:user?", getAuth, async (req, res, next) => {
       user_id=$1
       and timestamp > $2
       and timestamp < $3
-    order by id ${sort || "desc"} limit ${per} offset ${page * per}
+    order by id ${sort || "desc"} limit ${per == -1 ? "all" : per} offset ${page * per}
   `, [user.id, after, before]);
 
   res.json({
+    status: "ok",
     entries: history.map((x) => ({
       timestamp: x.timestamp,
       pleasantness: Math.floor(x.pleasantness * 100) / 100,
