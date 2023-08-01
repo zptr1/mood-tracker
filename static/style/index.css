@@ -1,5 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 @import url(/static/style/adaptation.css);
+
+@font-face {
+  font-family: 'VT323';
+  src: url(/static/font/VT323.ttf) format('truetype');
+}
 
 :root {
   --background: #1c1c1c;
@@ -18,7 +22,7 @@
   --color-10: #c3d194;
   --color-11: #a0ad7b;
   --color-12: #6c7b42;
-  --font: 'Inter', sans-serif;
+  --font: 'VT323', monospace;
 }
 
 body, html {
@@ -50,14 +54,6 @@ body {
 
 main {
   padding: 1em;
-}
-
-.mood {
-  font-weight: 500;
-}
-
-b, strong {
-  font-weight: 700;
 }
 
 h1, h2, ul, p {
