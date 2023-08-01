@@ -1,14 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="og:description" content="mood tracker">
-  <link rel="stylesheet" href="/static/style/index.css">
+  <%- include('../partials/head') %>
   <script src="/static/secret_cookie_clicker/index.js" async></script>
   <link rel="stylesheet" href="/static/secret_cookie_clicker/index.css">
-  <title>mood tracker</title>
 </head>
 <body>
   <main>
@@ -23,8 +18,7 @@
           &squarf; <a href="/auth/register">register</a>
         <% } %>
       </div>
-      <h1 id="secret_cookie_clicker">mood tracker</h1>
-      <div id="sccs"></div>
+      <h1 id="secret_cookie_clicker">mood tracker</h1><div id="sccs"></div>
     </div>
     <% if (user) { %>
       <p>

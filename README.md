@@ -28,7 +28,7 @@ https://mood.zptr.cc/
   - [x] Prometheus endpoint
 
 ### Internal
-- [ ] Split [`views/`](views) into `pages` and `partials`
+- [x] Split [`views/`](views) into `pages` and `partials`
 - [ ] Refractor stuff because the current code structure is ugly
 
 ## Plans

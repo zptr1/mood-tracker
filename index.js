@@ -20,9 +20,9 @@ app.use("/api", apiRouter);
 app.use("/auth", authRouter);
 app.use("/static", express.static("static"));
 
-app.use((req, res, next) => res.status(404).render("404"));
+app.use((req, res, next) => res.status(404).render("error/404"));
 app.use((err, req, res, next) => {
-  res.status(500).render("500");
+  res.status(500).render("error/500");
   console.error(err);
 });
 
