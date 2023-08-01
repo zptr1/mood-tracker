@@ -4,7 +4,6 @@
   <% locals.mood = "Register" %>
   <%- include('../partials/head') %>
 
-  <script src="/static/script/register.js" async defer></script>
   <% if (turnstile_site_key) { %>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <% } %>
@@ -19,7 +18,7 @@
       <label for="password">Password</label>
       <input name="password" id="password" type="password" placeholder="Password" required>
       
-      <p id="status_error" style="color:#ee5858"><%= locals.error || "" %></p>
+      <p id="status_error"><%= locals.error || "" %></p>
       
       <% if (turnstile_site_key) { %>
         <div class="cf-turnstile" data-sitekey="<%= turnstile_site_key %>"></div>
@@ -29,5 +28,21 @@
     </form>
     <p>Already have an account? <a href="/auth/login">Sign in</a></p>
   </main>
+  <script>
+    username.addEventListener("keyup", (e) => {
+      e.target.value = e.target.value.replace(/\s/g, "_").toLowerCase();
+      const err =
+        e.target.value.match(/[^a-z0-9_-]/)
+          ? "Username must contain only lowercase letters, numbers, underscores and dashes."
+        : e.target.value.length > 32
+          ? "Username is too long!"
+        : e.target.value.length < 3
+          ? "Username is too short!"
+        : null;
+
+      if (err) status_error.textContent = err;
+      else status_error.textContent = "";
+    });
+  </script>
 </body>
 </html>
