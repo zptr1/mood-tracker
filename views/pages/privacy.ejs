@@ -14,40 +14,47 @@
       <div><a href="/">mood tracker</a></div>
       <h1>Privacy Policy</h1>
     </div>
-    <p>Last Update: 2023-08-01</p>
+    <p><b>WARNING: This privacy policy is currently not released as its unfinished and describes some features that are not implemented yet.</b></p>
+    <p>Last Update: <b>2023-08-01</b></p>
     <p></p>
+    <hr>
     <section id="what">
-      <h2>What is being stored?</h2>
-      <p>We store the following data to provide access to the service:</p>
+      <h2>What information do we collect and how is it used?</h2>
+      <p>We collect and store the following data to provide access to the service and improve user experience:</p>
       <ul>
-        <li>Your username</li>
-        <li>The hash of your password using the bcrypt algorithm </li>
-        <li>Your profile settings and privacy settings</li>
-        <li>All your mood updates</li>
+        <li>Your username: Used for basic access and identification purposes</li>
+        <li>Hashed password (using bcrypt): To securely authorize you into your account </li>
+        <li>Profile settings and privacy settings: To customize data collection and personalize the service</li>
+        <li>Mood updates: Stored to provide analytics and insights into your mood, which you can view on your profile. The history is analyzed locally, but the data is stored on our side</li>
+        <li>Some data may be accessible through our <a href="/docs">API</a> by others if they know your username.</li>
       </ul>
       <p>The data is stored indefinitely by default, but you can limit the amount of days the mood history is stored up to, or disable the history entirely.</p>
-    </section>
-    <section id="how">
-      <h2>How is the data being used?</h2>
-      <p>
-        <ul>
-          <li>Your username and the hashed password is used to provide basic access to the service, allowing you to authorize into your account and access it.</li>
-          <li>Your settings are used to provide better experience with the service and customize data collection</li>
-          <li>The history of your mood updates is stored to provide analytics about your mood which you can view on your profile. <br>
-              Note: The history is analyzed locally but is stored on our side.</li>
-          <li>Some of your data may also be accessed by others using our <a href="/docs">API</a>. <br>
-              You can make your profile or metrics private in the settings, which will make them accessible only to you.</li>
-        </ul>
-      </p>
     </section>
     <section id="managing">
       <h2>Managing your data</h2>
       <p>
-        You can clear or disable the mood history in your profile settings, or you can limit the amount of days the mood history is stored up to.<br>
-        You can delete your account and we will immediately delete all the data associated with you.<br>
-        You can download a JSON file containing all data we store about you in your profile settings
+        You can delete your account at any time, and we will immediately delete all associated data.
+        Additionally, you can download a JSON file containing all the data we store about you in your profile settings.
       </p>
     </section>
+    <section id="third_party">
+      <h2>Third-Party Access</h2>
+      <p>While some of your data such as current mood and the history may be accessed using our API, we will never sell or share your data to anyone else.</p>
+    </section>
+    <section id="cookies">
+      <h2>Cookies</h2>
+      <p>Our website uses cookies to keep you signed in.</p>
+    </section>
+    <section id="changes">
+      <h2>Changes to our Privacy Policy</h2>
+      <p>We may update this privacy policy from time to time. We will notify you of any changes made to our Privacy Policy by specifying the date.</p>
+      <p>Previous versions of this privacy policy can be accessed by checking the commit history on our <a href="https://github.com/zptr1/mood-tracker">GitHub repository</a>.</p>
+      <p>You are advised to review our Privacy Policy periodically for any changes. Such changes to our Privacy Policy are effective when they are posted on this page.</p>
+    </section>
   </main>
+  <style>
+    p, li { max-width: 700px; }
+    p, section { margin-bottom: 20px; }
+  </style>
 </body>
 </html>
