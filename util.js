@@ -6,7 +6,7 @@ export const DEFAULT_MOODS = [
   "Blissful", "Cheerful", "Pleasant", "Uneasy", "Worried", "Anxious",
   "Fulfilled", "Content", "At ease", "Apathetic", "Lonely", "Scared",
   "Satisfied", "Restful", "Relaxed", "Tired", "Sad", "Miserable",
-  "Serence", "Tranquil", "Sleepy", "Drained", "Desolate", "Despair"
+  "Serene", "Tranquil", "Sleepy", "Drained", "Desolate", "Despair"
 ];
 
 export function moodInfo(pleasantness, energy, moods=DEFAULT_MOODS) {
