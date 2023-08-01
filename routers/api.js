@@ -85,7 +85,87 @@ router.put("/mood", getAuth, async (req, res) => {
   })
 });
 
-router.get("/metrics", async (req, res, next) => {
+router.get("/history/:user?", getAuth, async (req, res, next) => {
+  const username = req.params.user || req.user.username;
+  if (!username.match(/^[a-z0-9_-]{3,32}$/))
+    return next();
+
+  const user = await fetch$(
+    "select * from users where username=$1",
+    [username]
+  );
+
+  if (!user || ((user.is_profile_private || user.is_stats_private) && user.id != req.user.id)) {
+    return res.status(404).json({
+      status: "error",
+      message: "User not found"
+    });
+  }
+
+  const per = parseInt(req.query.per) || 25;
+  const page = parseInt(req.query.page) || 0;
+  const pages = Math.floor(user.stats_mood_sets / per);
+  const before = parseInt(req.query.before) || Date.now();
+  const after = parseInt(req.query.after) || 0;
+  const sort = (
+    req.query.sort == "newest"
+      ? "desc"
+    : req.query.sort == "oldest"
+      ? "asc"
+    : null
+  );
+
+  if (per < 1 || per > 100) {
+    return res.json({
+      status: "error",
+      messge: "`per` must be in range 1..100"
+    });
+  }
+
+  if (req.query.sort && !sort) {
+    return res.json({
+      status: "error",
+      message: "`sort` must be one of ('newest', 'oldest')"
+    });
+  }
+
+  if (after < 0 || after >= before || !Number.isSafeInteger(before) || !Number.isSafeInteger(after)) {
+    return res.json({
+      status: "error",
+      message: "Invalid time range"
+    });
+  }
+
+  if (page < 0 || (page && page >= pages)) {
+    return res.json({
+      entries: [],
+      total: user.stats_mood_sets,
+      pages: pages
+    })
+  }
+
+  const history = await exec$(`
+    select
+      timestamp, pleasantness, energy
+    from mood where
+      user_id=$1
+      and timestamp > $2
+      and timestamp < $3
+    order by id ${sort || "desc"} limit ${per} offset ${page * per}
+  `, [user.id, after, before]);
+
+  res.json({
+    entries: history.map((x) => ({
+      timestamp: x.timestamp,
+      pleasantness: Math.floor(x.pleasantness * 100) / 100,
+      energy: Math.floor(x.energy * 100) / 100
+    })),
+    total: user.stats_mood_sets,
+    pages: pages
+  });
+});
+
+router.get("/metrics", async (req, res) => {
   // TODO: show metrics for the API as well? (memory usage, uptime etc)
 
   if (!req.query.users) {
