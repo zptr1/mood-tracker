@@ -8,7 +8,9 @@
   <hr>
 </div>
 <div id="buttons">
-  <button id="btn_download">Download your data</button>
+  <a href="/mydata" download="mydata.json" class="btn">
+    <button id="btn_download">Download your data</button>
+  </a>
   <button class="danger" id="btn_clear">Clear mood history</button>
   <button class="danger" id="btn_delete">Delete your account</button>
 </div>
@@ -106,27 +108,6 @@
     form.style = null;
   });
 
-  btn_download.addEventListener("click", async () => {
-    buttons.style.pointerEvents = "none";
-    buttons.style.opacity = 0.5;
-    btn_download.disabled = true;
-
-    try {
-      const data = await fetchData();
-      const e = document.createElement("a");
-      document.body.appendChild(e);
-      e.setAttribute("href", "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2)));
-      e.setAttribute("download", `data-<%= user.username %>-${Date.now()}.json`);
-      e.click();
-      e.remove();
-    } catch (err) {
-      alert(`Download failed: ${err}`);
-    } finally {
-      btn_download.disabled = false;
-      buttons.style = null;
-    }
-  });
-
   function edit() {
     form.style.opacity = 0.5;
     form.style.pointerEvents = "none";
@@ -161,31 +142,4 @@
         is_profile_private.disabled = false;
       });
   }
-
-  async function fetchData() {
-    const me = await fetch(
-      "/api/me", {
-        headers: {
-          "Authorization": tok
-        }
-      }
-    ).then((x) => x.json());
-
-    const history = await fetch(
-      "/api/history/all?sort=oldest", {
-        headers: {
-          "Authorization": tok
-        }
-      }
-    ).then((x) => x.json());
-
-    if (me.status == "error") throw me.message;
-    if (history.status == "error") throw history.message;
-
-    return {
-      profile: me,
-      history: history.entries
-    }
-  }
-  // 
 </script>

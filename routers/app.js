@@ -1,6 +1,6 @@
 import { fetchMood, DEFAULT_MOODS, DEFAULT_COLORS } from "../util.js";
 import { getAuth } from "./auth.js";
-import { fetch$ } from "../db.js";
+import { exec$, fetch$ } from "../db.js";
 import express from "express";
 
 export const router = express.Router();
@@ -57,6 +57,35 @@ router.get("/settings/:category?", getAuth(true), async (req, res, next) => {
     category: req.params.category || "account",
     categories,
   })
+});
+
+router.get("/mydata", getAuth(true), async (req, res) => {
+  const history = await exec$(
+    "select * from mood where user_id=$1",
+    [req.user.id]
+  );
+
+  const data = {
+    user: {
+      username: req.user.username,
+      created_at: req.user.created_at,
+      total_mood_changes: req.user.stats_mood_sets,
+      settings: {
+        custom_labels: req.user.custom_labels,
+        custom_colors: req.user.custom_colors,
+        is_profile_private: req.user.is_profile_private,
+        is_history_private: req.user.is_profile_private || req.user.is_history_private
+      },
+    },
+    history: history.map((x) => ({
+      timestamp: x.timestamp,
+      pleasantness: x.pleasantness,
+      energy: x.energy
+    }))
+  };
+
+  res.setHeader("Content-Type", "application/json");
+  res.send(JSON.stringify(data, null, 2));
 })
 
 router.get("/500", (req, res) => {

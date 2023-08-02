@@ -248,6 +248,10 @@ a:hover {
   text-decoration-style: solid;
 }
 
+a.btn {
+  text-decoration: none;
+}
+
 hr {
   padding: 0;
   margin: 24px 0;
