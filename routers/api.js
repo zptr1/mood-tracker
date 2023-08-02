@@ -31,7 +31,7 @@ router.get("/me", getAuth, (req, res) => {
       custom_mood_labels: req.user.custom_labels,
       custom_colors: req.user.custom_colors,
       is_profile_private: req.user.is_profile_private,
-      is_stats_private: req.user.is_profile_private || req.user.is_stats_private
+      is_history_private: req.user.is_profile_private || req.user.is_history_private
     },
   })
 })
@@ -128,7 +128,7 @@ router.get("/history/:user?", getAuth, async (req, res, next) => {
     [username]
   );
 
-  if (!user || ((user.is_profile_private || user.is_stats_private) && user.id != req.user.id)) {
+  if (!user || ((user.is_profile_private || user.is_history_private) && user.id != req.user.id)) {
     return res.status(404).json({
       status: "error",
       message: "User not found"
@@ -224,7 +224,7 @@ router.get("/metrics", async (req, res) => {
     from users where
       username=any($1)
       and is_profile_private=false
-      and is_stats_private=false
+      and is_history_private=false
     order by username desc
   `, [
     usernames

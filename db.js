@@ -34,7 +34,7 @@ exec$(`
     custom_colors int[] default array[]::int[],
 
     is_profile_private bool default false,
-    is_stats_private bool default false
+    is_history_private bool default false
   );
 
   create index if not exists mood_user_id_idx on mood(user_id);
