@@ -33,7 +33,19 @@ router.get("/:username", getAuth(), async (req, res, next) => {
   });
 });
 
+router.get("/settings/:category?", getAuth(true), async (req, res, next) => {
+  const categories = ["account", "customization", "privacy"];
+  if (req.params.category && !categories.includes(req.params.category))
+    return next();
+
+  res.render("pages/settings", {
+    user: req.user,
+    category: req.params.category || "account",
+    categories,
+  })
+})
+
 router.get("/500", (req, res) => {
   // easter egg
   res.status(500).render("error/500");
-})
+});

@@ -1,0 +1,87 @@
+<div id="form">
+  <label for="username">Username</label>
+  <input name="username" id="username" type="text" value="<%= user.username %>" minlength="3" maxlength="32" pattern="^[a-z0-9_-]{3,32}$">
+  <label for="password">Password</label>
+  <input name="password" id="password" type="password" placeholder="Enter a new password if you want to change it">
+  <p id="status_error"></p>
+  <p id="status_warn"></p>
+  <div id="edit_usr_confirm" style="display:none">
+    <label for="confirm_password">Confirm password</label>
+    <input name="confirm_password" id="confirm_password" type="password" placeholder="Old password to confirm changes">
+    <div class="column_container">
+      <button id="submit" disabled>Submit</button>
+      <button id="cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+<script>
+  username.addEventListener("keyup", () => {
+    username.value = username.value.replace(/\s/g, "_").toLowerCase();
+    const error =
+      username.value.match(/[^a-z0-9_-]/)
+        ? "Username must contain only lowercase letters, numbers, underscores and dashes."
+      : username.value.length > 32
+        ? "Username is too long!"
+      : username.value.length < 3
+        ? "Username is too short!"
+      : null;
+
+    if (error) {
+      status_error.textContent = error;
+      submit.disabled = true;
+    } else {
+      status_error.textContent = "";
+      submit.disabled = !confirm_password.value;
+    }
+
+    edit_usr_confirm.style = null;
+  });
+
+  password.addEventListener("keyup", () => {
+    if (password.value) {
+      status_warn.textContent = "Changing your password will cause you to log out everywhere";
+    } else status_warn.textContent = "";
+
+    edit_usr_confirm.style = null;
+  });
+
+  confirm_password.addEventListener("keyup", () => {
+    submit.disabled = !confirm_password.value;
+  })
+
+  submit.addEventListener("click", (e) => {
+    const token = document.cookie.match(/token=([A-Za-z0-9_-]{64})/)[1];
+
+    form.style.opacity = 0.5;
+    form.style.pointerEvents = "none";
+    submit.disabled = true;
+    cancel.disabled = true;
+
+    fetch("/api/me", {
+      method: "PATCH",
+      headers: {
+        "Authorization": token,
+        "Content-Type": "application/json",
+      }
+    })
+      .then(res => res.json())
+      .then(res => {
+        if (res.status == "error") {
+          status_error.textContent = res.message;
+        } else {
+          window.location.reload();
+        }
+      })
+      .finally(() => {
+        form.style = null;
+        submit.disabled = false;
+        cancel.disabled = false;
+      });
+  })
+
+  cancel.addEventListener("click", (e) => {
+    confirm_password.value = password.value = status_error.textContent = status_warn.textContent = "";
+    edit_usr_confirm.style.display = "none";
+    username.value = "<%= user.username %>";
+  });
+</script>

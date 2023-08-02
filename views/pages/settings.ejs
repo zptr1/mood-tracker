@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% locals.title = "Settings" %>
+  <%- include('../partials/head') %>
+</head>
+<body>
+  <main>
+    <div class="view_header">
+      <div>
+        <a href="/<%= user.username %>">back</a>
+      </div>
+      <h1>Settings</h1>
+    </div>
+    <ul class="settings_nav">
+      <% for (const id of categories) { %>
+        <% if (id == category) { %>
+          <li class="active"><a><%= id[0].toUpperCase() + id.slice(1) %></a></li>
+        <% } else { %>
+          <li><a href="/settings/<%= id %>"><%= id[0].toUpperCase() + id.slice(1) %></a></li>
+        <% } %>
+      <% } %>
+    </ul>
+    <div class="setting_container">
+      <u>This section is under construction.</u>
+      <br><br>
+      <%- include(`./settings/${category}`) %>
+    </div>
+  </main>
+</body>
+</html>

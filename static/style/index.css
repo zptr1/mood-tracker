@@ -115,6 +115,11 @@ button, input[type=submit] {
   padding: 4px;
 }
 
+button:disabled, input[type=submit]:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
 button:hover, input[type=submit]:hover,
 button:focus, input[type=submit]:focus {
   border-color: white;
@@ -261,9 +266,24 @@ hr {
 #status_error {
   max-width: 560px;
   margin-bottom: 0.5em;
+  color: #ee5858;
 }
 
-#status_error:empty {
+#status_warn {
+  max-width: 560px;
+  margin-bottom: 0.5em;
+  color: #ee9458;
+}
+
+#status_error ~ #status_warn {
+  display: none;
+}
+
+#status_error:empty ~ #status_warn {
+  display: block;
+}
+
+#status_error:empty, #status_warn:empty {
   margin: 0;
 }
 
@@ -282,4 +302,48 @@ hr {
 
 .username {
   color: var(--color-8);
+}
+
+.settings_nav {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+  user-select: none;
+  list-style: none;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  gap: 0;
+}
+
+.settings_nav li {
+  padding: 0;
+  margin: 0;
+}
+
+.settings_nav li a {
+  padding: 10px 14px;
+  margin: 0;
+  text-decoration: none;
+  border-bottom: 3px solid #444;
+  transition: .2s border-color;
+}
+
+.settings_nav li.active a {
+  border-bottom-color: #a8ceff;
+}
+
+.settings_nav li:hover a {
+  border-bottom-color: #888;
+}
+
+.setting_container {
+  margin-top: 30px;
+}
+
+.column_container {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 8px;
 }
