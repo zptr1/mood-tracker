@@ -1,0 +1,191 @@
+<div id="form">
+  <input type="checkbox" name="is_profile_private" id="is_profile_private"><label for="is_profile_private"> Private account</label>
+  <p class="gray">The profile will be available only to you.</p>
+  <br>
+  <input type="checkbox" name="is_history_private" id="is_history_private"><label for="is_history_private"> Private history</label>
+  <p class="gray">The profile will be public but the analytics will be available only to you.</p>
+  <p id="status_error"></p>
+  <hr>
+</div>
+<div id="buttons">
+  <button id="btn_download">Download your data</button>
+  <button class="danger" id="btn_clear">Clear mood history</button>
+  <button class="danger" id="btn_delete">Delete your account</button>
+</div>
+<div id="danger_confirm" style="display:none">
+  <p id="status_warn" style="color:#ee5858"></p>
+  <label for="password_confirm">Enter your password to confirm</label>
+  <input type="password" name="password_confirm" id="password_confirm" placeholder="Enter your password to confirm">
+  <div class="column_container">
+    <button class="danger" id="danger_confirm_btn" disabled>Confirm</button>
+    <button id="danger_cancel_btn">Cancel</button>
+  </div>
+</div>
+<script>
+  const tok = document.cookie.match(/token=([A-Za-z0-9_-]{64})/)[1];
+  let action = null;
+  let p = "<%= user.is_profile_private %>" == "true";
+  let h = "<%= user.is_history_private %>" == "true";
+  is_profile_private.checked = is_history_private.disabled = p;
+  is_history_private.checked = p || h;
+
+  is_profile_private.addEventListener("change", () => {
+    if (is_profile_private.checked) {
+      is_history_private.disabled = true;
+      is_history_private.checked = true;
+    } else {
+      is_history_private.disabled = false;
+      is_history_private.checked = h;
+    }
+
+    edit();
+  });
+
+  is_history_private.addEventListener("change", () => {
+    edit();
+  });
+
+  btn_clear.addEventListener("click", () => {
+    status_warn.innerHTML = "Are you sure you want to clear all your mood history?<br>Your data will be lost forever (a long time!)";
+    buttons.style.display = "none";
+    form.style.display = "none";
+    danger_confirm.style = null;
+    action = "clear";
+  });
+
+  btn_delete.addEventListener("click", () => {
+    status_warn.innerHTML = "Are you sure you want to delete your account?<br>Your account and its data will be lost forever (a long time!)";
+    buttons.style.display = "none";
+    form.style.display = "none";
+    danger_confirm.style = null;
+    action = "delete";
+  });
+
+  password_confirm.addEventListener("keyup", () => {
+    danger_confirm_btn.disabled = !password_confirm.value;
+  });
+
+  danger_confirm_btn.addEventListener("click", () => {
+    const route = (
+      action == "clear"
+        ? "/api/history/all"
+      : action == "delete"
+        ? "/api/me"
+      : null
+    );
+
+    fetch(route, {
+      method: "DELETE",
+      body: JSON.stringify({
+        password: password_confirm.value
+      }),
+      headers: {
+        "Authorization": tok,
+        "Content-Type": "application/json"
+      }
+    })
+      .catch((err) => {
+        console.error(err);
+        alert("Something went wrong, sorry!");
+      })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.status == "error") {
+          alert(res.message);
+        } else {
+          window.location.reload();
+        }
+      });
+  });
+
+  danger_cancel_btn.addEventListener("click", () => {
+    danger_confirm.style.display = "none";
+    danger_confirm_btn.disabled = true;
+    password_confirm.value = "";
+    buttons.style = null;
+    form.style = null;
+  });
+
+  btn_download.addEventListener("click", async () => {
+    buttons.style.pointerEvents = "none";
+    buttons.style.opacity = 0.5;
+    btn_download.disabled = true;
+
+    try {
+      const data = await fetchData();
+      const e = document.createElement("a");
+      document.body.appendChild(e);
+      e.setAttribute("href", "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2)));
+      e.setAttribute("download", `data-<%= user.username %>-${Date.now()}.json`);
+      e.click();
+      e.remove();
+    } catch (err) {
+      alert(`Download failed: ${err}`);
+    } finally {
+      btn_download.disabled = false;
+      buttons.style = null;
+    }
+  });
+
+  function edit() {
+    form.style.opacity = 0.5;
+    form.style.pointerEvents = "none";
+    is_history_private.disabled = true;
+    is_profile_private.disabled = true;
+
+    fetch("/api/me", {
+      method: "PATCH",
+      body: JSON.stringify({
+        is_profile_private: is_profile_private.checked,
+        is_history_private: is_history_private.checked,
+      }),
+      headers: {
+        "Authorization": tok,
+        "Content-Type": "application/json",
+      }
+    })
+      .then(res => res.json())
+      .then(res => {
+        if (res.status == "error") {
+          status_error.textContent = res.message;
+          is_profile_private.checked = is_history_private.disabled = p;
+          is_history_private.checked = p || h;
+        } else {
+          p = is_profile_private.checked;
+          h = is_history_private.checked;
+        }
+      })
+      .finally(() => {
+        form.style = null;
+        is_history_private.disabled = false;
+        is_profile_private.disabled = false;
+      });
+  }
+
+  async function fetchData() {
+    const me = await fetch(
+      "/api/me", {
+        headers: {
+          "Authorization": tok
+        }
+      }
+    ).then((x) => x.json());
+
+    const history = await fetch(
+      "/api/history/all?sort=oldest", {
+        headers: {
+          "Authorization": tok
+        }
+      }
+    ).then((x) => x.json());
+
+    if (me.status == "error") throw me.message;
+    if (history.status == "error") throw history.message;
+
+    return {
+      profile: me,
+      history: history.entries
+    }
+  }
+  // 
+</script>

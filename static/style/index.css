@@ -125,6 +125,17 @@ button:focus, input[type=submit]:focus {
   border-color: white;
 }
 
+button.danger, input[type=submit].danger {
+  color: #fd5757;
+  border-color: #fd5757;
+}
+
+button.danger:hover, input[type=submit].danger:hover,
+button.danger:focus, input[type=submit].danger:focus {
+  border-color: #ff9999;
+  color: #ff9999;
+}
+
 .mood {
   position: relative;
   width: max-content;
@@ -339,6 +350,7 @@ hr {
 
 .setting_container {
   margin-top: 30px;
+  width: 568px;
 }
 
 .column_container {
@@ -346,4 +358,8 @@ hr {
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
   gap: 8px;
+}
+
+.gray {
+  color: #888;
 }
