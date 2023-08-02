@@ -20,7 +20,35 @@ async function getAuth(req, res, next) {
     })
   } else {
     next();
-  }  
+  }
+}
+
+async function userParamOrAuth(req, res, next) {
+  if (req.params.user) {
+    if (!req.params.user.match(/^[a-z0-9_-]{3,32}$/))
+      return next();
+
+    req.user = await fetch$(
+      "select * from users where username=$1 and is_profile_private=false and is_history_private=false",
+      [req.params.user]
+    );
+  } else if (req.headers.authorization) {
+    req.user = await fetch$(
+      "select * from users where token=$1",
+      [req.headers.authorization]
+    );
+  }
+
+  if (!req.user) {
+    res.status(401).json({
+      status: "error",
+      message: req.params.user
+        ? "User not found"
+        : "Unauthorized"
+    });
+  } else {
+    next();
+  }
 }
 
 router.get("/me", getAuth, (req, res) => {
@@ -116,32 +144,10 @@ router.delete("/me", getAuth, async (req, res) => {
   });
 })
 
-router.get("/mood", getAuth, async (req, res) => {
+router.get("/mood/:user?", userParamOrAuth, async (req, res, next) => {
   res.json({
     status: "ok",
     mood: await fetchMood(req.user.id)
-  });
-});
-
-router.get("/mood/:user", async (req, res, next) => {
-  if (!req.params.user.match(/^[a-z0-9_-]{3,32}$/))
-    return next();
-  
-  const user = await fetch$(
-    "select * from users where username=$1",
-    [req.params.user]
-  );
-
-  if (!user || user.is_profile_private) {
-    return res.status(404).json({
-      status: "error",
-      message: "User not found"
-    });
-  }
-  
-  res.json({
-    status: "ok",
-    mood: await fetchMood(user.id)
   })
 });
 
@@ -198,23 +204,61 @@ router.delete("/mood", getAuth, async (req, res) => {
   })
 })
 
-router.get("/history/:user?", getAuth, async (req, res, next) => {
-  const username = req.params.user || req.user.username;
-  if (!username.match(/^[a-z0-9_-]{3,32}$/) || username == "all")
-    return next();
-
-  const user = await fetch$(
-    "select * from users where username=$1",
-    [username]
+router.get("/history/all/:user?", userParamOrAuth, async (req, res, next) => {
+  const sort = (
+    req.query.sort == "newest"
+      ? "desc"
+    : req.query.sort == "oldest"
+      ? "asc"
+    : null
   );
 
-  if (!user || ((user.is_profile_private || user.is_history_private) && user.id != req.user.id)) {
-    return res.status(404).json({
+  if (req.query.sort && !sort) {
+    return res.json({
       status: "error",
-      message: "User not found"
+      message: "`sort` must be one of ('newest', 'oldest')"
     });
   }
 
+  const history = await exec$(`
+    select
+      timestamp, pleasantness, energy
+    from mood
+      where user_id=$1
+      order by id ${sort}
+  `, [user.id]);
+
+  res.json({
+    status: "ok",
+    entries: history.map((x) => ({
+      timestamp: x.timestamp,
+      pleasantness: Math.floor(x.pleasantness * 100) / 100,
+      energy: Math.floor(x.energy * 100) / 100
+    }))
+  });
+});
+
+router.delete("/history/all", getAuth, async (req, res) => {
+  if (typeof req.body.password != "string")
+    return res.status(400).json({
+      status: "error",
+      message: "Missing `password` body field"
+    });
+
+  if (!await compare(req.body.password, req.user.password_hash))
+    return res.status(401).json({
+      status: "error",
+      message: "Passwords do not match"
+    });
+
+  await exec$("delete from mood where user_id=$1", [req.user.id]);
+
+  res.json({
+    status: "ok"
+  });
+})
+
+router.get("/history/:user?", userParamOrAuth, async (req, res) => {
   const limit = parseInt(req.query.limit) || 25;
   const page = parseInt(req.query.page) || 0;
   const pages = Math.floor(user.stats_mood_sets / limit);
@@ -279,76 +323,6 @@ router.get("/history/:user?", getAuth, async (req, res, next) => {
     pages: pages
   });
 });
-
-router.get("/history/all/:user?", getAuth, async (req, res, next) => {
-  const username = req.params.user || req.user.username;
-  if (!username.match(/^[a-z0-9_-]{3,32}$/))
-    return next();
-
-  const user = await fetch$(
-    "select * from users where username=$1",
-    [username]
-  );
-
-  if (!user || ((user.is_profile_private || user.is_history_private) && user.id != req.user.id)) {
-    return res.status(404).json({
-      status: "error",
-      message: "User not found"
-    });
-  }
-
-  const sort = (
-    req.query.sort == "newest"
-      ? "desc"
-    : req.query.sort == "oldest"
-      ? "asc"
-    : null
-  );
-
-  if (req.query.sort && !sort) {
-    return res.json({
-      status: "error",
-      message: "`sort` must be one of ('newest', 'oldest')"
-    });
-  }
-
-  const history = await exec$(`
-    select
-      timestamp, pleasantness, energy
-    from mood
-      where user_id=$1
-      order by id ${sort}
-  `, [user.id]);
-
-  res.json({
-    status: "ok",
-    entries: history.map((x) => ({
-      timestamp: x.timestamp,
-      pleasantness: Math.floor(x.pleasantness * 100) / 100,
-      energy: Math.floor(x.energy * 100) / 100
-    }))
-  });
-});
-
-router.delete("/history/all", getAuth, async (req, res) => {
-  if (typeof req.body.password != "string")
-    return res.status(400).json({
-      status: "error",
-      message: "Missing `password` body field"
-    });
-
-  if (!await compare(req.body.password, req.user.password_hash))
-    return res.status(401).json({
-      status: "error",
-      message: "Passwords do not match"
-    });
-
-  await exec$("delete from mood where user_id=$1", [req.user.id]);
-
-  res.json({
-    status: "ok"
-  });
-})
 
 router.get("/metrics", async (req, res) => {
   // TODO: show metrics for the API as well? (memory usage, uptime etc)
