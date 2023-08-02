@@ -59,6 +59,13 @@
 
     fetch("/api/me", {
       method: "PATCH",
+      body: JSON.stringify({
+        username: username.value != "<%= user.username %>"
+          ? username.value || undefined
+          : undefined,
+        new_password: password.value || undefined,
+        confirm_password: confirm_password.value
+      }),
       headers: {
         "Authorization": token,
         "Content-Type": "application/json",
