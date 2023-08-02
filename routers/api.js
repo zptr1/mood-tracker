@@ -179,7 +179,7 @@ router.delete("/mood", getAuth, async (req, res) => {
 
 router.get("/history/:user?", getAuth, async (req, res, next) => {
   const username = req.params.user || req.user.username;
-  if (!username.match(/^[a-z0-9_-]{3,32}$/))
+  if (!username.match(/^[a-z0-9_-]{3,32}$/) || username == "all")
     return next();
 
   const user = await fetch$(
