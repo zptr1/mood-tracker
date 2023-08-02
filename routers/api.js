@@ -1,7 +1,8 @@
-import config from "../config.json" assert { type: "json" };
 import { fetchMood, moodInfo } from "../util.js";
 import { exec$, fetch$ } from "../db.js";
+import { randomBytes } from "crypto";
 import express from "express";
+import bcrypt, { compare } from "bcrypt";
 
 export const router = express.Router();
 
@@ -34,6 +35,64 @@ router.get("/me", getAuth, (req, res) => {
       is_history_private: req.user.is_profile_private || req.user.is_history_private
     },
   })
+});
+
+router.patch("/me", getAuth, async (req, res) => {
+  if (req.body.username || req.body.new_password) {
+    if (!await bcrypt.compare(req.body.confirm_password, req.user.password_hash)) {
+      return res.status(401).json({
+        status: "error",
+        message: "Passwords do not match"
+      });
+    }
+  }
+
+  if (typeof req.body.username == "string") {
+    if (!req.body.username.match(/^[a-z0-9_-]{3,32}$/)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid username"
+      });
+    }
+    
+    if (await fetch$("select 1 from users where username=$1", [req.body.username])) {
+      return res.status(409).json({
+        status: "error",
+        message: "Username taken"
+      });
+    }
+
+    req.user.username = req.body.username;
+  }
+
+  if (typeof req.body.new_password == "string") {
+    req.user.password_hash = await bcrypt.hash(req.body.new_password, 10);
+    req.user.token = randomBytes(48).toString("base64url");
+  }
+
+  if (typeof req.body.is_profile_private == "boolean")
+    req.user.is_profile_private = req.body.is_profile_private;
+  
+  if (typeof req.body.is_history_private == "boolean")
+    req.user.is_history_private = req.body.is_history_private;
+
+  await exec$(`
+    update users set
+      username=$1,
+      password_hash=$2,
+      token=$3,
+      is_profile_private=$4,
+      is_history_private=$5
+    where id=$6
+  `, [
+    req.user.username, req.user.password_hash, req.user.token,
+    req.user.is_profile_private, req.user.is_history_private,
+    req.user.id
+  ]);
+
+  res.json({
+    status: "ok"
+  });
 })
 
 router.get("/mood", getAuth, async (req, res) => {
@@ -135,9 +194,9 @@ router.get("/history/:user?", getAuth, async (req, res, next) => {
     });
   }
 
-  const per = parseInt(req.query.per) || 25;
+  const limit = parseInt(req.query.limit) || 25;
   const page = parseInt(req.query.page) || 0;
-  const pages = Math.floor(user.stats_mood_sets / per);
+  const pages = Math.floor(user.stats_mood_sets / limit);
   const before = parseInt(req.query.before) || Date.now();
   const after = parseInt(req.query.after) || 0;
   const sort = (
@@ -148,10 +207,10 @@ router.get("/history/:user?", getAuth, async (req, res, next) => {
     : null
   );
 
-  if ((per < 1 || per > 100) && per != -1) {
+  if (limit < 1 || limit > 100) {
     return res.json({
       status: "error",
-      messge: "`per` must be in range 1..100"
+      messge: "`limit` must be in range 1..100"
     });
   }
 
@@ -185,7 +244,7 @@ router.get("/history/:user?", getAuth, async (req, res, next) => {
       user_id=$1
       and timestamp > $2
       and timestamp < $3
-    order by id ${sort || "desc"} limit ${per == -1 ? "all" : per} offset ${page * per}
+    order by id ${sort || "desc"} limit ${limit} offset ${page * limit}
   `, [user.id, after, before]);
 
   res.json({
@@ -199,6 +258,76 @@ router.get("/history/:user?", getAuth, async (req, res, next) => {
     pages: pages
   });
 });
+
+router.get("/history/all/:user?", getAuth, async (req, res, next) => {
+  const username = req.params.user || req.user.username;
+  if (!username.match(/^[a-z0-9_-]{3,32}$/))
+    return next();
+
+  const user = await fetch$(
+    "select * from users where username=$1",
+    [username]
+  );
+
+  if (!user || ((user.is_profile_private || user.is_history_private) && user.id != req.user.id)) {
+    return res.status(404).json({
+      status: "error",
+      message: "User not found"
+    });
+  }
+
+  const sort = (
+    req.query.sort == "newest"
+      ? "desc"
+    : req.query.sort == "oldest"
+      ? "asc"
+    : null
+  );
+
+  if (req.query.sort && !sort) {
+    return res.json({
+      status: "error",
+      message: "`sort` must be one of ('newest', 'oldest')"
+    });
+  }
+
+  const history = await exec$(`
+    select
+      timestamp, pleasantness, energy
+    from mood
+      where user_id=$1
+      order by id ${sort}
+  `, [user.id]);
+
+  res.json({
+    status: "ok",
+    entries: history.map((x) => ({
+      timestamp: x.timestamp,
+      pleasantness: Math.floor(x.pleasantness * 100) / 100,
+      energy: Math.floor(x.energy * 100) / 100
+    }))
+  });
+});
+
+router.delete("/history/all", getAuth, async (req, res) => {
+  if (typeof req.body.password != "string")
+    return res.status(400).json({
+      status: "error",
+      message: "Missing `password` body field"
+    });
+
+  if (!await compare(req.body.password, user.password_hash))
+    return res.status(401).json({
+      status: "error",
+      message: "Passwords do not match"
+    });
+
+  await exec$("delete from mood where user_id=$1", [req.user.id]);
+  
+  res.json({
+    status: "ok"
+  });
+})
 
 router.get("/metrics", async (req, res) => {
   // TODO: show metrics for the API as well? (memory usage, uptime etc)
