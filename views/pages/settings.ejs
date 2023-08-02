@@ -22,10 +22,28 @@
       <% } %>
     </ul>
     <div class="setting_container">
-      <u>This section is under construction.</u>
-      <br><br>
       <%- include(`./settings/${category}`) %>
     </div>
+    <style>
+      :root {
+        --background: <%= user.custom_colors[0] %>;
+        --secondary-background: <%= user.custom_colors[1] %>;
+        --foreground: <%= user.custom_colors[2] %>;
+        --secondary-foreground: <%= user.custom_colors[3] %>;
+        --color-1: <%= user.custom_colors[4] %>;
+        --color-2: <%= user.custom_colors[5] %>;
+        --color-3: <%= user.custom_colors[6] %>;
+        --color-4: <%= user.custom_colors[7] %>;
+        --color-5: <%= user.custom_colors[8] %>;
+        --color-6: <%= user.custom_colors[9] %>;
+        --color-7: <%= user.custom_colors[10] %>;
+        --color-8: <%= user.custom_colors[11] %>;
+        --color-9: <%= user.custom_colors[12] %>;
+        --color-10: <%= user.custom_colors[13] %>;
+        --color-11: <%= user.custom_colors[14] %>;
+        --color-12: <%= user.custom_colors[15] %>;
+      }
+    </style>
   </main>
 </body>
 </html>

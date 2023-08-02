@@ -1,4 +1,4 @@
-import { fetchMood, moodInfo } from "../util.js";
+import { DEFAULT_COLORS, DEFAULT_MOODS, fetchMood, moodInfo } from "../util.js";
 import { exec$, fetch$ } from "../db.js";
 import { randomBytes } from "crypto";
 import express from "express";
@@ -57,7 +57,7 @@ router.get("/me", getAuth, (req, res) => {
     created_at: req.user.created_at,
     total_mood_changes: req.user.stats_mood_sets,
     settings: {
-      custom_mood_labels: req.user.custom_labels,
+      custom_labels: req.user.custom_labels,
       custom_colors: req.user.custom_colors,
       is_profile_private: req.user.is_profile_private,
       is_history_private: req.user.is_profile_private || req.user.is_history_private
@@ -104,17 +104,59 @@ router.patch("/me", getAuth, async (req, res) => {
   if (typeof req.body.is_history_private == "boolean")
     req.user.is_history_private = req.body.is_history_private;
 
+  if (req.body.custom_colors?.length == 0) {
+    req.user.custom_colors = [];
+  } else if (Array.isArray(req.body.custom_colors)) {
+    if (
+      req.body.custom_colors.length != DEFAULT_COLORS.length
+      || req.body.custom_colors.find((x) => !Number.isInteger(x) || x < 0 || x > 0xFFFFFF)
+    ) {
+      return res.status(400).json({
+        status: "error",
+        message: `\`custom_colors\` must be an array of ${DEFAULT_COLORS.length} integers from 0 to ${0xFFFFFF}`
+      });
+    }
+
+    req.user.custom_colors = req.body.custom_colors;
+  }
+
+  if (req.body.custom_labels?.length == 0) {
+    req.user.custom_labels = [];
+  } else if (Array.isArray(req.body.custom_labels)) {
+    if (
+      req.body.custom_labels.length != DEFAULT_MOODS.length
+      || req.body.custom_labels.find((x) => typeof x != "string" || x.length < 1 || x.length > 26)
+    ) {
+      return res.status(400).json({
+        status: "error",
+        message: `\`custom_labels\` needs to be an array of ${DEFAULT_MOODS.length} strings, each from 1 to 26 characters in length`
+      });
+    }
+
+    req.user.custom_labels = req.body.custom_labels.map(
+      (x, i) => (
+        x.replace(/[^\u0000-\u00FF]/g, "?")
+         .replace(/[\s\n]+/g, " ")
+         .replace(/[\/:]/g, "") // to prevent links
+         .trim()
+      ) || DEFAULT_MOODS[i]
+    );
+  }
+
   await exec$(`
     update users set
       username=$1,
       password_hash=$2,
       token=$3,
       is_profile_private=$4,
-      is_history_private=$5
-    where id=$6
+      is_history_private=$5,
+      custom_colors=$6,
+      custom_labels=$7
+    where id=$8
   `, [
     req.user.username, req.user.password_hash, req.user.token,
     req.user.is_profile_private, req.user.is_history_private,
+    req.user.custom_colors, req.user.custom_labels,
     req.user.id
   ]);
 
@@ -147,7 +189,7 @@ router.delete("/me", getAuth, async (req, res) => {
 router.get("/mood/:user?", userParamOrAuth, async (req, res, next) => {
   res.json({
     status: "ok",
-    mood: await fetchMood(req.user.id)
+    mood: await fetchMood(req.user)
   })
 });
 
@@ -164,7 +206,7 @@ router.put("/mood", getAuth, async (req, res) => {
     });
   }
 
-  const lastMood = await fetchMood(req.user.id);
+  const lastMood = await fetchMood(req.user);
   if (parseInt(lastMood.timestamp) + 10_000 > Date.now()) {
     await exec$("update mood set pleasantness=$1, energy=$2, timestamp=$3 where id=$4", [
       req.body.pleasantness, req.body.energy, Date.now(), lastMood.id
@@ -356,7 +398,7 @@ router.get("/metrics", async (req, res) => {
 
   const moods = {};
   for (const user of users)
-    moods[user.id] = await fetchMood(user.id);
+    moods[user.id] = await fetchMood(user);
 
   res.setHeader("Content-Type", "text/plain");
   res.send([

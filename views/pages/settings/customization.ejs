@@ -1,0 +1,121 @@
+<p>This section is under construction</p>
+<div id="form">
+  <div class="mood_chart_config">
+    <% for (let i = 0; i < 6; i++) { %>
+      <div>
+        <input class="custom_color" type="color" id="<%= 4 + i %>" value="<%= user.custom_colors[4 + i] %>" autocomplete="off">
+        <% for (let j = 0; j < 3; j++) { %>
+          <% const n = 5 - i + j * 6 %>
+          <div class="custom_label" style="--color: var(--color-<%= i + 1 %>)" id="<%= n %>" contenteditable spellcheck="false"><%= user.custom_labels[n] %></div>
+        <% } %>
+        <input class="custom_color" type="color" id="<%= 10 + i %>" value="<%= user.custom_colors[10 + i] %>" autocomplete="off">
+        <% for (let j = 0; j < 3; j++) { %>
+          <% const n = 5 - i + (j + 3) * 6; %>
+          <div class="custom_label" style="--color: var(--color-<%= i + 7 %>)" id="<%= n %>" contenteditable spellcheck="false"><%= user.custom_labels[n] %></div>
+        <% } %>
+      </div>
+    <% } %>
+  </div>
+  <hr>
+  <div class="misc_color_config">
+    <div>
+      <p>Background</p>
+      <input type="color" id="bg" value="<%= user.custom_colors[0] %>" autocomplete="off">
+    </div>
+    <div>
+      <p>Secondary Background</p>
+      <input type="color" id="second_bg" value="<%= user.custom_colors[1] %>" autocomplete="off">
+    </div>
+    <div>
+      <p>Foreground</p>
+      <input type="color" id="fg" value="<%= user.custom_colors[2] %>" autocomplete="off">
+    </div>
+    <div>
+      <p>Secondary Foreground</p>
+      <input type="color" id="second_fg" value="<%= user.custom_colors[3] %>" autocomplete="off">
+    </div>
+  </div>
+  <hr>
+  <div class="column_container">
+    <button id="submit">Save</button>
+    <button id="cancel">Cancel</button>
+  </div>
+</div>
+
+<script>
+  const colors = "<%= user.custom_colors.join(',') %>".split(",");
+  const labels = "<%= user.custom_labels.join('\uFFFF') %>".split('\uFFFF');
+
+  document.addEventListener("change", (e) => {
+    if (e.target.tagName == "INPUT") {
+      if (e.target.classList.contains("custom_color")) {
+        const id = parseInt(e.target.id);
+        document.documentElement.style.setProperty(`--color-${id - 3}`, e.target.value);
+        colors[id] = e.target.value;
+      } else if (e.target.id == "bg") {
+        document.documentElement.style.setProperty("--background", e.target.value);  
+        colors[0] = e.target.value;
+      } else if (e.target.id == "second_bg") {
+        document.documentElement.style.setProperty("--secondary-background", e.target.value);  
+        colors[1] = e.target.value;
+      } else if (e.target.id == "fg") {
+        document.documentElement.style.setProperty("--foreground", e.target.value);  
+        colors[2] = e.target.value;
+      } else if (e.target.id == "second_fg") {
+        document.documentElement.style.setProperty("--secondary-foreground", e.target.value);  
+        colors[3] = e.target.value;
+      }
+    }
+  });
+
+  document.addEventListener("keypress", (e) => {
+    if (e.target.tagName == "DIV" && e.target.classList.contains("custom_label")) {
+      if (e.target.textContent.length >= 26 || e.keyCode == 13)
+        e.preventDefault();
+    }
+  });
+
+  document.addEventListener("keyup", (e) => {
+    if (e.target.tagName == "DIV" && e.target.classList.contains("custom_label")) {
+      if (e.target.textContent.includes("\n") || e.target.textContent.match(/[^\u0000-\u00FF]/) || e.target.textContent.length > 26)
+        e.target.textContent = e.target.textContent
+          .replace(/[^\u0000-\u00FF]/g, "?")
+          .replace(/\n/g, " ")
+          .slice(0, 26);
+
+      labels[parseInt(e.target.id)] = e.target.textContent;
+    }
+  });
+
+  submit.addEventListener("click", (e) => {
+    const token = document.cookie.match(/token=([A-Za-z0-9_-]{64})/)[1];
+    form.style.pointerEvents = "none";
+    form.style.opacity = 0.5;
+
+    fetch("/api/me", {
+      method: "PATCH",
+      body: JSON.stringify({
+        custom_colors: colors.map((x) => parseInt(x.slice(1), 16)),
+        custom_labels: labels
+      }),
+      headers: {
+        "Authorization": token,
+        "Content-Type": "application/json"
+      }
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.status == "error") {
+          alert(res.message);
+        }
+      })
+      .finally(() => {
+        form.style = null;
+      });
+  });
+
+  cancel.addEventListener("click", (e) => {
+    // todo
+    location.reload();
+  })
+</script>

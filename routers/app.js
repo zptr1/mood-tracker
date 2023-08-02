@@ -1,4 +1,4 @@
-import { fetchMood, DEFAULT_MOODS } from "../util.js";
+import { fetchMood, DEFAULT_MOODS, DEFAULT_COLORS } from "../util.js";
 import { getAuth } from "./auth.js";
 import { fetch$ } from "../db.js";
 import express from "express";
@@ -28,8 +28,14 @@ router.get("/:username", getAuth(), async (req, res, next) => {
   res.render("pages/view", {
     self: req.user?.id == user.id,
     username: user.username,
-    mood: await fetchMood(user.id),
-    labels: DEFAULT_MOODS
+    mood: await fetchMood(user),
+
+    labels: user.custom_labels.length > 0
+      ? user.custom_labels
+      : DEFAULT_MOODS,
+    colors: user.custom_colors.length > 0
+      ? user.custom_colors.map((x) => `#${x.toString(16).padStart(6, "0")}`)
+      : DEFAULT_COLORS
   });
 });
 
@@ -39,7 +45,15 @@ router.get("/settings/:category?", getAuth(true), async (req, res, next) => {
     return next();
 
   res.render("pages/settings", {
-    user: req.user,
+    user: {
+      ...req.user,
+      custom_labels: req.user.custom_labels.length > 0
+        ? req.user.custom_labels
+        : DEFAULT_MOODS,
+      custom_colors: req.user.custom_colors.length > 0
+        ? req.user.custom_colors.map((x) => `#${x.toString(16).padStart(6, "0")}`)
+        : DEFAULT_COLORS
+    },
     category: req.params.category || "account",
     categories,
   })

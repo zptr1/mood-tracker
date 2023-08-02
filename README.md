@@ -10,8 +10,8 @@ https://mood.zptr.cc/
 - [ ] Settings
   * [ ] Profile Customization
     - [x] Change username / password
-    - [ ] Custom Mood Labels
-    - [ ] Custom Colors
+    - [x] Custom Mood Labels
+    - [x] Custom Colors
     - [ ] oneko (cat follows mouse)
   * [x] Privacy Settings
     - [x] Make profile private
