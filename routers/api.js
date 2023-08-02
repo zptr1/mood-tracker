@@ -226,7 +226,7 @@ router.get("/history/all/:user?", userParamOrAuth, async (req, res, next) => {
     from mood
       where user_id=$1
       order by id ${sort}
-  `, [user.id]);
+  `, [req.user.id]);
 
   res.json({
     status: "ok",
@@ -261,7 +261,7 @@ router.delete("/history/all", getAuth, async (req, res) => {
 router.get("/history/:user?", userParamOrAuth, async (req, res) => {
   const limit = parseInt(req.query.limit) || 25;
   const page = parseInt(req.query.page) || 0;
-  const pages = Math.floor(user.stats_mood_sets / limit);
+  const pages = Math.floor(req.user.stats_mood_sets / limit);
   const before = parseInt(req.query.before) || Date.now();
   const after = parseInt(req.query.after) || 0;
   const sort = (
@@ -297,7 +297,7 @@ router.get("/history/:user?", userParamOrAuth, async (req, res) => {
     return res.json({
       status: "ok",
       entries: [],
-      total: user.stats_mood_sets,
+      total: req.user.stats_mood_sets,
       pages: pages
     })
   }
@@ -310,7 +310,7 @@ router.get("/history/:user?", userParamOrAuth, async (req, res) => {
       and timestamp > $2
       and timestamp < $3
     order by id ${sort || "desc"} limit ${limit} offset ${page * limit}
-  `, [user.id, after, before]);
+  `, [req.user.id, after, before]);
 
   res.json({
     status: "ok",
@@ -319,7 +319,7 @@ router.get("/history/:user?", userParamOrAuth, async (req, res) => {
       pleasantness: Math.floor(x.pleasantness * 100) / 100,
       energy: Math.floor(x.energy * 100) / 100
     })),
-    total: user.stats_mood_sets,
+    total: req.user.stats_mood_sets,
     pages: pages
   });
 });
