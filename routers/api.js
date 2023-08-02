@@ -316,14 +316,14 @@ router.delete("/history/all", getAuth, async (req, res) => {
       message: "Missing `password` body field"
     });
 
-  if (!await compare(req.body.password, user.password_hash))
+  if (!await compare(req.body.password, req.user.password_hash))
     return res.status(401).json({
       status: "error",
       message: "Passwords do not match"
     });
 
   await exec$("delete from mood where user_id=$1", [req.user.id]);
-  
+
   res.json({
     status: "ok"
   });
