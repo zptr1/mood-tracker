@@ -95,6 +95,27 @@ router.patch("/me", getAuth, async (req, res) => {
   });
 })
 
+router.delete("/me", getAuth, async (req, res) => {
+  if (typeof req.body.password != "string")
+    return res.status(400).json({
+      status: "error",
+      message: "Missing `password` body field"
+    });
+
+  if (!await compare(req.body.password, req.user.password_hash))
+    return res.status(401).json({
+      status: "error",
+      message: "Passwords do not match"
+    });
+
+  await exec$("delete from mood where user_id=$1", [req.user.id]);
+  await exec$("delete from users where id=$1", [req.user.id]);
+
+  res.json({
+    status: "ok"
+  });
+})
+
 router.get("/mood", getAuth, async (req, res) => {
   res.json({
     status: "ok",
