@@ -9,17 +9,17 @@ https://mood.zptr.cc/
 - [ ] Privacy Policy
 - [ ] Settings
   * [ ] Profile Customization
-    - [ ] Change username / password
+    - [x] Change username / password
     - [ ] Custom Mood Labels
     - [ ] Custom Colors
     - [ ] oneko (cat follows mouse)
-  * [ ] Privacy Settings
-    - [ ] Make profile private
-    - [ ] Make mood history private
-  * [ ] Buttons!
-    - [ ] Clear mood history
-    - [ ] Download my data
-    - [ ] Delete the account
+  * [x] Privacy Settings
+    - [x] Make profile private
+    - [x] Make mood history private
+  * [x] Buttons!
+    - [x] Clear mood history
+    - [x] Download my data
+    - [x] Delete the account
 - [ ] Charts/analytics on the profile
 - [ ] API
   - [x] Fetching history (full or paginated)
