@@ -101,11 +101,11 @@ router.patch("/", getAuth, async (req, res) => {
   } else if (Array.isArray(req.body.custom_labels)) {
     if (
       req.body.custom_labels.length != DEFAULT_MOODS.length
-      || req.body.custom_labels.find((x) => typeof x != "string" || x.length < 1 || x.length > 44)
+      || req.body.custom_labels.find((x) => typeof x != "string" || x.length < 1 || x.length > 64)
     ) {
       return res.status(400).json({
         status: "error",
-        message: `\`custom_labels\` needs to be an array of ${DEFAULT_MOODS.length} strings, each from 1 to 44 characters in length`
+        message: `\`custom_labels\` needs to be an array of ${DEFAULT_MOODS.length} strings, each from 1 to 64 characters in length`
       });
     }
 

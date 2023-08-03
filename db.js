@@ -30,7 +30,7 @@ exec$(`
     
     stats_mood_sets int default 0,
 
-    custom_labels varchar(44)[] default array[]::varchar[],
+    custom_labels varchar(64)[] default array[]::varchar[],
     custom_colors int[] default array[]::int[],
     custom_font_size float default 1.2,
 

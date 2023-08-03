@@ -38,7 +38,7 @@
   <div class="config_options_container">
     <div>
       <p>Font Size</p>
-      <select id="font_size">
+      <select id="font_size" autocomplete="off">
         <% const font_sizes = {
           Biggest: 1.4,
           Big: 1.3,
@@ -98,18 +98,18 @@
 
   document.addEventListener("keypress", (e) => {
     if (e.target.tagName == "DIV" && e.target.classList.contains("custom_label")) {
-      if (e.target.textContent.length >= 44 || e.keyCode == 13)
+      if (e.target.textContent.length >= 64 || e.keyCode == 13)
         e.preventDefault();
     }
   });
 
   document.addEventListener("keyup", (e) => {
     if (e.target.tagName == "DIV" && e.target.classList.contains("custom_label")) {
-      if (e.target.textContent.includes("\n") || e.target.textContent.match(/[^\u0000-\u00FF]/) || e.target.textContent.length > 44)
+      if (e.target.textContent.includes("\n") || e.target.textContent.match(/[^\u0000-\u00FF]/) || e.target.textContent.length > 64)
         e.target.textContent = e.target.textContent
           .replace(/[^\u0000-\u00FF]/g, "?")
           .replace(/\n/g, " ")
-          .slice(0, 44);
+          .slice(0, 64);
 
       labels[parseInt(e.target.id)] = e.target.textContent;
     }
