@@ -36,7 +36,8 @@ router.get("/:username", getAuth(), async (req, res, next) => {
       : DEFAULT_MOODS,
     colors: user.custom_colors.length > 0
       ? user.custom_colors.map((x) => `#${x.toString(16).padStart(6, "0")}`)
-      : DEFAULT_COLORS
+      : DEFAULT_COLORS,
+    font_size: user.custom_font_size || 1.2
   });
 });
 
@@ -52,13 +53,14 @@ router.get("/:username/analytics", getAuth(), async (req, res, next) => {
   
   res.render("pages/analytics", {
     username: user.username,
-
+    
     labels: user.custom_labels.length > 0
       ? user.custom_labels
       : DEFAULT_MOODS,
     colors: user.custom_colors.length > 0
       ? user.custom_colors.map((x) => `#${x.toString(16).padStart(6, "0")}`)
-      : DEFAULT_COLORS
+      : DEFAULT_COLORS,
+    font_size: user.custom_font_size || 1.2
   })
 });
 
@@ -75,7 +77,8 @@ router.get("/settings/:category?", getAuth(true), async (req, res, next) => {
         : DEFAULT_MOODS,
       custom_colors: req.user.custom_colors.length > 0
         ? req.user.custom_colors.map((x) => `#${x.toString(16).padStart(6, "0")}`)
-        : DEFAULT_COLORS
+        : DEFAULT_COLORS,
+      custom_font_size: req.user.custom_font_size || 1.2
     },
     category: req.params.category || "account",
     categories,

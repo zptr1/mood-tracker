@@ -16,7 +16,7 @@
     <% } %>
   </div>
   <hr>
-  <div class="misc_color_config">
+  <div class="config_options_container">
     <div>
       <p>Background</p>
       <input type="color" id="bg" value="<%= user.custom_colors[0] %>" autocomplete="off">
@@ -35,6 +35,29 @@
     </div>
   </div>
   <hr>
+  <div class="config_options_container">
+    <div>
+      <p>Font Size</p>
+      <select id="font_size">
+        <% const font_sizes = {
+          Biggest: 1.4,
+          Big: 1.3,
+          Normal: 1.2,
+          Small: 1.1,
+          Smallest: 1.05
+        }; %>
+
+        <% for (const size in font_sizes) { %>
+          <% if (user.custom_font_size == font_sizes[size]) { %>
+            <option value="<%= size.toLowerCase() %>" selected><%= size %></option>
+          <% } else { %>
+            <option value="<%= size.toLowerCase() %>"><%= size %></option>
+          <% } %>
+        <% } %>
+      </select>
+    </div>
+  </div>
+  <hr>
   <div class="column_container">
     <button id="submit">Save</button>
     <button id="cancel">Cancel</button>
@@ -46,24 +69,30 @@
   const labels = "<%= user.custom_labels.join('\uFFFF') %>".split('\uFFFF');
 
   document.addEventListener("change", (e) => {
-    if (e.target.tagName == "INPUT") {
-      if (e.target.classList.contains("custom_color")) {
-        const id = parseInt(e.target.id);
-        document.documentElement.style.setProperty(`--color-${id - 3}`, e.target.value);
-        colors[id] = e.target.value;
-      } else if (e.target.id == "bg") {
-        document.documentElement.style.setProperty("--background", e.target.value);  
-        colors[0] = e.target.value;
-      } else if (e.target.id == "second_bg") {
-        document.documentElement.style.setProperty("--secondary-background", e.target.value);  
-        colors[1] = e.target.value;
-      } else if (e.target.id == "fg") {
-        document.documentElement.style.setProperty("--foreground", e.target.value);  
-        colors[2] = e.target.value;
-      } else if (e.target.id == "second_fg") {
-        document.documentElement.style.setProperty("--secondary-foreground", e.target.value);  
-        colors[3] = e.target.value;
-      }
+    if (e.target.classList.contains("custom_color")) {
+      const id = parseInt(e.target.id);
+      document.documentElement.style.setProperty(`--color-${id - 3}`, e.target.value);
+      colors[id] = e.target.value;
+    } else if (e.target.id == "bg") {
+      document.documentElement.style.setProperty("--background", e.target.value);
+      colors[0] = e.target.value;
+    } else if (e.target.id == "second_bg") {
+      document.documentElement.style.setProperty("--secondary-background", e.target.value);
+      colors[1] = e.target.value;
+    } else if (e.target.id == "fg") {
+      document.documentElement.style.setProperty("--foreground", e.target.value);
+      colors[2] = e.target.value;
+    } else if (e.target.id == "second_fg") {
+      document.documentElement.style.setProperty("--secondary-foreground", e.target.value);
+      colors[3] = e.target.value;
+    } else if (e.target.id == "font_size") {
+      document.documentElement.style.setProperty("--font-size", `${{
+        biggest: 1.4,
+        big: 1.3,
+        normal: 1.2,
+        small: 1.1,
+        smallest: 1.05
+      }[e.target.value]}rem`);
     }
   });
 
@@ -95,7 +124,8 @@
       method: "PATCH",
       body: JSON.stringify({
         custom_colors: colors.map((x) => parseInt(x.slice(1), 16)),
-        custom_labels: labels
+        custom_labels: labels,
+        custom_font_size: font_size.value
       }),
       headers: {
         "Authorization": token,

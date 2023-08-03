@@ -23,6 +23,7 @@
   --color-11: #a0ad7b;
   --color-12: #6c7b42;
   --font: 'VT323', monospace;
+  --font-size: 1.2rem;
 }
 
 body, html {
@@ -32,7 +33,7 @@ body, html {
   background: var(--background);
   font-family: var(--font);
   font-variant-ligatures: none;
-  font-size: 1.2rem;
+  font-size: var(--font-size);
 }
 
 *, ::before, ::after {
@@ -142,7 +143,7 @@ button.danger:focus, input[type=submit].danger:focus {
   position: relative;
   width: max-content;
   padding-left: 0.5em;
-  font-size: 1rem;
+  font-size: 0.8em;
 }
 
 #moods {
@@ -176,6 +177,7 @@ button.danger:focus, input[type=submit].danger:focus {
   border: 1px solid #000;
   word-break: break-word;
   text-align: center;
+  line-height: .8em;
 }
 
 #dot {
@@ -389,7 +391,7 @@ hr {
   grid-auto-flow: column;
   grid-auto-columns: max-content;
   user-select: none;
-  font-size: 1rem;
+  font-size: 0.8em;
   gap: 0
 }
 
@@ -421,6 +423,7 @@ hr {
   text-align: center;
   font-size: 1em;
   outline: none;
+  line-height: .8em;
 }
 
 .mood_chart_config input[type=color]:hover,
@@ -436,11 +439,11 @@ hr {
   width: 100%;
 }
 
-.misc_color_config {
+.config_options_container {
   display: grid;
 }
 
-.misc_color_config div {
+.config_options_container div {
   display: grid;
   grid-template-columns: 1fr max-content;
   gap: 0.5em;

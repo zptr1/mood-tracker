@@ -32,6 +32,7 @@ exec$(`
 
     custom_labels varchar(44)[] default array[]::varchar[],
     custom_colors int[] default array[]::int[],
+    custom_font_size float default 1.2,
 
     is_profile_private bool default false,
     is_history_private bool default false

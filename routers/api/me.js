@@ -15,6 +15,7 @@ router.get("/", getAuth, (req, res) => {
     settings: {
       custom_labels: req.user.custom_labels,
       custom_colors: req.user.custom_colors,
+      custom_font_size: req.user.custom_font_size,
       is_profile_private: req.user.is_profile_private,
       is_history_private: req.user.is_profile_private || req.user.is_history_private
     },
@@ -59,6 +60,25 @@ router.patch("/", getAuth, async (req, res) => {
   
   if (typeof req.body.is_history_private == "boolean")
     req.user.is_history_private = req.body.is_history_private;
+
+  if (typeof req.body.custom_font_size == "string") {
+    const size = {
+      biggest: 1.4,
+      big: 1.3,
+      normal: 1.2,
+      small: 1.1,
+      smallest: 1.05
+    }[req.body.custom_font_size];
+
+    if (typeof size != "number") {
+      return res.status(400).json({
+        status: "error",
+        message: "Expected `custom_font_size` to be one of ('biggest', 'big', 'normal', 'small', 'smallest')"
+      });
+    }
+
+    req.user.custom_font_size = size;
+  }
 
   if (req.body.custom_colors?.length == 0) {
     req.user.custom_colors = [];
@@ -107,12 +127,13 @@ router.patch("/", getAuth, async (req, res) => {
       is_profile_private=$4,
       is_history_private=$5,
       custom_colors=$6,
-      custom_labels=$7
-    where id=$8
+      custom_labels=$7,
+      custom_font_size=$8
+    where id=$9
   `, [
     req.user.username, req.user.password_hash, req.user.token,
     req.user.is_profile_private, req.user.is_history_private,
-    req.user.custom_colors, req.user.custom_labels,
+    req.user.custom_colors, req.user.custom_labels, req.user.custom_font_size,
     req.user.id
   ]);
 
