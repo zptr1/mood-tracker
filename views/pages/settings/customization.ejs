@@ -65,8 +65,8 @@
 </div>
 
 <script>
-  const colors = "<%= user.custom_colors.join(',') %>".split(",");
-  const labels = "<%= user.custom_labels.join('\uFFFF') %>".split('\uFFFF');
+  const colors = <%- JSON.stringify(user.custom_colors) %>;
+  const labels = <%- JSON.stringify(user.custom_labels) %>;
 
   document.addEventListener("change", (e) => {
     if (e.target.classList.contains("custom_color")) {
@@ -124,7 +124,7 @@
       method: "PATCH",
       body: JSON.stringify({
         custom_colors: colors.map((x) => parseInt(x.slice(1), 16)),
-        custom_labels: labels,
+        custom_labels: labels.map((x) => x.replace(/\n/g, "").replace(/\s+/g, " ").trim()),
         custom_font_size: font_size.value
       }),
       headers: {

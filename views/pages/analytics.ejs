@@ -83,8 +83,8 @@
     </style>
     <script>
       const username = "<%= username %>";
-      const labels = "<%= labels.join('\uffff') %>".split("\uffff");
-      const labelColors = "<%= colors.slice(4).join(',') %>".split(",");
+      const labelColors = <%- JSON.stringify(colors) %>;
+      const labels = <%- JSON.stringify(labels) %>;
     </script>
   </main>
 </body>

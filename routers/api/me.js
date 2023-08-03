@@ -112,7 +112,8 @@ router.patch("/", getAuth, async (req, res) => {
     req.user.custom_labels = req.body.custom_labels.map(
       (x, i) => (
         x.replace(/[^\u0000-\u00FF]/g, "?")
-         .replace(/[\s\n]+/g, " ")
+         .replace(/\n/g, "")
+         .replace(/\s+/g, " ")
          .replace(/[\/:]/g, "") // to prevent links
          .trim()
       ) || DEFAULT_MOODS[i]
