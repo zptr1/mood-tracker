@@ -13,6 +13,9 @@ window.addEventListener("load", async () => {
   if (req.status != 200 || data.status == "error") {
     loading.textContent = "Could not load data.";
     return;
+  } else if (data.entries.length == 0) {
+    loading.textContent = "No data yet.";
+    return;
   }
 
   const oldestAt = parseInt(data.entries[data.entries.length - 1].timestamp);
