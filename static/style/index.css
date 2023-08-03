@@ -191,6 +191,19 @@ button.danger:focus, input[type=submit].danger:focus {
   top: var(--top);
 }
 
+.dot {
+  width: 1rem;
+  height: 1rem;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  background: rgba(0, 0, 0, 0);
+  backdrop-filter: invert(1) brightness(150%);
+  border: 2px solid black;
+  border-radius: 100%;
+  left: var(--left);
+  top: var(--top);
+}
+
 .mood > span {
   color: var(--secondary-foreground);
   display: inline-block;
@@ -431,4 +444,19 @@ hr {
   display: grid;
   grid-template-columns: 1fr max-content;
   gap: 0.5em;
+}
+
+#hover_tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.65);
+  transform: translate(-50%, -50%);
+  transition: top .2s ease-out 0s, left .2s ease-out 0s, opacity .2s;
+  opacity: 0;
+  pointer-events: none;
+  white-space: pre;
+  z-index: 999;
+  color: #fff;
+  user-select: none;
+  font-size: 1rem;
+  padding: 8px;
 }

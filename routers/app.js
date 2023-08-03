@@ -27,6 +27,7 @@ router.get("/:username", getAuth(), async (req, res, next) => {
 
   res.render("pages/view", {
     self: req.user?.id == user.id,
+    user: user,
     username: user.username,
     mood: await fetchMood(user),
 
@@ -37,6 +38,28 @@ router.get("/:username", getAuth(), async (req, res, next) => {
       ? user.custom_colors.map((x) => `#${x.toString(16).padStart(6, "0")}`)
       : DEFAULT_COLORS
   });
+});
+
+router.get("/:username/analytics", getAuth(), async (req, res, next) => {
+  const user = await fetch$(
+    "select * from users where username=$1",
+    [req.params.username]
+  );
+
+  if (!user) return next();
+  if (user.is_profile_private && req.user?.id != user.id)
+    return next();
+  
+  res.render("pages/analytics", {
+    username: user.username,
+
+    labels: user.custom_labels.length > 0
+      ? user.custom_labels
+      : DEFAULT_MOODS,
+    colors: user.custom_colors.length > 0
+      ? user.custom_colors.map((x) => `#${x.toString(16).padStart(6, "0")}`)
+      : DEFAULT_COLORS
+  })
 });
 
 router.get("/settings/:category?", getAuth(true), async (req, res, next) => {

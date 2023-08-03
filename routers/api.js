@@ -21,20 +21,22 @@ export async function getAuth(req, res, next) {
 }
 
 export async function userParamOrAuth(req, res, next) {
+  if (req.headers.authorization) {
+    req.auth = await fetch$(
+      "select * from users where token=$1",
+      [req.headers.authorization]
+    );
+  }
+
   if (req.params.user) {
     if (!req.params.user.match(/^[a-z0-9_-]{3,32}$/))
       return next();
 
     req.user = await fetch$(
-      "select * from users where username=$1 and is_profile_private=false and is_history_private=false",
-      [req.params.user]
+      "select * from users where username=$1 and ((is_profile_private=false and is_history_private=false) or id=$2)",
+      [req.params.user, req.auth?.id ?? -1]
     );
-  } else if (req.headers.authorization) {
-    req.user = await fetch$(
-      "select * from users where token=$1",
-      [req.headers.authorization]
-    );
-  }
+  } else req.user = req.auth;
 
   if (!req.user) {
     res.status(

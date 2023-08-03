@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% locals.title = `${username}'${username.endsWith("s") ? "" : "s"} mood analytics` %>
+  <%- include('../partials/head') %>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" async defer></script>
+  <script src="/static/script/moment.min.js" async defer></script>
+  <script src="/static/script/analytics.js" async defer></script>
+</head>
+<body>
+  <main style="padding: 0">
+    <div class="view_header">
+      <div>
+        <a href="/<%= username %>">back</a>
+      </div>
+      <h1><span><%= username %></span>'<%= username.endsWith("s") ? "" : "s" %> mood analytics</h1>
+    </div>
+    <div id="hover_tooltip"></div>
+    <div id="loading">Loading data ...</div>
+    <div id="analytics" style="display:none">
+      <div class="column_container">
+        <select id="timespan">
+          <option value="0">All time</option>
+          <option value="365">This year</option>
+          <option value="90">Last 3 months</option>
+          <option value="30">Last month</option>
+          <option value="14">Last 14 days</option>
+          <option value="7">Last 7 days</option>
+          <option value="3" selected>Last 3 days</option>
+          <option value="1">Last 24 hours</option>
+          <option value="-" hidden>Custom</option>
+        </select>
+        <input type="date" id="start_date">
+        <input type="date" id="end_date">
+      </div>
+      <p id="status_warn" style="font-size:1rem"></p>
+      <hr>
+      <select id="htype">
+        <option value="scatter">Scatter</option>
+        <option value="heatmap">Heatmap</option>
+      </select>
+      <div class="mood">
+        <span>Low Energy &lt;--&gt; High Energy</span>
+        <div id="moods">
+          <% for (let i = 0; i < 6; i++) { %>
+            <div>
+              <% for (let j = 0; j < 6; j++) { %>
+                <div style="--color: var(--color-<%= 6 * (i >= 3) + j + 1 %>)" id="mood_sq_<%= i * 6 + (5 - j) %>"><%= labels[i * 6 + (5 - j)] %></div>
+              <% } %>
+            </div>
+          <% } %>
+          <div id="dots"></div>
+        </div>
+        <span>Unpleasant &lt;--&gt; Pleasant</span>
+      </div>
+      <hr>
+      <canvas id="line_chart_canvas"></canvas>
+      <br>
+      <div class="column_container">
+        <canvas id="pie_chart_canvas"></canvas>
+      </div>
+    </div>
+    <style>
+      :root {
+        --background: <%= colors[0] %>;
+        --secondary-background: <%= colors[1] %>;
+        --foreground: <%= colors[2] %>;
+        --secondary-foreground: <%= colors[3] %>;
+        --color-1: <%= colors[4] %>;
+        --color-2: <%= colors[5] %>;
+        --color-3: <%= colors[6] %>;
+        --color-4: <%= colors[7] %>;
+        --color-5: <%= colors[8] %>;
+        --color-6: <%= colors[9] %>;
+        --color-7: <%= colors[10] %>;
+        --color-8: <%= colors[11] %>;
+        --color-9: <%= colors[12] %>;
+        --color-10: <%= colors[13] %>;
+        --color-11: <%= colors[14] %>;
+        --color-12: <%= colors[15] %>;
+      }
+    </style>
+    <script>
+      const username = "<%= username %>";
+      const labels = "<%= labels.join('\uffff') %>".split("\uffff");
+      const labelColors = "<%= colors.slice(4).join(',') %>".split(",");
+    </script>
+  </main>
+</body>
+</html>
