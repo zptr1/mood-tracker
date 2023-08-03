@@ -69,18 +69,18 @@
 
   document.addEventListener("keypress", (e) => {
     if (e.target.tagName == "DIV" && e.target.classList.contains("custom_label")) {
-      if (e.target.textContent.length >= 26 || e.keyCode == 13)
+      if (e.target.textContent.length >= 44 || e.keyCode == 13)
         e.preventDefault();
     }
   });
 
   document.addEventListener("keyup", (e) => {
     if (e.target.tagName == "DIV" && e.target.classList.contains("custom_label")) {
-      if (e.target.textContent.includes("\n") || e.target.textContent.match(/[^\u0000-\u00FF]/) || e.target.textContent.length > 26)
+      if (e.target.textContent.includes("\n") || e.target.textContent.match(/[^\u0000-\u00FF]/) || e.target.textContent.length > 44)
         e.target.textContent = e.target.textContent
           .replace(/[^\u0000-\u00FF]/g, "?")
           .replace(/\n/g, " ")
-          .slice(0, 26);
+          .slice(0, 44);
 
       labels[parseInt(e.target.id)] = e.target.textContent;
     }
