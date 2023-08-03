@@ -37,7 +37,9 @@ export async function userParamOrAuth(req, res, next) {
   }
 
   if (!req.user) {
-    res.status(401).json({
+    res.status(
+      req.params.user ? 404 : 401
+    ).json({
       status: "error",
       message: req.params.user
         ? "User not found"
