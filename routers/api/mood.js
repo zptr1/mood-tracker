@@ -24,7 +24,7 @@ router.put("/", getAuth, validateBody(z.object({
 
   if (lastMood && (
     req.user.history_threshold_days == 0
-    || parseInt(lastMood.timestamp) + 10000 > Date.now()
+    || parseInt(lastMood.timestamp) + 25000 > Date.now()
   )) {
     await exec$("update mood set pleasantness=$1, energy=$2, timestamp=$3 where id=$4", [
       req.body.pleasantness, req.body.energy, Date.now(), lastMood.id
