@@ -15,10 +15,10 @@ https://mood.zptr.cc/
     - [x] Custom Font Size
     - [ ] Custom Font Family
     - [ ] oneko (cat follows mouse)
-  * [ ] Privacy Settings
+  * [x] Privacy Settings
     - [x] Make profile private
     - [x] Make mood history private
-    - [ ] Limit the amount of days the mood history is stored up to (or disable the history at all)
+    - [x] Limit the amount of days the mood history is stored up to (or disable the history at all)
   * [x] Buttons!
     - [x] Clear mood history
     - [x] Download my data
