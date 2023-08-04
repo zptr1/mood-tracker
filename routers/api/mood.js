@@ -1,7 +1,8 @@
-import { getAuth, userParamOrAuth } from "../api.js";
+import { getAuth, userParamOrAuth, validateBody } from "../api.js";
 import { fetchMood } from "../../util.js";
 import { exec$ } from "../../db.js";
 import express from "express";
+import { z } from "zod";
 
 export const router = express.Router();
 
@@ -12,21 +13,12 @@ router.get("/:user?", userParamOrAuth, async (req, res, next) => {
   })
 });
 
-router.put("/", getAuth, async (req, res) => {
-  if (
-    typeof req.body.pleasantness != "number"
-    || typeof req.body.energy != "number"
-    || Math.abs(req.body.pleasantness) > 1
-    || Math.abs(req.body.energy) > 1
-  ) {
-    return res.status(400).json({
-      status: "error",
-      message: "`pleasantness` and `energy` fields need to be a float from -1 to 1"
-    });
-  }
-
+router.put("/", getAuth, validateBody(z.object({
+  pleasantness: z.number().min(-1).max(1),
+  energy: z.number().min(-1).max(1)
+})), async (req, res) => {
   const lastMood = await fetchMood(req.user);
-  if (parseInt(lastMood.timestamp) + 10_000 > Date.now()) {
+  if (parseInt(lastMood.timestamp) + 15_000 > Date.now()) {
     await exec$("update mood set pleasantness=$1, energy=$2, timestamp=$3 where id=$4", [
       req.body.pleasantness, req.body.energy, Date.now(), lastMood.id
     ]);
@@ -46,7 +38,9 @@ router.put("/", getAuth, async (req, res) => {
   })
 });
 
-router.delete("/", getAuth, async (req, res) => {
+router.delete("/", getAuth, validateBody(z.object({
+  timestamps: z.array(z.number().int().positive())
+})), async (req, res) => {
   if (!Array.isArray(req.body.timestamps) || req.body.timestamps.find((x) => !Number.isInteger(x))) {
     return res.status(400).json({
       status: "error",

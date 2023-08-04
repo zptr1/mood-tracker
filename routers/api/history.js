@@ -1,32 +1,27 @@
-import { getAuth, userParamOrAuth } from "../api.js";
+import { getAuth, userParamOrAuth, validateBody, validateQuery } from "../api.js";
 import { exec$ } from "../../db.js";
 import express from "express";
 import bcrypt from "bcrypt";
+import { z } from "zod";
 
 export const router = express.Router();
 
-router.get("/all/:user?", userParamOrAuth, async (req, res, next) => {
+router.get("/all/:user?", userParamOrAuth, validateQuery(z.object({
+  sort: z.enum(["newest", "oldest"]).optional()
+})), async (req, res, next) => {
   const sort = (
     req.query.sort == "newest"
       ? "desc"
     : req.query.sort == "oldest"
       ? "asc"
-    : null
+    : "desc"
   );
-
-  if (req.query.sort && !sort) {
-    return res.json({
-      status: "error",
-      message: "`sort` must be one of ('newest', 'oldest')"
-    });
-  }
 
   const history = await exec$(`
     select
       timestamp, pleasantness, energy
-    from mood
-      where user_id=$1
-      order by id ${sort || "desc"}
+    from mood where user_id=$1
+    order by id ${sort}
   `, [req.user.id]);
 
   res.json({
@@ -39,13 +34,9 @@ router.get("/all/:user?", userParamOrAuth, async (req, res, next) => {
   });
 });
 
-router.delete("/all", getAuth, async (req, res) => {
-  if (typeof req.body.password != "string")
-    return res.status(400).json({
-      status: "error",
-      message: "Missing `password` body field"
-    });
-
+router.delete("/all", getAuth, validateBody(z.object({
+  password: z.string()
+})), async (req, res) => {
   if (!await bcrypt.compare(req.body.password, req.user.password_hash))
     return res.status(401).json({
       status: "error",
@@ -59,7 +50,13 @@ router.delete("/all", getAuth, async (req, res) => {
   });
 })
 
-router.get("/:user?", userParamOrAuth, async (req, res) => {
+router.get("/:user?", userParamOrAuth, validateQuery(z.object({
+  limit: z.coerce.number().int().min(0).max(100).optional(),
+  page: z.coerce.number().int().optional(),
+  before: z.coerce.number().int().positive().optional(),
+  after: z.coerce.number().int().positive().optional(),
+  sort: z.enum(["newest", "oldest"]).optional()
+})), async (req, res) => {
   const limit = parseInt(req.query.limit) || 25;
   const page = parseInt(req.query.page) || 0;
   const pages = Math.floor(req.user.stats_mood_sets / limit);
@@ -70,31 +67,10 @@ router.get("/:user?", userParamOrAuth, async (req, res) => {
       ? "desc"
     : req.query.sort == "oldest"
       ? "asc"
-    : null
+    : "desc"
   );
 
-  if (limit < 1 || limit > 100) {
-    return res.json({
-      status: "error",
-      messge: "`limit` must be in range 1..100"
-    });
-  }
-
-  if (req.query.sort && !sort) {
-    return res.json({
-      status: "error",
-      message: "`sort` must be one of ('newest', 'oldest')"
-    });
-  }
-
-  if (after < 0 || after >= before || !Number.isSafeInteger(before) || !Number.isSafeInteger(after)) {
-    return res.json({
-      status: "error",
-      message: "Invalid time range"
-    });
-  }
-
-  if (page < 0 || (page && page >= pages)) {
+  if (page < 0 || (page && page >= pages) || after >= before) {
     return res.json({
       status: "ok",
       entries: [],
@@ -107,10 +83,8 @@ router.get("/:user?", userParamOrAuth, async (req, res) => {
     select
       timestamp, pleasantness, energy
     from mood where
-      user_id=$1
-      and timestamp > $2
-      and timestamp < $3
-    order by id ${sort || "desc"} limit ${limit} offset ${page * limit}
+      user_id=$1 and timestamp > $2 and timestamp < $3
+    order by id ${sort} limit ${limit} offset ${page * limit}
   `, [req.user.id, after, before]);
 
   res.json({

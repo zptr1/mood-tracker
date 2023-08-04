@@ -1,5 +1,7 @@
+import { fromZodError } from 'zod-validation-error';
 import { fetch$ } from "../db.js";
 import express from "express";
+import z from "zod";
 
 export const router = express.Router();
 
@@ -49,6 +51,46 @@ export async function userParamOrAuth(req, res, next) {
     });
   } else {
     next();
+  }
+}
+
+export function validateBody(obj) {
+  return async function (req, res, next) {
+    try {
+      await obj.parseAsync(req.body);
+      next();
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        res.status(400).json({
+          status: "error",
+          message: fromZodError(err, {
+            prefix: "Invalid body"
+          }).toString()
+        });
+      } else {
+        throw err;
+      }
+    }
+  }
+}
+
+export function validateQuery(obj) {
+  return async function (req, res, next) {
+    try {
+      await obj.parseAsync(req.query);
+      next();
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        res.status(400).json({
+          status: "error",
+          message: fromZodError(err, {
+            prefix: "Invalid query"
+          }).toString()
+        });
+      } else {
+        throw err;
+      }
+    }
   }
 }
 
