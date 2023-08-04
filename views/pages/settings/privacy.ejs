@@ -1,10 +1,36 @@
+<p id="status_error"></p>
 <div id="form">
   <input type="checkbox" name="is_profile_private" id="is_profile_private"><label for="is_profile_private"> Private account</label>
   <p class="gray">The profile will be available only to you.</p>
   <br>
   <input type="checkbox" name="is_history_private" id="is_history_private"><label for="is_history_private"> Private history</label>
   <p class="gray">The profile will be public but the analytics will be available only to you.</p>
-  <p id="status_error"></p>
+  <hr>
+  <div class="config_options_container">
+    <div>
+      <p>Delete mood history after</p>
+      <select id="history_threshold_days" autocomplete="off">
+        <% const values = {
+          "Never": -1,
+          "365 days (year)": 365,
+          "90 days (3 months)": 90,
+          "30 days (1 month)": 30,
+          "14 days (2 weeks)": 14,
+          "7 days (week)": 7,
+          "3 days": 3,
+          "Don't store mood history": 0,
+        }; %>
+        <% for (const d in values) { %>
+          <% if (user.history_threshold_days == values[d]) { %>
+            <option value="<%= values[d] %>" selected><%= d %></option>
+          <% } else { %>
+            <option value="<%= values[d] %>"><%= d %></option>
+          <% } %>
+        <% } %>
+      </select>
+    </div>
+    <p class="gray">All records older than the specified amount of days will be automatically deleted</p>
+  </div>
   <hr>
 </div>
 <div id="buttons">
@@ -26,8 +52,9 @@
 <script>
   const tok = document.cookie.match(/token=([A-Za-z0-9_-]{64})/)[1];
   let action = null;
-  let p = "<%= user.is_profile_private %>" == "true";
-  let h = "<%= user.is_history_private %>" == "true";
+  let p = <%= user.is_profile_private %>;
+  let h = <%= user.is_history_private %>;
+  let htd = <%= user.history_threshold_days %>;
   is_profile_private.checked = is_history_private.disabled = p;
   is_history_private.checked = p || h;
 
@@ -48,7 +75,7 @@
   });
 
   btn_clear.addEventListener("click", () => {
-    status_warn.innerHTML = "Are you sure you want to clear all your mood history?<br>Your data will be lost forever (a long time!)";
+    status_warn.innerHTML = "Are you sure you want to clear all your mood history?<br>Your mood history will be lost forever (a long time!)";
     buttons.style.display = "none";
     form.style.display = "none";
     danger_confirm.style = null;
@@ -68,8 +95,17 @@
   });
 
   danger_confirm_btn.addEventListener("click", () => {
+    if (action == "change_history_threshold") {
+      danger_confirm.style.display = "none";
+      danger_confirm_btn.disabled = true;
+      password_confirm.value = "";
+      buttons.style = null;
+      form.style = null;
+      return edit();
+    }
+
     const route = (
-      action == "clear"
+      action == "clear" || action == "disable_history"
         ? "/api/history/all"
       : action == "delete"
         ? "/api/me"
@@ -94,6 +130,17 @@
       .then((res) => {
         if (res.status == "error") {
           alert(res.message);
+        } else if (action == "disable_history") {
+          fetch("/api/me", {
+            method: "PATCH",
+            body: JSON.stringify({
+              history_threshold_days: parseInt(history_threshold_days.value)
+            }),
+            headers: {
+              "Authorization": tok,
+              "Content-Type": "application/json"
+            }
+          }).then(() => window.location.reload());
         } else {
           window.location.reload();
         }
@@ -101,6 +148,7 @@
   });
 
   danger_cancel_btn.addEventListener("click", () => {
+    history_threshold_days.value = htd.toString();
     danger_confirm.style.display = "none";
     danger_confirm_btn.disabled = true;
     password_confirm.value = "";
@@ -108,17 +156,36 @@
     form.style = null;
   });
 
+  history_threshold_days.addEventListener("change", () => {
+    if (history_threshold_days.value == "-1")
+      return edit();
+
+    if (history_threshold_days.value == "0") {
+      status_warn.innerHTML = "This would clear all your mood history, are you sure?<br>Your mood history will be lost forever (a long time!)";
+      action = "disable_history";
+    } else {
+      status_warn.innerHTML = `This would clear all mood history older than ${history_threshold_days.value} days, are you sure?`;
+      action = "change_history_threshold";
+    }
+
+    buttons.style.display = "none";
+    form.style.display = "none";
+    danger_confirm.style = null;
+  })
+
   function edit() {
     form.style.opacity = 0.5;
     form.style.pointerEvents = "none";
     is_history_private.disabled = true;
     is_profile_private.disabled = true;
+    history_threshold_days.disabled = true;
 
     fetch("/api/me", {
       method: "PATCH",
       body: JSON.stringify({
         is_profile_private: is_profile_private.checked,
         is_history_private: is_history_private.checked,
+        history_threshold_days: parseInt(history_threshold_days.value)
       }),
       headers: {
         "Authorization": tok,
@@ -131,15 +198,18 @@
           status_error.textContent = res.message;
           is_profile_private.checked = is_history_private.disabled = p;
           is_history_private.checked = p || h;
+          history_threshold_days.value = htd.toString();
         } else {
           p = is_profile_private.checked;
           h = is_history_private.checked;
+          htd = parseInt(history_threshold_days.value);
         }
       })
       .finally(() => {
         form.style = null;
         is_history_private.disabled = false;
         is_profile_private.disabled = false;
+        history_threshold_days.disabled = false;
       });
   }
 </script>

@@ -1,6 +1,6 @@
 import { getAuth, userParamOrAuth, validateBody } from "../api.js";
 import { fetchMood } from "../../util.js";
-import { exec$ } from "../../db.js";
+import { exec$, fetch$ } from "../../db.js";
 import express from "express";
 import { z } from "zod";
 
@@ -17,8 +17,15 @@ router.put("/", getAuth, validateBody(z.object({
   pleasantness: z.number().min(-1).max(1),
   energy: z.number().min(-1).max(1)
 })), async (req, res) => {
-  const lastMood = await fetchMood(req.user);
-  if (parseInt(lastMood.timestamp) + 15_000 > Date.now()) {
+  const lastMood = await fetch$(
+    "select * from mood where user_id=$1 order by id desc limit 1",
+    [req.user.id]
+  );
+
+  if (lastMood && (
+    req.user.history_threshold_days == 0
+    || parseInt(lastMood.timestamp) + 10000 > Date.now()
+  )) {
     await exec$("update mood set pleasantness=$1, energy=$2, timestamp=$3 where id=$4", [
       req.body.pleasantness, req.body.energy, Date.now(), lastMood.id
     ]);

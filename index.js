@@ -11,6 +11,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ strict: true }));
 app.use(cookieParser());
 
+import "./db.js";     // initialize database
+import "./tasks.js";  // initialize tasks
+
 import { router as authRouter } from "./routers/auth.js";
 import { router as apiRouter } from "./routers/api.js";
 import { router as appRouter } from "./routers/app.js";

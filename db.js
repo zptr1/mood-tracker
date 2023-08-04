@@ -35,7 +35,8 @@ exec$(`
     custom_font_size float default 1.2,
 
     is_profile_private bool default false,
-    is_history_private bool default false
+    is_history_private bool default false,
+    history_threshold_days int default -1
   );
 
   create index if not exists mood_user_id_idx on mood(user_id);
