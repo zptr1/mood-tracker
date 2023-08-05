@@ -1,9 +1,6 @@
 import { fromZodError } from 'zod-validation-error';
-import { fetch$ } from "../db.js";
-import express from "express";
+import { fetch$ } from "../../db.js";
 import z from "zod";
-
-export const router = express.Router();
 
 export async function getAuth(req, res, next) {
   if (req.headers.authorization) {
@@ -93,20 +90,3 @@ export function validateQuery(obj) {
     }
   }
 }
-
-import { router as prometheusRouter } from "./api/prometheus.js";
-import { router as historyRouter } from "./api/history.js";
-import { router as moodRouter } from "./api/mood.js";
-import { router as meRouter } from "./api/me.js";
-
-router.use("/metrics", prometheusRouter);
-router.use("/history", historyRouter);
-router.use("/mood", moodRouter);
-router.use("/me", meRouter);
-
-router.use((req, res) => {
-  res.status(404).json({
-    status: "error",
-    message: "Route not found"
-  });
-});

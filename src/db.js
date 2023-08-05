@@ -1,4 +1,4 @@
-import config from "./config.json" assert { type: "json" };
+import config from "../config.json" assert { type: "json" };
 import pg from "pg";
 
 export const pool = new pg.Pool(config.database);

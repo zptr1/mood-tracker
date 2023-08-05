@@ -1,4 +1,4 @@
-import config from "../config.json" assert { type: "json" };
+import config from "../../config.json" assert { type: "json" };
 import { exec$, fetch$ } from "../db.js";
 import { randomBytes } from "crypto";
 import express from "express";
