@@ -2,13 +2,18 @@ window.addEventListener("load", async () => {
   const tokenCookie = document.cookie.match(/token=([A-Za-z0-9_-]{64})/);
   const token = tokenCookie ? tokenCookie[1] : undefined;
 
-  const req = await fetch(`/api/history/all/${username}?sort=newest`, {
+  const req = await fetch(`/api/history/all/${username}?sort=newest&minimized=true`, {
     headers: {
       "Authorization": token
     }
   });
 
   const data = await req.json();
+  const entries = data.entries.map((x) => ({
+    timestamp: parseInt(x[0]),
+    pleasantness: x[1],
+    energy: x[2]
+  }));
   
   if (req.status != 200 || data.status == "error") {
     loading.textContent = "Could not load data.";
@@ -18,7 +23,7 @@ window.addEventListener("load", async () => {
     return;
   }
 
-  const oldestAt = parseInt(data.entries[data.entries.length - 1].timestamp);
+  const oldestAt = entries[entries.length - 1].timestamp;
 
   moment.locale(navigator.userLanguage || navigator.language);
   analytics.style = null;
@@ -74,7 +79,7 @@ window.addEventListener("load", async () => {
         dot.style.left = `${(point.pleasantness + 1) / 2 * 100}%`;
         dot.style.top = `${(-point.energy + 1) / 2 * 100}%`;
         dot.style.opacity = decay;
-        dot.setAttribute("data-hover-text", `${moment(parseInt(point.timestamp)).calendar()}\nPleasantness: ${Math.floor(point.pleasantness * 100)}% | Energy: ${Math.floor(point.energy * 100)}%`);
+        dot.setAttribute("data-hover-text", `${moment(point.timestamp).calendar()}\nPleasantness: ${Math.floor(point.pleasantness * 100)}% | Energy: ${Math.floor(point.energy * 100)}%`);
         dots.appendChild(dot);
       }
     } else if (htype.value == "heatmap") {
@@ -103,7 +108,7 @@ window.addEventListener("load", async () => {
     lineChart.data.datasets[0].data = entries.slice(0, 150).map((x) => x.energy).reverse();
     lineChart.data.datasets[1].data = entries.slice(0, 150).map((x) => x.pleasantness).reverse();
     lineChart.data.labels = entries.slice(0, 150)
-      .map((x) => moment(parseInt(x.timestamp)).format(
+      .map((x) => moment(x.timestamp).format(
         x.timestamp > today.getTime() ? "LT" : "L"
       )).reverse();
 
@@ -116,11 +121,11 @@ window.addEventListener("load", async () => {
 
     if (!days) {
       start_date.value = formatDate(new Date(oldestAt));
-      displayEntries(data.entries);
+      displayEntries(entries);
     } else {
       start_date.value = formatDate(new Date(Math.max(timestamp, oldestAt)));
       displayEntries(
-        data.entries.filter(
+        entries.filter(
           (x) => x.timestamp > timestamp
         )
       );
@@ -141,7 +146,7 @@ window.addEventListener("load", async () => {
       : end_date.valueAsNumber;
 
     displayEntries(
-      data.entries.filter(
+      entries.filter(
         (x) =>
           x.timestamp >= start_date.valueAsNumber
           && x.timestamp <= end
@@ -159,8 +164,8 @@ window.addEventListener("load", async () => {
 
   const formatDate = (date) => `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`
 
-  start_date.min = end_date.min = formatDate(new Date(parseInt(data.entries[data.entries.length - 1].timestamp)));
-  start_date.max = end_date.max = formatDate(new Date(parseInt(data.entries[0].timestamp)));
+  start_date.min = end_date.min = formatDate(new Date(entries[entries.length - 1].timestamp));
+  start_date.max = end_date.max = formatDate(new Date(entries[0].timestamp));
   
   display();
   
