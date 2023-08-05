@@ -5,17 +5,12 @@
   <%- include('../partials/head') %>
 </head>
 <body>
-  <!-- 
-    This privacy policy is currently not released as its unfinished and describes some features that are not implemented yet.
-  -->
-
   <main>
     <div class="view_header">
       <div><a href="/">mood tracker</a></div>
       <h1>Privacy Policy</h1>
     </div>
-    <p><b>WARNING: This privacy policy is currently not released as its unfinished and describes some features that are not implemented yet.</b></p>
-    <p>Last Update: <b>2023-08-01</b></p>
+    <p>Last Update: <b>2023-08-05</b></p>
     <p></p>
     <hr>
     <section id="what">
@@ -26,9 +21,9 @@
         <li><b>Hashed password</b> (using bcrypt): To securely authorize you into your account </li>
         <li><b>Profile settings and privacy settings</b>: To customize data collection and personalize the service</li>
         <li><b>Mood updates</b>: Stored to provide analytics and insights into your mood, which you can view on your profile. The history is analyzed locally, but the data is stored on our side</li>
-        <li>Some data may be accessible through our <a href="/docs">API</a> by others if they know your username and your profile is not private. Only mood data and history is shared through the API.</li>
+        <li>Some data may be accessible through our API by others if they know your username and your profile is not private. Only mood data and history is shared through the API.</li>
       </ul>
-      <p>The data is stored indefinitely by default, but you can limit the amount of days the mood history is stored up to in the profile settings (or disable the history entirely).</p>
+      <p>The data is stored indefinitely by default, but you can limit the amount of days the mood history is stored up to in the profile settings (or disable the history entirely, storing only the current mood).</p>
     </section>
     <section id="managing">
       <h2>Managing your data</h2>
@@ -53,8 +48,14 @@
     </section>
   </main>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+    section {
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      margin-bottom: 26px;
+    }
     p, li { max-width: 700px; }
-    p, section { margin-bottom: 20px; }
+    p { margin-bottom: 16px; }
   </style>
 </body>
 </html>

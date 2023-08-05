@@ -23,10 +23,13 @@
       <% if (turnstile_site_key) { %>
         <div class="cf-turnstile" data-sitekey="<%= turnstile_site_key %>"></div>
       <% } %>
+
+      <input type="checkbox" id="confirm_privacy_policy" name="confirm_privacy_policy" required>
+      <label for="confirm_privacy_policy">I have read and agree to the <a href="/privacy">Privacy Policy</a></label>
       
       <input type="submit" value="Register">
     </form>
-    <p>Already have an account? <a href="/auth/login">Sign in</a></p>
+    <p class="gray">Already have an account? <a href="/auth/login" class="gray">Sign in</a></p>
   </main>
   <script>
     username.addEventListener("keyup", (e) => {

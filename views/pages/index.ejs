@@ -12,18 +12,21 @@
         <% if (user) { %>
           <a href="/<%= user.username %>">profile</a>
           &squarf; <a href="/settings">settings</a>
-          &squarf; <a href="/auth/logout">logout</a>
         <% } else { %>
           <a href="/auth/login">login</a>
           &squarf; <a href="/auth/register">register</a>
         <% } %>
+        <span style="float: right">
+          <a href="https://github.com/zptr1/mood-tracker">github</a>
+          &squarf; <a href="/privacy">privacy</a>
+        </span>
       </div>
       <h1 id="secret_cookie_clicker">mood tracker</h1><div id="sccs"></div>
     </div>
     <% if (user) { %>
       <p>
         <% const feelings = ["good", "alright", "okay", "well", "happy"] %>
-        <% const days = ["an awesome", "a good", "a happy", "a wonderful", "a great", "a nice"] %>
+        <% const days = ["an awesome", "an amazing", "a good", "a happy", "a wonderful", "a great", "a nice"] %>
         
         <% const feeling = feelings[Math.floor(Math.random() * feelings.length)] %>
         <% const day = days[Math.floor(Math.random() * days.length)] %>

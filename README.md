@@ -6,7 +6,7 @@ https://mood.zptr.cc/
 
 ## TODO
 
-- [ ] Privacy Policy
+- [x] Privacy Policy
 - [ ] Settings
   * [ ] Profile Customization
     - [x] Change username / password
