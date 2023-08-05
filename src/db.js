@@ -1,4 +1,5 @@
 import config from "../config.json" assert { type: "json" };
+import { readFile } from "fs/promises";
 import pg from "pg";
 
 export const pool = new pg.Pool(config.database);
@@ -12,34 +13,8 @@ export async function fetch$(query, values=[]) {
   return (await exec$(query, values))[0];
 }
 
-exec$(`
-  create table if not exists mood (
-    id serial primary key,
-    timestamp bigint,
-    pleasantness float,
-    energy float,
-    user_id int
+export async function initDatabase() {
+  await exec$(
+    await readFile("data/setup.psql", "utf-8")
   );
-
-  create table if not exists users (
-    id serial primary key,
-    username varchar(32) unique,
-    password_hash varchar(60), -- bcrypt
-    token varchar(64),
-    created_at bigint,
-    
-    stats_mood_sets int default 0,
-
-    custom_labels varchar(64)[] default array[]::varchar[],
-    custom_colors int[] default array[]::int[],
-    custom_font_size float default 1.2,
-
-    is_profile_private bool default false,
-    is_history_private bool default false,
-    history_threshold_days int default -1
-  );
-
-  create index if not exists mood_user_id_idx on mood(user_id);
-  create index if not exists users_username_idx on users(username);
-  create index if not exists users_token_idx on users(token);
-`);
+}

@@ -1,6 +1,6 @@
 import { exec$ } from "./db.js";
 
-async function cleanMoodHistory() {
+export async function cleanMoodHistory() {
   const users = await exec$("select id, history_threshold_days as days from users where history_threshold_days > 0");
   const now = Date.now();
   const day = 24 * 3600 * 1000;
@@ -13,4 +13,6 @@ async function cleanMoodHistory() {
   }
 }
 
-setInterval(cleanMoodHistory, 3600 * 1000); // every 1 hour
+export async function initTasks() {
+  setInterval(cleanMoodHistory, 3600 * 1000); // every 1 hour
+}
