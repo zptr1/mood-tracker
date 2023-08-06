@@ -66,8 +66,14 @@ router.get("/:username/analytics", getAuth(), async (req, res, next) => {
 });
 
 router.get("/settings/:category?", getAuth(true), async (req, res, next) => {
-  const categories = ["account", "customization", "privacy"];
-  if (req.params.category && !categories.includes(req.params.category))
+  const categories = {
+    account: "Account",
+    customization: "Customization",
+    privacy: "Privacy",
+    api: "API"
+  };
+
+  if (req.params.category && !Object.keys(categories).includes(req.params.category))
     return next();
 
   res.render("pages/settings", {

@@ -13,11 +13,11 @@
       <h1>Settings</h1>
     </div>
     <ul class="settings_nav">
-      <% for (const id of categories) { %>
+      <% for (const id in categories) { %>
         <% if (id == category) { %>
-          <li class="active"><a><%= id[0].toUpperCase() + id.slice(1) %></a></li>
+          <li class="active"><a><%= categories[id] %></a></li>
         <% } else { %>
-          <li><a href="/settings/<%= id %>"><%= id[0].toUpperCase() + id.slice(1) %></a></li>
+          <li><a href="/settings/<%= id %>"><%= categories[id] %></a></li>
         <% } %>
       <% } %>
     </ul>
