@@ -60,6 +60,12 @@ router.get("/authorize", getAuth(true), async (req, res) => {
         });
     }
 
+    if (!client.redirect_uris.includes(req.query.redirect_uri)) {
+        return res.status(400).render("error/oauth2.ejs", {
+            error: "The client did not provide a valid redirect URI",
+        });
+    }
+
     return res.render("pages/oauth2/authorize.ejs", {
         user: req.user,
         clientData: client,
@@ -86,7 +92,7 @@ router.post("/authorize", getAuth(true), async (req, res) => {
         })
     }
 
-    const client = fetch$("select * from apps where id=$1", [
+    const client = await fetch$("select * from apps where id=$1", [
         req.body.client_id,
     ]);
 
@@ -113,6 +119,12 @@ router.post("/authorize", getAuth(true), async (req, res) => {
             code,
             error: null,
             state: req.body.state
+        })
+    }
+
+    if (!client.redirect_uris.includes(req.body.redirect_uri)) {
+        return res.render("error/oauth2.ejs", {
+            error: "The client did not provide a valid redirect URI",
         })
     }
 
