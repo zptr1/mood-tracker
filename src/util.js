@@ -1,5 +1,13 @@
+import { init as initCuid2 } from "@paralleldrive/cuid2";
 import { DEFAULT_MOODS } from "./const.js";
 import { fetch$ } from "./db.js";
+import crypto from "crypto";
+
+export const createId = initCuid2({
+  random: () => crypto.randomInt(281474976710655) / 281474976710655,
+  length: 16,
+  fingerprint: 'mood-tracker',
+});
 
 export function moodInfo(pleasantness, energy, moods=DEFAULT_MOODS) {
   if (energy >= 0.67) {

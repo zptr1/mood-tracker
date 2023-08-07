@@ -1,8 +1,8 @@
 import { exec$, fetch$ } from "../../db.js";
+import { createId } from "../../util.js";
 import { getAuth } from "../auth.js";
-import {randomBytes} from "crypto";
-import {nanoid} from "nanoid";
 import express from "express";
+import crypto from "crypto";
 
 export const router = express.Router();
 
@@ -131,18 +131,18 @@ router.post("/authorize", getAuth(true), async (req, res) => {
       error: null
     });
   } else {
-    const id = nanoid(16);
+    const id = createId();
 
     await exec$(
       "insert into authorized_apps values ($1, $2, $3, $4, $5, $6, $7)",
       [
         id,
-        req.user.id,
-        req.body.client_id,
+        crypto.randomBytes(32).toString("base64"),
+        crypto.randomBytes(10).toString("base64"),
         scopes,
-        randomBytes(32).toString("base64"),
-        randomBytes(10).toString("base64"),
-        Date.now()
+        Date.now(),
+        req.body.client_id,
+        req.user.id,
       ]
     );
 
