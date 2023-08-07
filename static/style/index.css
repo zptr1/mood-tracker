@@ -58,7 +58,7 @@ main {
   padding: 1em;
 }
 
-h1, h2, ul, p {
+h1, h2, h3, ul, p {
   padding: 0;
   margin: 0;
 }
@@ -76,7 +76,7 @@ ul {
   margin-left: 1.5em;
 }
 
-h2 {
+h2, h3 {
   margin-top: 10px;
   margin-bottom: 5px;
 }
@@ -462,4 +462,91 @@ hr {
   user-select: none;
   font-size: 1rem;
   padding: 8px;
+}
+
+.apps, .authorized_apps {
+  padding: 2px;
+  margin: 0;
+  list-style: none;
+  user-select: none;
+}
+
+.apps li, .authorized_apps > li {
+  background-color: var(--secondary-background);
+  border: 2px solid var(--secondary-foreground);
+  padding: 8px;
+  margin: 8px 0;
+}
+
+.apps li:hover, .apps li.active, .authorized_apps > li:hover {
+  border-color: var(--foreground);
+}
+
+.app_name {
+  cursor: pointer;
+}
+
+.app_id {
+  display: none;
+  color: var(--secondary-foreground);
+}
+
+.expand {
+  display: none;
+}
+
+.apps li.active .expand {
+  display: grid;
+}
+
+.apps li.active .app_id {
+  display: inline-block;
+}
+
+.expand p {
+  color: var(--secondary-foreground);
+}
+
+.app_id {
+  user-select: all;
+  cursor: pointer;
+}
+
+.permissions {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  color: var(--secondary-foreground);
+}
+
+.permissions li::before {
+  content: "✔";
+  color: #76bd61;
+  margin: 0 .4em;
+}
+
+.app_create_btn {
+  opacity: 0.5;
+}
+
+.authorized_apps div {
+  display: grid;
+  align-items: center;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr max-content;
+}
+
+.authorized_apps div p {
+  margin-left: 4px;
+  padding: 6px 0;
+}
+
+.authorized_apps div button {
+  margin: 0;
+  padding: 4px 8px;
+  display: none;
+}
+
+.authorized_apps li:hover div button {
+  display: block;
 }
