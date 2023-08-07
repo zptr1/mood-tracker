@@ -36,7 +36,7 @@ create table if not exists apps (
 
 create table if not exists authorized_apps (
   id varchar(16) primary key,
-  access_token varchar(27) unique,
+  access_token varchar(64) unique,
   refresh_token varchar(27) unique,
   scopes varchar(24)[],
   created_at bigint,

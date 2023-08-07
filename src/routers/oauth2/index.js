@@ -2,10 +2,12 @@ import express from "express";
 import { getAuth } from "../auth.js";
 import { exec$, fetch$ } from "../../db.js";
 import {validateQuery} from "../api/util.js";
+import {nanoid} from "nanoid";
+import {randomBytes} from "crypto";
 
 export const router = express.Router();
 
-const SCOPES = {
+export const SCOPES = {
     user: "Read your user information",
 
     mood: "Read and update your current mood",
@@ -148,12 +150,12 @@ router.post("/authorize", getAuth(true), async (req, res) => {
         const newAuth = await exec$(
             "insert into authorized_apps (id, user_id, app_id, scopes, access_token, refresh_token, created_at) values ($1, $2, $3, $4, $5, $5, $6) returning *",
             [
-                /* TODO: actually make an id */
-                `${req.user.id}`,
+                nanoid(16),
                 req.user.id,
                 req.body.client_id,
                 scopes,
-                "PENDING",
+                randomBytes(64).toString("base64"),
+                randomBytes(27).toString("base64"),
                 Date.now(),
             ],
         );

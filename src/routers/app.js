@@ -5,7 +5,9 @@ import { getAuth } from "./auth.js";
 import express from "express";
 import {validateBody} from "./api/util.js";
 import {z} from "zod";
-import crypto from "crypto";
+import crypto, {randomBytes} from "crypto";
+import {nanoid} from "nanoid";
+import {SCOPES} from "./oauth2/index.js";
 
 export const router = express.Router();
 
@@ -92,7 +94,7 @@ router.get("/settings/api/create-app", getAuth(true), (req, res) => {
       custom_font_size: req.user.custom_font_size || 1.2,
     },
     category: req.params.category || "api",
-    categories,
+    categories
   });
 });
 
@@ -142,26 +144,14 @@ router.post("/settings/api/create-app", getAuth(true), async (req, res) => {
     return die("Invalid redirect URI.");
   }
 
-  // schema:
-  /*
-  create table if not exists apps (
-  id varchar(16) primary key,
-  name varchar(32),
-  secret varchar(64) unique,
-  redirect_uris varchar(255)[],
-  created_at bigint,
-
-  owner_id int references users(id) on delete cascade
-);
-   */
   await exec$(
       "insert into apps (id, name, secret, redirect_uris, created_at, owner_id) values ($1, $2, $3, $4, $5, $6) returning *",
       [
         // 16 chars
-        crypto.getRandomValues(new Uint8Array(6)).join(""),
+        nanoid(16),
         req.body.name,
         // 64 chars
-        crypto.getRandomValues(new Uint8Array(16)).join(""),
+        randomBytes(32).toString("base64"),
         [req.body.redirect_uri],
         Date.now(),
         req.user.id,
@@ -178,14 +168,21 @@ router.get("/settings/:category?", getAuth(true), async (req, res, next) => {
   const extras = {}
 
   if (req.params.category === "api") {
-    const apps = await fetch$(
+    const apps = await exec$(
         "select * from apps where owner_id=$1",
         [req.user.id]
     ) ?? [];
-    const authed = await fetch$(
+    const authed = await Promise.all(await exec$(
         "select * from authorized_apps where user_id=$1",
         [req.user.id]
-    ) ?? [];
+    ).then(res => res?.map(async auth => {
+      const app = await fetch$("select * from apps where id=$1", [auth.app_id])
+
+      return {
+        ...auth,
+        app_name: app.name
+      }
+    }))) ?? [];
 
     extras.apps = Array.isArray(apps) ? apps : [apps]
     extras.authed = Array.isArray(authed) ? authed : [authed]
@@ -206,7 +203,8 @@ router.get("/settings/:category?", getAuth(true), async (req, res, next) => {
     },
     category: req.params.category || "account",
     categories,
-    extras
+    extras,
+    scopes: SCOPES
   })
 });
 

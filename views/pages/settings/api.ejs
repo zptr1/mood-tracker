@@ -6,7 +6,7 @@
   <% for (const auth of extras.authed) { %>
     <li data-app-id="<%= auth.app_id %>">
       <div>
-        <p><%= auth.id %></p>
+        <p><%= auth.app_name %></p>
         <form action="/oauth2/revoke" method="post"><input type="text" name="client_id" value="<%= auth.app_id %>" style="display: none" /><button class="danger app_deauthorize_btn">Deauthorize</button></form>
       </div>
       <ul class="permissions">
@@ -27,8 +27,8 @@
     <li data-app-id="<%= app.id %>">
       <p class="app_name"><%= app.name %> <span class="app_id">(<%= app.id %>)</span></p>
       <div class="expand column_container">
-        <button onclick="navigator.clipboard.writeText(app.id)">Copy ID</button>
-        <button class="app_copy_secret_btn" onclick="navigator.clipboard.writeText(app.secret)">Copy Secret</button>
+        <button onclick="navigator.clipboard.writeText('<%= app.id %>')">Copy ID</button>
+        <button class="app_copy_secret_btn" onclick="navigator.clipboard.writeText('<%= app.secret %>')">Copy Secret</button>
         <form action="/settings/api/delete-app" method="post">
             <input type="text" name="app_id" value="<%= app.id %>" style="display: none" />
           <button class="app_delete_btn danger">Delete</button>
