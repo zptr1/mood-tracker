@@ -55,6 +55,12 @@ export function moodInfo(pleasantness, energy, moods=DEFAULT_MOODS) {
   }
 }
 
+export function safeParseURL(url) {
+  try {
+    return new URL(url);
+  } catch (e) {}
+}
+
 export async function fetchMood(user) {
   const mood = await fetch$(
     "select * from mood where user_id=$1 order by id desc limit 1",

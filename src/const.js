@@ -1,3 +1,17 @@
+export const SETTING_CATEGORIES = {
+  account: "Account",
+  customization: "Customization",
+  privacy: "Privacy",
+  api: "API"
+};
+
+export const OAUTH_SCOPES = {
+  "identify": "Read your user information",
+  "mood.read": "Read your current mood",
+  "mood.write": "Update your current mood",
+  "history.read": "Read your mood history"
+};
+
 export const DEFAULT_MOODS = [
   "Ecstatic", "Festive", "Manic", "Shocked", "Angry", "Enraged",
   "Excited", "Motivated", "Energized", "Restless", "Stressed", "Fuming",

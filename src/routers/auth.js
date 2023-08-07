@@ -22,7 +22,6 @@ export function getAuth(required=false) {
   }
 }
 
-
 router.get("/login", (req, res) => res.render("pages/login"));
 router.get("/register", (req, res) => res.render("pages/register", {
   turnstile_site_key: config.turnstile.site_key

@@ -1,10 +1,9 @@
-import { DEFAULT_MOODS, DEFAULT_COLORS } from "../const.js";
-import { fetchMood, createId } from "../util.js";
-import { SCOPES } from "./oauth2/user.js";
+import { DEFAULT_MOODS, DEFAULT_COLORS, SETTING_CATEGORIES, OAUTH_SCOPES } from "../const.js";
+import { router as apiSettingsRouter } from "./oauth2/settings.js";
 import { exec$, fetch$ } from "../db.js";
+import { fetchMood } from "../util.js";
 import { getAuth } from "./auth.js";
 import express from "express";
-import {router as apiSettingsRouter} from "./oauth2/settings.js";
 
 export const router = express.Router();
 
@@ -67,17 +66,11 @@ router.get("/:username/analytics", getAuth(), async (req, res, next) => {
   })
 });
 
+// todo: move this to specific api routes
 router.use("/settings/api", apiSettingsRouter);
 
-export const settingsCategories = {
-  account: "Account",
-  customization: "Customization",
-  privacy: "Privacy",
-  api: "API"
-};
-
 router.get("/settings/:category?", getAuth(true), async (req, res, next) => {
-  if (req.params.category && !Object.keys(settingsCategories).includes(req.params.category))
+  if (req.params.category && !Object.keys(SETTING_CATEGORIES).includes(req.params.category))
     return next();
 
   // todo: move this to client-side script and an api route
@@ -117,9 +110,9 @@ router.get("/settings/:category?", getAuth(true), async (req, res, next) => {
       custom_font_size: req.user.custom_font_size || 1.2
     },
     category: req.params.category || "account",
-    categories: settingsCategories,
+    categories: SETTING_CATEGORIES,
+    scopes: OAUTH_SCOPES,
     extras,
-    scopes: SCOPES
   })
 });
 
