@@ -1,13 +1,11 @@
 import { DEFAULT_MOODS, DEFAULT_COLORS } from "../const.js";
+import { SCOPES } from "./oauth2/index.js";
 import { exec$, fetch$ } from "../db.js";
 import { fetchMood } from "../util.js";
 import { getAuth } from "./auth.js";
-import express from "express";
-import {validateBody} from "./api/util.js";
-import {z} from "zod";
-import crypto, {randomBytes} from "crypto";
 import {nanoid} from "nanoid";
-import {SCOPES} from "./oauth2/index.js";
+import express from "express";
+import crypto from "crypto";
 
 export const router = express.Router();
 
@@ -70,50 +68,35 @@ router.get("/:username/analytics", getAuth(), async (req, res, next) => {
   })
 });
 
-const categories = {
-  account: "Account",
-  customization: "Customization",
-  privacy: "Privacy",
-  api: "API"
-};
-
+// todo: move these two to client-side script and an api route
 router.get("/settings/api/create-app", getAuth(true), (req, res) => {
   res.render("pages/oauth2/create-app", {
     user: {
       ...req.user,
-      custom_labels:
-          req.user.custom_labels.length > 0
-              ? req.user.custom_labels
-              : DEFAULT_MOODS,
-      custom_colors:
-          req.user.custom_colors.length > 0
-              ? req.user.custom_colors.map(
-                  (x) => `#${x.toString(16).padStart(6, "0")}`,
-              )
-              : DEFAULT_COLORS,
+      custom_labels: req.user.custom_labels.length > 0
+        ? req.user.custom_labels
+        : DEFAULT_MOODS,
+      custom_colors: req.user.custom_colors.length > 0
+        ? req.user.custom_colors.map((x) => `#${x.toString(16).padStart(6, "0")}`)
+        : DEFAULT_COLORS,
       custom_font_size: req.user.custom_font_size || 1.2,
     },
     category: req.params.category || "api",
     categories
   });
 });
-
 router.post("/settings/api/create-app", getAuth(true), async (req, res) => {
   function die(msg) {
     res.status(400).render("pages/oauth2/create-app", {
       user: {
         ...req.user,
-        custom_labels:
-            req.user.custom_labels.length > 0
-                ? req.user.custom_labels
-                : DEFAULT_MOODS,
-        custom_colors:
-            req.user.custom_colors.length > 0
-                ? req.user.custom_colors.map(
-                    (x) => `#${x.toString(16).padStart(6, "0")}`,
-                )
-                : DEFAULT_COLORS,
-        custom_font_size: req.user.custom_font_size || 1.2,
+        custom_labels: req.user.custom_labels.length > 0
+          ? req.user.custom_labels
+          : DEFAULT_MOODS,
+        custom_colors: req.user.custom_colors.length > 0
+          ? req.user.custom_colors.map((x) => `#${x.toString(16).padStart(6, "0")}`)
+          : DEFAULT_COLORS,
+        custom_font_size: req.user.custom_font_size || 1.2
       },
       category: req.params.category || "api",
       categories,
@@ -145,49 +128,52 @@ router.post("/settings/api/create-app", getAuth(true), async (req, res) => {
   }
 
   await exec$(
-      "insert into apps (id, name, secret, redirect_uris, created_at, owner_id) values ($1, $2, $3, $4, $5, $6) returning *",
-      [
-        // 16 chars
-        nanoid(16),
-        req.body.name,
-        // 64 chars
-        randomBytes(32).toString("base64"),
-        [req.body.redirect_uri],
-        Date.now(),
-        req.user.id,
-      ],
+    "insert into apps values ($1, $2, $3, $4, $5, $6)", [
+      nanoid(16),
+      req.body.name,
+      crypto.randomBytes(32).toString("base64"),
+      [req.body.redirect_uri],
+      Date.now(),
+      req.user.id,
+    ]
   );
 
   return res.redirect("/settings/api");
 });
 
+const categories = {
+  account: "Account",
+  customization: "Customization",
+  privacy: "Privacy",
+  api: "API"
+};
+
 router.get("/settings/:category?", getAuth(true), async (req, res, next) => {
   if (req.params.category && !Object.keys(categories).includes(req.params.category))
     return next();
+  
+  // todo: move this to client-side script and an api route
+  const extras = {};
+  if (req.params.category == "api") {
+    req.locals. apps = await exec$(
+      "select * from apps where owner_id=$1",
+      [req.user.id]
+    );
 
-  const extras = {}
+    const auths = await exec$(
+      "select * from authorized_apps where user_id=$1",
+      [req.user.id]
+    );
 
-  if (req.params.category === "api") {
-    const apps = await exec$(
-        "select * from apps where owner_id=$1",
-        [req.user.id]
-    ) ?? [];
-    const authed = await Promise.all(await exec$(
-        "select * from authorized_apps where user_id=$1",
-        [req.user.id]
-    ).then(res => res?.map(async auth => {
-      const app = await fetch$("select * from apps where id=$1", [auth.app_id])
+    const authedApps = await exec$(
+      "select name from apps where id=any($1)",
+      auths.map((x) => x.app_id)
+    );
 
-      return {
-        ...auth,
-        app_name: app.name
-      }
-    }))) ?? [];
-
-    extras.apps = Array.isArray(apps) ? apps : [apps]
-    extras.authed = Array.isArray(authed) ? authed : [authed]
-
-    console.log(apps, authed)
+    extras.authed = auths.map((auth) => ({
+      app_name: authedApps.find((x) => x.id == auth.app_id),
+      ...auth,
+    }));
   }
 
   res.render("pages/settings", {

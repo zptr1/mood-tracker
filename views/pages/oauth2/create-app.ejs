@@ -1,64 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <% locals.title = "Settings" %>
-    <%- include('../../partials/head') %>
+  <% locals.title = "Settings" %>
+  <%- include('../../partials/head') %>
 </head>
 <body>
 <main>
-    <div class="view_header">
-        <div>
-            <a href="/<%= user.username %>">back</a>
-        </div>
-        <h1>Settings</h1>
-    </div>
-    <ul class="settings_nav">
-        <% for (const id in categories) { %>
-            <% if (id == category) { %>
-                <li class="active"><a><%= categories[id] %></a></li>
-            <% } else { %>
-                <li><a href="/settings/<%= id %>"><%= categories[id] %></a></li>
-            <% } %>
-        <% } %>
-    </ul>
-    <div class="setting_container">
-        <form action="/settings/api/create-app" method="post">
-            <h2>Create Application</h2>
-            <p class="gray">Create an OAuth2.0-compatible application.</p>
-            <hr style="border-color: gray" />
-            <label for="name">Name</label>
-            <input type="text" name="name" placeholder="My Example App" value="<%= locals.values?.name ?? '' %>">
-            <label for="redirect_uri">Redirect URL</label>
-            <input type="text" name="redirect_uri" placeholder="https://example.com/callback" value="<%= locals.values?.redirect_uri ?? '' %>">
+  <div class="view_header">
+    <div><a href="/<%= user.username %>">back</a></div>
+    <h1>Settings</h1>
+  </div>
+  <ul class="settings_nav">
+    <% for (const id in categories) { %>
+      <% if (id == category) { %>
+        <li class="active"><a><%= categories[id] %></a></li>
+      <% } else { %>
+        <li><a href="/settings/<%= id %>"><%= categories[id] %></a></li>
+      <% } %>
+    <% } %>
+  </ul>
+  <div class="setting_container">
+    <form action="/settings/api/create-app" method="post">
+      <h2>Create Application</h2>
+      <p class="gray">Create an OAuth2.0-compatible application.</p>
+      <hr style="border-color: gray" />
+      <label for="name">Name</label>
+      <input type="text" name="name" placeholder="My Example App" value="<%= locals.values?.name ?? '' %>">
+      <label for="redirect_uri">Redirect URL</label>
+      <input type="text" name="redirect_uri" placeholder="https://example.com/callback" value="<%= locals.values?.redirect_uri ?? '' %>">
 
-            <% if (locals.error) { %>
-                <p style="color:#ee5858"><%= error %></p>
-            <% } %>
+      <% if (locals.error) { %>
+        <p style="color:#ee5858"><%= error %></p>
+      <% } %>
 
-            <input type="submit" value="Create">
-        </form>
-    </div>
-    <style>
-        :root {
-            --background: <%= user.custom_colors[0] %>;
-            --secondary-background: <%= user.custom_colors[1] %>;
-            --foreground: <%= user.custom_colors[2] %>;
-            --secondary-foreground: <%= user.custom_colors[3] %>;
-            --color-1: <%= user.custom_colors[4] %>;
-            --color-2: <%= user.custom_colors[5] %>;
-            --color-3: <%= user.custom_colors[6] %>;
-            --color-4: <%= user.custom_colors[7] %>;
-            --color-5: <%= user.custom_colors[8] %>;
-            --color-6: <%= user.custom_colors[9] %>;
-            --color-7: <%= user.custom_colors[10] %>;
-            --color-8: <%= user.custom_colors[11] %>;
-            --color-9: <%= user.custom_colors[12] %>;
-            --color-10: <%= user.custom_colors[13] %>;
-            --color-11: <%= user.custom_colors[14] %>;
-            --color-12: <%= user.custom_colors[15] %>;
-            --font-size: <%= user.custom_font_size %>rem;
-        }
-    </style>
+      <input type="submit" value="Create">
+    </form>
+  </div>
+  <style>
+    :root {
+      --background: <%= user.custom_colors[0] %>;
+      --secondary-background: <%= user.custom_colors[1] %>;
+      --foreground: <%= user.custom_colors[2] %>;
+      --secondary-foreground: <%= user.custom_colors[3] %>;
+      --color-1: <%= user.custom_colors[4] %>;
+      --color-2: <%= user.custom_colors[5] %>;
+      --color-3: <%= user.custom_colors[6] %>;
+      --color-4: <%= user.custom_colors[7] %>;
+      --color-5: <%= user.custom_colors[8] %>;
+      --color-6: <%= user.custom_colors[9] %>;
+      --color-7: <%= user.custom_colors[10] %>;
+      --color-8: <%= user.custom_colors[11] %>;
+      --color-9: <%= user.custom_colors[12] %>;
+      --color-10: <%= user.custom_colors[13] %>;
+      --color-11: <%= user.custom_colors[14] %>;
+      --color-12: <%= user.custom_colors[15] %>;
+      --font-size: <%= user.custom_font_size %>rem;
+    }
+  </style>
 </main>
 </body>
 </html>
