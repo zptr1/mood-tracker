@@ -4,7 +4,7 @@ import express from "express";
 import { router as authRouter } from "./routers/auth.js";
 import { router as apiRouter } from "./routers/api/index.js";
 import { router as appRouter } from "./routers/app.js";
-import { router as oauthRouter } from "./routers/oauth2/index.js";
+import { router as oauthRouter } from "./routers/oauth2/user.js";
 
 export const router = express.Router();
 

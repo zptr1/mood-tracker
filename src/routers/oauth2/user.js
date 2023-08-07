@@ -185,3 +185,17 @@ router.post("/authorize", getAuth(true), async (req, res) => {
     }
   }
 });
+
+router.post("/revoke", getAuth(true), async (req, res) => {
+  const client_id = req.body.client_id;
+
+  if (!client_id || typeof client_id !== "string") {
+      return res.status(400).render("error/400.ejs", {
+          error: "Invalid app id"
+      });
+  }
+
+  await exec$("delete from authorized_apps where app_id=$1 and user_id=$2", [client_id, req.user.id]);
+
+    res.redirect("/settings/api");
+});

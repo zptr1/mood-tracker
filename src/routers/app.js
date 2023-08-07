@@ -1,10 +1,10 @@
 import { DEFAULT_MOODS, DEFAULT_COLORS } from "../const.js";
 import { fetchMood, createId } from "../util.js";
-import { SCOPES } from "./oauth2/index.js";
+import { SCOPES } from "./oauth2/user.js";
 import { exec$, fetch$ } from "../db.js";
 import { getAuth } from "./auth.js";
 import express from "express";
-import crypto from "crypto";
+import {router as apiSettingsRouter} from "./oauth2/settings.js";
 
 export const router = express.Router();
 
@@ -67,90 +67,9 @@ router.get("/:username/analytics", getAuth(), async (req, res, next) => {
   })
 });
 
-// todo: move these two to client-side script and an api route
-router.get("/settings/api/create-app", getAuth(true), (req, res) => {
-  res.render("pages/oauth2/create-app", {
-    user: {
-      ...req.user,
-      custom_labels: req.user.custom_labels.length > 0
-        ? req.user.custom_labels
-        : DEFAULT_MOODS,
-      custom_colors: req.user.custom_colors.length > 0
-        ? req.user.custom_colors.map((x) => `#${x.toString(16).padStart(6, "0")}`)
-        : DEFAULT_COLORS,
-      custom_font_size: req.user.custom_font_size || 1.2,
-    },
-    category: req.params.category || "api",
-    categories
-  });
-});
-router.post("/settings/api/create-app", getAuth(true), async (req, res) => {
-  function die(msg) {
-    res.status(400).render("pages/oauth2/create-app", {
-      user: {
-        ...req.user,
-        custom_labels: req.user.custom_labels.length > 0
-          ? req.user.custom_labels
-          : DEFAULT_MOODS,
-        custom_colors: req.user.custom_colors.length > 0
-          ? req.user.custom_colors.map((x) => `#${x.toString(16).padStart(6, "0")}`)
-          : DEFAULT_COLORS,
-        custom_font_size: req.user.custom_font_size || 1.2
-      },
-      category: req.params.category || "api",
-      categories,
-      error: msg,
-      values: {
-        name: req.body.name,
-        redirect_uri: req.body.redirect_uri,
-      },
-    });
-  }
+router.use("/settings/api", apiSettingsRouter);
 
-  if (!req.body.name || !req.body.redirect_uri) {
-    return die("Missing required fields.");
-  }
-
-  if (req.body.name?.length > 32) {
-    return die("Name must be less than 32 characters long.");
-  }
-
-  /**
-   * @type {URL}
-   */
-  let url
-
-  try {
-    url = new URL(req.body.redirect_uri);
-
-    // TODO: uncomment this if we decide HTTPS is required
-    // if (url.protocol !== 'https:') {
-    //   return die("Redirect URI must be HTTPS.");
-    // }
-  } catch {
-    return die("Invalid redirect URI.");
-  }
-
-  url.searchParams.delete('error');
-  url.searchParams.delete('code');
-  url.searchParams.delete('state');
-  url.hash = '';
-
-  await exec$(
-    "insert into apps values ($1, $2, $3, $4, $5, $6)", [
-      createId(),
-      req.body.name,
-      crypto.randomBytes(32).toString("base64"),
-      [url.toString()],
-      Date.now(),
-      req.user.id,
-    ]
-  );
-
-  return res.redirect("/settings/api");
-});
-
-const categories = {
+export const settingsCategories = {
   account: "Account",
   customization: "Customization",
   privacy: "Privacy",
@@ -158,7 +77,7 @@ const categories = {
 };
 
 router.get("/settings/:category?", getAuth(true), async (req, res, next) => {
-  if (req.params.category && !Object.keys(categories).includes(req.params.category))
+  if (req.params.category && !Object.keys(settingsCategories).includes(req.params.category))
     return next();
 
   // todo: move this to client-side script and an api route
@@ -181,7 +100,7 @@ router.get("/settings/:category?", getAuth(true), async (req, res, next) => {
     );
 
     extras.authed = auths.map((auth) => ({
-      app_name: authedApps.find((x) => x.id === auth.app_id).name,
+      app_name: authedApps.find((x) => x.id === auth.app_id)?.name ?? "Deleted App",
       ...auth,
     }));
   }
@@ -198,7 +117,7 @@ router.get("/settings/:category?", getAuth(true), async (req, res, next) => {
       custom_font_size: req.user.custom_font_size || 1.2
     },
     category: req.params.category || "account",
-    categories,
+    categories: settingsCategories,
     extras,
     scopes: SCOPES
   })
