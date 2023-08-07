@@ -22,11 +22,10 @@
   <div class="setting_container">
     <form action="/settings/api/create-app" method="post">
       <h2>Create Application</h2>
-      <p class="gray">Create an OAuth2.0-compatible application.</p>
-      <hr style="border-color: gray" />
+      <p class="gray">Create an OAuth2-compatible application.</p>
       <label for="name">Name</label>
-      <input type="text" name="name" placeholder="My Example App" value="<%= locals.values?.name ?? '' %>">
-      <label for="redirect_uri">Redirect URL</label>
+      <input type="text" name="name" placeholder="My Cool App" value="<%= locals.values?.name ?? '' %>">
+      <label for="redirect_uri">Redirect URI</label>
       <input type="text" name="redirect_uri" placeholder="https://example.com/callback" value="<%= locals.values?.redirect_uri ?? '' %>">
 
       <% if (locals.error) { %>

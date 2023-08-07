@@ -8,10 +8,6 @@
       text-decoration-color: var(--secondary-foreground);
     }
 
-    a.dev span {
-      text-decoration-color: var(--color-8);
-    }
-
     .scopes {
       margin: 10px 0;
       list-style: none;
@@ -29,7 +25,9 @@
 <body>
   <main>
     <h1><span><%= clientData.name %></span> wants access to your account</h1>
-    <p><span class="gray">The <a href="/<%= owner.username %>" class="dev">developer of this app (<span class="username">@<%= owner.username %></span>)</span></a> will be able to:</span></p>
+    <p class="gray">
+      The <a href="/<%= owner.username %>" class="dev">developer of this app (<span class="username">@<%= owner.username %></span>)</a> will be able to:
+    </p>
 
     <form action="/oauth2<%= url %>" method="post">
       <input type="text" value="<%= clientData.id %>" name="client_id" style="display: none">
@@ -41,15 +39,15 @@
         <% for (const scope of params.scope) { %>
           <li>
             <% if (params.editable) { %>
-              <input type="checkbox" name="scopes.<%= scope %>" checked>
+              <input type="checkbox" name="scopes.<%= scope %>" id="<%= scope %>" checked>
             <% } else { %>
-              <input type="checkbox" name="scopes.<%= scope %>" checked disabled>
+              <input type="checkbox" name="scopes.<%= scope %>" id="<%= scope %>" checked disabled>
             <% } %>
-            <label for="scopes.<%= scope %>"><%= scopes[scope] %></label>
+            <label for="<%= scope %>"><%= scopes[scope] %></label>
           </li>
         <% } %>
       </ul>
-      <p class="gray">Once you authorize, you will be redirected to: <span class="active"><%= params.redirect_uri.host %></span></p>
+      <p class="gray">Once you authorize, you will be redirected to: <b><%= params.redirect_uri.host %></b></p>
 
       <button type="submit">Authorize</button>
       <a href="/">[back]</a>

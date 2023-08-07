@@ -1,9 +1,8 @@
 import { DEFAULT_MOODS, DEFAULT_COLORS } from "../const.js";
+import { fetchMood, createId } from "../util.js";
 import { SCOPES } from "./oauth2/index.js";
 import { exec$, fetch$ } from "../db.js";
-import { fetchMood } from "../util.js";
 import { getAuth } from "./auth.js";
-import {nanoid} from "nanoid";
 import express from "express";
 import crypto from "crypto";
 
@@ -129,7 +128,7 @@ router.post("/settings/api/create-app", getAuth(true), async (req, res) => {
 
   await exec$(
     "insert into apps values ($1, $2, $3, $4, $5, $6)", [
-      nanoid(16),
+      createId(),
       req.body.name,
       crypto.randomBytes(32).toString("base64"),
       [req.body.redirect_uri],
@@ -155,7 +154,7 @@ router.get("/settings/:category?", getAuth(true), async (req, res, next) => {
   // todo: move this to client-side script and an api route
   const extras = {};
   if (req.params.category == "api") {
-    req.locals. apps = await exec$(
+    extras.apps = await exec$(
       "select * from apps where owner_id=$1",
       [req.user.id]
     );
@@ -167,7 +166,7 @@ router.get("/settings/:category?", getAuth(true), async (req, res, next) => {
 
     const authedApps = await exec$(
       "select name from apps where id=any($1)",
-      auths.map((x) => x.app_id)
+      [auths.map((x) => x.app_id)]
     );
 
     extras.authed = auths.map((auth) => ({
