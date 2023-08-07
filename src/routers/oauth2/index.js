@@ -72,6 +72,7 @@ router.get("/authorize", getAuth(true), async (req, res) => {
             editable: req.query.editable === "true",
         },
         scopes: SCOPES,
+        url: req.url
     });
 });
 
@@ -148,14 +149,14 @@ router.post("/authorize", getAuth(true), async (req, res) => {
     } else {
         // we have to create a new authorization
         const newAuth = await exec$(
-            "insert into authorized_apps (id, user_id, app_id, scopes, access_token, refresh_token, created_at) values ($1, $2, $3, $4, $5, $5, $6) returning *",
+            "insert into authorized_apps (id, user_id, app_id, scopes, access_token, refresh_token, created_at) values ($1, $2, $3, $4, $5, $6, $7) returning *",
             [
                 nanoid(16),
                 req.user.id,
                 req.body.client_id,
                 scopes,
-                randomBytes(64).toString("base64"),
-                randomBytes(27).toString("base64"),
+                randomBytes(32).toString("base64"),
+                randomBytes(10).toString("base64"),
                 Date.now(),
             ],
         );

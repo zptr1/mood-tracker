@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <%
-    locals.url = redirect_uri %>?<%= error ? `error=${error.code}&description=${error.message ?? ''}` : `code=${code}`
+    locals.url = redirect_uri +'?' + (error ? `error=${error.code}&description=${error.message ?? ''}` : `code=${code}`)
 %>
 <html lang="en">
     <head>
@@ -9,7 +9,7 @@
 </head>
 <body>
 <main>
-    <h1><span>Successfully authorized.</h1>
+    <h1>Successfully authorized.</h1>
     <p>You are being redirected to the application. Please wait...</p>
     <hr/>
     <a href="<%= locals.url %>" class="gray"><p>[go directly]</p></a>

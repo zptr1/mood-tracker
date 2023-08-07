@@ -33,7 +33,7 @@
         <h1><span><%= clientData.name %></span> wants access to your account</h1>
         <p><span class="gray">The <a href="/<%= owner.username %>" class="developer_link"><span class="gray">developer of this app (</span><span class="username">@<%= owner.username %></span><span class="gray">)</span></a> will be able to:</span></p>
 
-        <form action="/oauth2/authorize" method="post">
+        <form action="/oauth2<%= url %>" method="post">
             <input type="text" value="<%= clientData.id %>" name="client_id" style="display: none">
             <input type="text" value="<%= params.redirect_uri %>" name="redirect_uri" style="display: none">
             <input type="text" value="<%= params.state %>" name="state" style="display: none">

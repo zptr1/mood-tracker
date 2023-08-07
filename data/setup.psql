@@ -12,7 +12,7 @@ create table if not exists users (
   password_hash varchar(60), -- bcrypt
   token varchar(64),
   created_at bigint,
-  
+
   stats_mood_sets int default 0,
 
   custom_labels varchar(64)[] default array[]::varchar[],
@@ -37,7 +37,7 @@ create table if not exists apps (
 create table if not exists authorized_apps (
   id varchar(16) primary key,
   access_token varchar(64) unique,
-  refresh_token varchar(27) unique,
+  refresh_token varchar(32) unique,
   scopes varchar(24)[],
   created_at bigint,
 
