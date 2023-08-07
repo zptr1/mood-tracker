@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../../partials/head') %>
+    <style>
+        .developer_link {
+            text-decoration-color: gray;
+        }
+
+        .scopes {
+            margin-top: 10px;
+            margin-bottom: 10px;
+
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            justify-content: start;
+            align-items: start;
+        }
+
+        .scope {
+            display: flex;
+            flex: 1;
+            flex-direction: row;
+            justify-content: center ;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1><span><%= clientData.name %></span> wants access to your account</h1>
+        <p><span class="gray">The <a href="/<%= owner.username %>" class="developer_link"><span class="gray">developer of this app (</span><span class="username">@<%= owner.username %></span><span class="gray">)</span></a> will be able to:</span></p>
+
+        <form action="/oauth2/authorize" method="post">
+            <input type="text" value="<%= clientData.id %>" name="client_id" style="display: none">
+            <input type="text" value="<%= params.redirect_uri %>" name="redirect_uri" style="display: none">
+            <input type="text" value="<%= params.state %>" name="state" style="display: none">
+            <input type="text" value="<%= params.response_type %>" name="response_type" style="display: none">
+
+            <div class="scopes">
+                <ul>
+                <% for (const scope of params.scope) { %>
+                    <% if (params.editable) { %>
+
+                    <div class="scope">
+                        <input type="checkbox" name="scopes.<%= scope %>" checked/>
+                        <label for="scopes.<%= scope %>"><%= scopes[scope] %></label>
+                    </div>
+
+                    <% } else { %>
+                            <input type="checkbox" name="scopes.<%= scope %>" checked style="display: none"/>
+
+                    <li><%= scopes[scope] %></li>
+                    <% } %>
+                    <% } %>
+                </ul>
+            </div>
+
+
+            <p class="gray">If you allow this, you will be redirected to <span class="active"><%= params.redirect_uri.host %></span>.</p>
+
+            <button type="submit">Authorize</button>
+        </form>
+
+        <a href="/" class="gray"><p>[back to safety]</p></a>
+        <br/>
+    </main>
+</body>
+</html>

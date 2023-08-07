@@ -18,8 +18,20 @@ export function getAuth(required=false) {
       res.status(401).redirect("/auth/login");
     } else {
       next();
-    }    
+    }
   }
+}
+
+export function appAuth(scope) {
+  // https://datatracker.ietf.org/doc/html/rfc6749#section-2.3.1
+
+  const { client_id, client_secret } = req.body;
+
+    if (!client_id || !client_secret) {
+        return res.status(400).send({
+          error: "invalid_client"
+        });
+    }
 }
 
 router.get("/login", (req, res) => res.render("pages/login"));
@@ -41,7 +53,7 @@ router.post("/login", async (req, res) => {
       error: "Invalid username or password"
     });
   }
-  
+
   res.cookie("token", user.token, {
     maxAge: 365 * 24 * 3600 * 1000
   }).redirect("/");
@@ -87,7 +99,7 @@ router.post("/register", async (req, res) => {
         remoteip: req.headers["cf-connecting-ip"]
       })
     });
-    
+
     if (!(await captcha.json()).success) {
       return res.status(401).render("pages/register", {
         error: "Captcha failed, retry again please!",
@@ -95,7 +107,7 @@ router.post("/register", async (req, res) => {
       });
     }
   }
-    
+
   const hash = await bcrypt.hash(req.body.password, 10);
   const token = randomBytes(48).toString("base64url");
 

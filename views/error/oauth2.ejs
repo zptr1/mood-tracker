@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% locals.title = "Invalid Request" %>
+    <%- include('../partials/head') %>
+</head>
+<body>
+<main>
+    <h1 id="h">Invalid Request</h1>
+    <p style="max-width:560px"><%= error %></p>
+    <br>
+    <a href="/"><p>[go home]</p></a>
+</main>
+<script>
+    h.onmouseenter=()=>h.textContent="1nv4l1d R3qu3st";
+        h.onmouseleave=()=>h.textContent="Invalid Request";
+</script>
+</body>
+</html>
