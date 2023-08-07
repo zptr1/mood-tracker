@@ -6,6 +6,7 @@ import { z } from "zod";
 
 export const router = express.Router();
 
+// TODO: history.all scope?
 router.get("/all/:user?", userParamOrAuth, validateQuery(z.object({
   sort: z.enum(["newest", "oldest"]).optional(),
   minimized: z.enum(["true", "false"]).optional()
@@ -62,6 +63,7 @@ router.delete("/all", getAuth, validateBody(z.object({
   });
 })
 
+// TODO: history.read scope
 router.get("/:user?", userParamOrAuth, validateQuery(z.object({
   limit: z.coerce.number().int().min(0).max(100).optional(),
   page: z.coerce.number().int().optional(),

@@ -1,4 +1,4 @@
-import { getAuth, userParamOrAuth, validateBody } from "../util.js";
+import {getAuth, scope, userParamOrAuth, validateBody} from "../util.js";
 import { exec$, fetch$ } from "../../../db.js";
 import { fetchMood } from "../../../util.js";
 import express from "express";
@@ -6,6 +6,7 @@ import { z } from "zod";
 
 export const router = express.Router();
 
+// TODO: mood.read scope
 router.get("/:user?", userParamOrAuth, async (req, res, next) => {
   res.json({
     status: "ok",
@@ -13,7 +14,7 @@ router.get("/:user?", userParamOrAuth, async (req, res, next) => {
   })
 });
 
-router.put("/", getAuth, validateBody(z.object({
+router.put("/", scope("mood.write"), validateBody(z.object({
   pleasantness: z.number().min(-1).max(1),
   energy: z.number().min(-1).max(1)
 })), async (req, res) => {
@@ -23,7 +24,7 @@ router.put("/", getAuth, validateBody(z.object({
   );
 
   if (lastMood && (
-    req.user.history_threshold_days == 0
+    req.user.history_threshold_days === 0
     || parseInt(lastMood.timestamp) + 25000 > Date.now()
   )) {
     await exec$("update mood set pleasantness=$1, energy=$2, timestamp=$3 where id=$4", [

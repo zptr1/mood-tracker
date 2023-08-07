@@ -1,19 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
+<%
+  const url = new URL(redirect_uri);
+
+  if (error) {
+    url.searchParams.set("error", error.code);
+    url.searchParams.set("description", error.message || "");
+  } else {
+    url.searchParams.set("code", code);
+  }
+%>
+
 <head>
   <%- include('../../partials/head') %>
-  <meta http-equiv="refresh" content="2; url=<%= redirect_uri %>?<%=
-    error
-      ? `error=${error.code}&description=${error.message || ""}`
-      : `code="${code}"`
-  %>">
+  <meta http-equiv="refresh" content="2; url=<%= url.toString() %>">
 </head>
 <body>
   <main>
     <h1>Successfully authorized.</h1>
     <p>You are being redirected to the application. Please wait...</p>
     <hr>
-    <a href="<%= locals.url %>" class="gray"><p>[go directly]</p></a>
+    <a href="<%= url.toString() %>" class="gray"><p>[go directly]</p></a>
   </main>
 </body>
 </html>

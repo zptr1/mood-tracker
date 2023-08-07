@@ -21,19 +21,21 @@
       gap: 10px;
     }
   </style>
+
 </head>
 <body>
   <main>
-    <h1><span><%= clientData.name %></span> wants access to your account</h1>
+    <h1><span><%= clientData.name %></span> wants access to <span>@<%= user.username %></span></h1>
     <p class="gray">
       The <a href="/<%= owner.username %>" class="dev">developer of this app (<span class="username">@<%= owner.username %></span>)</a> will be able to:
     </p>
 
-    <form action="/oauth2<%= url %>" method="post">
+    <form action="/oauth2<%= url %>" method="post" id="oauth2-consent-form">
       <input type="text" value="<%= clientData.id %>" name="client_id" style="display: none">
       <input type="text" value="<%= params.redirect_uri %>" name="redirect_uri" style="display: none">
       <input type="text" value="<%= params.state %>" name="state" style="display: none">
       <input type="text" value="<%= params.response_type %>" name="response_type" style="display: none">
+      <input type="text" value="allow" name="action" style="display: none">
 
       <ul class="scopes">
         <% for (const scope of params.scope) { %>
@@ -47,11 +49,26 @@
           </li>
         <% } %>
       </ul>
-      <p class="gray">Once you authorize, you will be redirected to: <b><%= params.redirect_uri.host %></b></p>
+      <p class="gray">Once you authorize, you will be redirected to: <%= params.redirect_uri.host %></p>
+      <p class="gray">You can revoke access at any time from your <a href="/settings/api">API settings</a>.</p>
 
       <button type="submit">Authorize</button>
-      <a href="/">[back]</a>
+      <a rel="noopener noreferrer" referrerpolicy="no-referrer" href="<%= params.redirect_uri.toString() + '?error=access_denied' + (params.state ? `&state=${params.state}`: '') %>" style="text-decoration: none"><button type="button" class="danger">Cancel</button></a>
     </form>
   </main>
+
+  <script defer>
+    const cancelButton = document.getElementById('cancel-button');
+
+    cancelButton.addEventListener('click', (event) => {
+      event.preventDefault();
+
+      const actionInput = document.querySelector('#oauth2-consent-form input[name="action"]');
+      actionInput.value = 'deny';
+
+      const form = document.getElementById('oauth2-consent-form');
+      form.submit();
+    });
+  </script>
 </body>
 </html>

@@ -22,17 +22,6 @@ export function getAuth(required=false) {
   }
 }
 
-export function appAuth(scope) {
-  // https://datatracker.ietf.org/doc/html/rfc6749#section-2.3.1
-
-  const { client_id, client_secret } = req.body;
-
-    if (!client_id || !client_secret) {
-        return res.status(400).send({
-          error: "invalid_client"
-        });
-    }
-}
 
 router.get("/login", (req, res) => res.render("pages/login"));
 router.get("/register", (req, res) => res.render("pages/register", {

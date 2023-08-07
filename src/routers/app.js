@@ -115,8 +115,13 @@ router.post("/settings/api/create-app", getAuth(true), async (req, res) => {
     return die("Name must be less than 32 characters long.");
   }
 
+  /**
+   * @type {URL}
+   */
+  let url
+
   try {
-    const url = new URL(req.body.redirect_uri);
+    url = new URL(req.body.redirect_uri);
 
     // TODO: uncomment this if we decide HTTPS is required
     // if (url.protocol !== 'https:') {
@@ -126,12 +131,17 @@ router.post("/settings/api/create-app", getAuth(true), async (req, res) => {
     return die("Invalid redirect URI.");
   }
 
+  url.searchParams.delete('error');
+  url.searchParams.delete('code');
+  url.searchParams.delete('state');
+  url.hash = '';
+
   await exec$(
     "insert into apps values ($1, $2, $3, $4, $5, $6)", [
       createId(),
       req.body.name,
       crypto.randomBytes(32).toString("base64"),
-      [req.body.redirect_uri],
+      [url.toString()],
       Date.now(),
       req.user.id,
     ]
@@ -150,10 +160,11 @@ const categories = {
 router.get("/settings/:category?", getAuth(true), async (req, res, next) => {
   if (req.params.category && !Object.keys(categories).includes(req.params.category))
     return next();
-  
+
   // todo: move this to client-side script and an api route
+  // or use ejs and provide exec$/fetch function as a global
   const extras = {};
-  if (req.params.category == "api") {
+  if (req.params.category === "api") {
     extras.apps = await exec$(
       "select * from apps where owner_id=$1",
       [req.user.id]
@@ -165,12 +176,12 @@ router.get("/settings/:category?", getAuth(true), async (req, res, next) => {
     );
 
     const authedApps = await exec$(
-      "select name from apps where id=any($1)",
+      "select name, id from apps where id=any($1)",
       [auths.map((x) => x.app_id)]
     );
 
     extras.authed = auths.map((auth) => ({
-      app_name: authedApps.find((x) => x.id == auth.app_id),
+      app_name: authedApps.find((x) => x.id === auth.app_id).name,
       ...auth,
     }));
   }

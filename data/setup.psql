@@ -42,7 +42,9 @@ create table if not exists authorized_apps (
   created_at bigint,
 
   app_id varchar(16) references apps(id) on delete cascade,
-  user_id int references users(id) on delete cascade
+  user_id int references users(id) on delete cascade,
+
+  redirect_uri varchar(255) -- for security
 );
 
 create index if not exists mood_user_id_idx on mood(user_id);

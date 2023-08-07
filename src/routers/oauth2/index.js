@@ -35,18 +35,19 @@ router.get("/authorize", getAuth(true), async (req, res) => {
   }
 
   if (
-    !req.query.scope?.length
-    || req.query.scope.split(/[-, ]+/g).some((scope) => !SCOPE_TYPES.includes(scope))
+      !req.query.scope?.length ||
+      req.query.scope
+          .split(/[-, ]+/g)
+          .some((scope) => !SCOPE_TYPES.includes(scope))
   ) {
     return res.status(400).render("error/400.ejs", {
       error: "The app did not provide a valid scope"
     });
   }
 
-  const app = await fetch$(
-    "select * from apps where id=$1",
-    [req.query.client_id]
-  );
+  const app = await fetch$("select * from apps where id=$1", [
+    req.query.client_id
+  ]);
 
   if (!app) {
     return res.status(400).render("error/400.ejs", {
@@ -60,16 +61,18 @@ router.get("/authorize", getAuth(true), async (req, res) => {
     });
   }
 
+  res.header("X-Frame-Options", "DENY");
+
   return res.render("pages/oauth2/authorize.ejs", {
     user: req.user,
     clientData: app,
     owner: req.user,
     params: {
-        redirect_uri: new URL(req.query.redirect_uri),
-        response_type: req.query.response_type,
-        scope: req.query.scope.split(/[-, ]+/g),
-        state: req.query.state,
-        editable: req.query.editable === "true",
+      redirect_uri: new URL(req.query.redirect_uri),
+      response_type: req.query.response_type,
+      scope: req.query.scope.split(/[-, ]+/g),
+      state: req.query.state,
+      editable: req.query.editable === "true"
     },
     scopes: SCOPES,
     url: req.url
@@ -77,14 +80,13 @@ router.get("/authorize", getAuth(true), async (req, res) => {
 });
 
 router.post("/authorize", getAuth(true), async (req, res) => {
-  const client = await fetch$(
-    "select * from apps where id=$1",
-    [req.body.client_id]
-  );
+  const client = await fetch$("select * from apps where id=$1", [
+    req.body.client_id
+  ]);
 
   const scopes = Object.keys(req.body)
-    .filter((x) => x.startsWith("scopes.") && req.body[x])
-    .map((x) => x.slice(7));
+      .filter((x) => x.startsWith("scopes.") && req.body[x])
+      .map((x) => x.slice(7));
 
   if (!client) {
     return res.render("error/400.ejs", {
@@ -99,7 +101,7 @@ router.post("/authorize", getAuth(true), async (req, res) => {
         code: error
       },
       state: req.body.state
-    })
+    });
   }
 
   if (!client.redirect_uris.includes(req.body.redirect_uri))
@@ -111,46 +113,75 @@ router.post("/authorize", getAuth(true), async (req, res) => {
   if (req.body.response_type !== "code")
     return die("unsupported_response_type");
 
-  const existing = await fetch$(
-    "select id from authorized_apps where user_id=$1 and app_id=$2",
-    [req.user.id, req.body.client_id]
-  );
+  let url = new URL(req.body.redirect_uri);
 
-  // user has already authed, update last authorization
-  // !! updating scope to be exclusively the recently requested scopes may not be the best way to do this
-  if (existing) {
-    await exec$(
-      "update authorized_apps set scopes=$1 where id=$2",
-      [scopes, existing.id]
-    );
+  url.searchParams.delete('error');
+  url.searchParams.delete('code');
+  url.searchParams.delete('state');
+  url.hash = '';
 
-    res.render("pages/oauth2/success.ejs", {
-      redirect_uri: req.body.redirect_uri,
-      state: req.body.state,
-      code: existing.id,
-      error: null
-    });
-  } else {
-    const id = createId();
+  if (req.body.state) url.searchParams.set("state", req.body.state);
 
-    await exec$(
-      "insert into authorized_apps values ($1, $2, $3, $4, $5, $6, $7)",
-      [
-        id,
-        crypto.randomBytes(32).toString("base64"),
-        crypto.randomBytes(10).toString("base64"),
-        scopes,
-        Date.now(),
-        req.body.client_id,
-        req.user.id,
-      ]
-    );
+  const action = req.body.action;
 
-    res.render("pages/oauth2/success.ejs", {
-      redirect_uri: req.body.redirect_uri,
-      state: req.body.state,
-      error: null,
-      code: id
-    });
+  if (action !== "allow" && action !== "deny") return die("server_error");
+
+  switch (action) {
+    case "deny": {
+        url.searchParams.set("error", "access_denied")
+
+        res.redirect(url);
+        return;
+    }
+    case "allow": {
+      const existing = await fetch$(
+          "select id from authorized_apps where user_id=$1 and app_id=$2",
+          [req.user.id, req.body.client_id]
+      );
+
+      // user has already authed, update last authorization
+      // !! updating scope to be exclusively the recently requested scopes may not be the best way to do this
+      if (existing) {
+        await exec$("update authorized_apps set scopes=$1 where id=$2", [
+          scopes,
+          existing.id
+        ]);
+
+        res.render("pages/oauth2/success.ejs", {
+          redirect_uri: url.toString(),
+          code: existing.id,
+          error: null
+        });
+      } else {
+        const id = createId();
+
+        // TODO: preventing replay attacks by only allowing the code to be used once
+        // > If a code is used more than once, it should be treated as an attack.
+        // > If possible, the service should revoke the previous access tokens that were
+        // > issued from this authorization code.
+        // https://www.oauth.com/oauth2-servers/access-tokens/authorization-code-request/#security-considerations
+        await exec$(
+            "insert into authorized_apps values ($1, $2, $3, $4, $5, $6, $7, $8)",
+            [
+              id,
+              crypto.randomBytes(32).toString("base64"),
+              crypto.randomBytes(10).toString("base64"),
+              scopes,
+              Date.now(),
+              req.body.client_id,
+              req.user.id,
+              req.body.redirect_uri
+            ]
+        );
+
+        res.render("pages/oauth2/success.ejs", {
+          redirect_uri: url,
+          error: null,
+          code: id
+        });
+      }
+
+      return;
+    }
   }
 });
