@@ -24,6 +24,30 @@ create table if not exists users (
   history_threshold_days int default -1
 );
 
+create table if not exists apps (
+  id varchar(16) primary key,
+  name varchar(32),
+  secret varchar(64) unique,
+  redirect_uris varchar(255)[],
+  created_at bigint,
+
+  owner_id int references users(id) on delete cascade
+);
+
+create table if not exists authorized_apps (
+  id varchar(16) primary key,
+  access_token varchar(27) unique,
+  refresh_token varchar(27) unique,
+  scopes varchar(24)[],
+  created_at bigint,
+
+  app_id varchar(16) references apps(id) on delete cascade,
+  user_id int references users(id) on delete cascade
+);
+
 create index if not exists mood_user_id_idx on mood(user_id);
 create index if not exists users_username_idx on users(username);
 create index if not exists users_token_idx on users(token);
+create index if not exists apps_owner_id_idx on apps(owner_id);
+create index if not exists authorized_apps_access_token_idx on authorized_apps(access_token);
+create index if not exists authorized_apps_user_id_idx on authorized_apps(user_id);
