@@ -1,12 +1,17 @@
 <!-- indev; hardcoded data for testing -->
 
+<%#
+  todo: there's now specific api routes
+        but still need to update the page
+%>
+
 <h3>Authorized Applications</h3>
 <ul class="authorized_apps">
   <% for (const auth of extras.authed) { %>
     <li data-app-id="<%= auth.app_id %>">
       <div>
         <p><%= auth.app_name %></p>
-        <!-- TODO: move controls to a script -->
+        <!-- TODO -->
         <form action="/oauth2/revoke" method="post">
           <input type="text" name="client_id" value="<%= auth.app_id %>" style="display: none">
           <button class="danger app_deauthorize_btn">Deauthorize</button>
@@ -33,7 +38,7 @@
       <div class="expand column_container">
         <button onclick="navigator.clipboard.writeText('<%= app.id %>')">Copy ID</button>
         <button class="app_copy_secret_btn" onclick="navigator.clipboard.writeText('<%= app.secret %>')">Copy Secret</button>
-        <!-- TODO: move controls to a script -->
+        <!-- TODO -->
         <form action="/settings/api/delete-app" method="post">
           <input type="text" name="app_id" value="<%= app.id %>" style="display: none">
           <button class="app_delete_btn danger">Delete</button>
@@ -41,6 +46,7 @@
       </div>
     </li>
   <% } %>
+  <!-- TODO -->
   <a href="/settings/api/create-app"><button class="app_create_btn">Create</button></a>
 </ul>
 

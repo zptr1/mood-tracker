@@ -5,12 +5,14 @@ import { router as prometheusRouter } from "./routers/prometheus.js";
 import { router as historyRouter } from "./routers/history.js";
 import { router as oauth2Router } from "./routers/oauth2.js"
 import { router as moodRouter } from "./routers/mood.js";
+import { router as appsRouter } from "./routers/apps.js";
 import { router as meRouter } from "./routers/me.js";
 
 export const router = express.Router();
 
 router.use("/me", meRouter);
 router.use("/mood", moodRouter);
+router.use("/apps", appsRouter);
 router.use("/oauth2", oauth2Router);
 router.use("/history", historyRouter);
 router.use("/metrics", prometheusRouter);

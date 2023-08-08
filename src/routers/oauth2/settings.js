@@ -1,5 +1,8 @@
 // todo: move this to specific api routes
 
+// upd: there's now specific api routes
+//      but still need to update the page
+
 import { DEFAULT_COLORS, DEFAULT_MOODS, SETTING_CATEGORIES } from "../../const.js";
 import { exec$, fetch$ } from "../../db.js";
 import { createId, safeParseURL } from "../../util.js";
@@ -56,7 +59,7 @@ router.post("/create-app", getAuth(true), async (req, res) => {
     return die("Name must be less than 32 characters long.");
 
   const url = safeParseURL(req.body.redirect_uri);
-  
+
   if (!url)
     return die("Invalid redirect URI.");
 
