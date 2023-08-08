@@ -32,3 +32,26 @@
     </a>
   <% } %>
 </ul>
+<h3>API Token</h3>
+<p class="gray">
+  Used to access the API.
+  Never share it with anyone, as it might grant others access to your account!
+  <br>
+  You can regenerate the token by changing your password.
+</p>
+<div class="column_container" style="grid-template-columns: 1fr 5em">
+  <input id="token" type="text" placeholder="**************************" readonly autocomplete="off">
+  <button id="reveal_token">Reveal</button>
+</div>
+
+<script>
+  reveal_token.addEventListener("click", () => {
+    if (token.value) {
+      token.value = null;
+      reveal_token.textContent = "Reveal";
+    } else {
+      token.value = document.cookie.match(/token=([A-Za-z0-9_-]{64})/)[1];
+      reveal_token.textContent = "Hide";
+    }
+  });
+</script>
