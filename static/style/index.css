@@ -473,12 +473,18 @@ hr {
 
 #app_list li {
   cursor: pointer;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr 0.65em;
+}
+
+#app_list a {
+  text-decoration: none;
 }
 
 .app {
   background-color: var(--secondary-background);
   border: 2px solid var(--secondary-foreground);
-  text-decoration: none;
   padding: 8px;
   margin: 8px 0;
 }
@@ -563,4 +569,34 @@ a.dev {
   color: #1c1c1c;
   user-select: all;
   padding: 4px;
+}
+
+#redirect_uris {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#redirect_uris li {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: 1fr 4em;
+  width: 560px;
+  margin: 0 4px;
+  padding: 0;
+}
+
+#redirect_uris li span {
+  user-select: all;
+  background: var(--secondary-background);
+  border: 2px solid var(--secondary-foreground);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin: 8px 0;
+  padding: 4px;
+}
+
+#add_redirect_uri {
+  opacity: 0.7;
 }

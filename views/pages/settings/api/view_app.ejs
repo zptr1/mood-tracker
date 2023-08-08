@@ -35,34 +35,6 @@
   <input type="password" id="password_confirm">
 </div>
 
-<style>
-  #redirect_uris {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  #redirect_uris li {
-    display: grid;
-    grid-auto-flow: column;
-    grid-template-columns: 1fr 4em;
-    margin: 0 4px;
-    padding: 0;
-  }
-
-  #redirect_uris li span {
-    user-select: none;
-    background: var(--secondary-background);
-    border: 2px solid var(--secondary-foreground);
-    margin: 8px 0;
-    padding: 4px;
-  }
-
-  #add_redirect_uri {
-    opacity: 0.7;
-  }
-</style>
-
 <script>
   const redirectURIs = <%- JSON.stringify(app.redirect_uris) %>;
   document.addEventListener("click", (e) => e.target.blur());

@@ -22,7 +22,8 @@
   <% for (const app of apps) { %>
     <a href="/settings/api/app/<%= app.id %>">
       <li class="app">
-        <%= app.name %>
+        <span class="app_name"><%= app.name %></span>
+        <span class="arrow">&gt;</span>
       </li>
     </a>
   <% } %>
