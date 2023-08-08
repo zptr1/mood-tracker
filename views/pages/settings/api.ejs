@@ -1,9 +1,9 @@
 <h3>Authorized Applications</h3>
 <ul id="authed_apps">
   <% for (const auth of auths) { %>
-    <li data-app-id="<%= auth.app_id %>">
+    <li class="app" data-app-id="<%= auth.app_id %>">
       <div>
-        <p><%= auth.app_name %></p>
+        <p><%= auth.name %></p>
         <button class="app_deauthorize_btn danger">Deauthorize</button>
       </div>
       <ul class="permissions">

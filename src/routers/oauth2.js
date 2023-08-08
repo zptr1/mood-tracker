@@ -82,7 +82,7 @@ router.post("/authorize", getAuth(true), async (req, res) => {
     req.body.client_id
   ]);
 
-  const scopes = Object.keys(req.body)
+  const scopes = [...new Set(Object.keys(req.body))]
     .filter((x) => x.startsWith("scopes.") && req.body[x])
     .map((x) => x.slice(7));
 

@@ -22,10 +22,11 @@
           <li>
             <% if (params.editable) { %>
               <input type="checkbox" name="scopes.<%= scope %>" id="<%= scope %>" checked>
+              <label for="<%= scope %>"><%= scopes[scope] %></label>
             <% } else { %>
-              <input type="checkbox" name="scopes.<%= scope %>" id="<%= scope %>" checked disabled>
+              <input type="checkbox" name="scopes.<%= scope %>" checked class="disabled" tabindex="-1">
+              <label><%= scopes[scope] %></label>
             <% } %>
-            <label for="<%= scope %>"><%= scopes[scope] %></label>
           </li>
         <% } %>
       </ul>
@@ -48,6 +49,10 @@
     <style>
       p, ul li { max-width: 570px; }
       h1 { max-width: 500px; }
+      input[type=checkbox].disabled {
+        pointer-events: none;
+        opacity: 0.5;
+      }
       #redirect_uri {
         display: block;
         max-width: 570px;
