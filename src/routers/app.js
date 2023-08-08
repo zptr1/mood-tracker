@@ -1,5 +1,4 @@
-import { DEFAULT_MOODS, DEFAULT_COLORS, SETTING_CATEGORIES, OAUTH_SCOPES } from "../const.js";
-import { router as apiSettingsRouter } from "./oauth2/settings.js";
+import { DEFAULT_MOODS, DEFAULT_COLORS } from "../const.js";
 import { exec$, fetch$ } from "../db.js";
 import { fetchMood } from "../util.js";
 import { getAuth } from "./auth.js";
@@ -63,56 +62,6 @@ router.get("/:username/analytics", getAuth(), async (req, res, next) => {
       ? user.custom_colors.map((x) => `#${x.toString(16).padStart(6, "0")}`)
       : DEFAULT_COLORS,
     font_size: user.custom_font_size || 1.2
-  })
-});
-
-// todo: move this to specific api routes
-router.use("/settings/api", apiSettingsRouter);
-
-router.get("/settings/:category?", getAuth(true), async (req, res, next) => {
-  if (req.params.category && !Object.keys(SETTING_CATEGORIES).includes(req.params.category))
-    return next();
-
-  // todo: move this to client-side script and an api route
-  // or use ejs and provide exec$/fetch function as a global
-  const extras = {};
-  if (req.params.category === "api") {
-    extras.apps = await exec$(
-      "select * from apps where owner_id=$1",
-      [req.user.id]
-    );
-
-    const auths = await exec$(
-      "select * from authorized_apps where user_id=$1",
-      [req.user.id]
-    );
-
-    const authedApps = await exec$(
-      "select name, id from apps where id=any($1)",
-      [auths.map((x) => x.app_id)]
-    );
-
-    extras.authed = auths.map((auth) => ({
-      app_name: authedApps.find((x) => x.id === auth.app_id)?.name ?? "Deleted App",
-      ...auth,
-    }));
-  }
-
-  res.render("pages/settings", {
-    user: {
-      ...req.user,
-      custom_labels: req.user.custom_labels.length > 0
-        ? req.user.custom_labels
-        : DEFAULT_MOODS,
-      custom_colors: req.user.custom_colors.length > 0
-        ? req.user.custom_colors.map((x) => `#${x.toString(16).padStart(6, "0")}`)
-        : DEFAULT_COLORS,
-      custom_font_size: req.user.custom_font_size || 1.2
-    },
-    category: req.params.category || "account",
-    categories: SETTING_CATEGORIES,
-    scopes: OAUTH_SCOPES,
-    extras,
   })
 });
 

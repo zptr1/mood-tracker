@@ -1,14 +1,16 @@
-import { OAUTH_SCOPES } from "../../const.js";
-import { exec$, fetch$ } from "../../db.js";
-import { createId } from "../../util.js";
-import { getAuth } from "../auth.js";
+import { OAUTH_SCOPES } from "../const.js";
+import { exec$, fetch$ } from "../db.js";
+import { createId } from "../util.js";
+import { getAuth } from "./auth.js";
 import express from "express";
 import crypto from "crypto";
 
 export const router = express.Router();
 const SCOPE_TYPES = Object.keys(OAUTH_SCOPES);
 
-router.get("/authorize", getAuth(true), async (req, res) => {
+router.get(
+  "/authorize", getAuth(true),
+  async (req, res) => {
   if (!req.query.client_id) {
     return res.status(400).render("error/400.ejs", {
       error: "The app did not provide sufficient identification"
@@ -38,9 +40,10 @@ router.get("/authorize", getAuth(true), async (req, res) => {
     });
   }
 
-  const app = await fetch$("select * from apps where id=$1", [
-    req.query.client_id
-  ]);
+  const app = await fetch$(
+    "select * from apps where id=$1",
+    [req.query.client_id]
+  );
 
   if (!app) {
     return res.status(400).render("error/400.ejs", {
@@ -55,17 +58,19 @@ router.get("/authorize", getAuth(true), async (req, res) => {
   }
 
   res.header("X-Frame-Options", "DENY");
-
-  return res.render("pages/oauth2/authorize.ejs", {
+  res.render("pages/oauth2/authorize.ejs", {
     user: req.user,
     clientData: app,
-    owner: req.user,
+    owner: await fetch$(
+      "select * from users where id=$1",
+      [app.owner_id]
+    ),
     params: {
       redirect_uri: new URL(req.query.redirect_uri),
       response_type: req.query.response_type,
-      scope: req.query.scope.split(/[-, ]+/g),
+      scope: [...new Set(req.query.scope.split(/[-, ]+/g))],
       state: req.query.state,
-      editable: req.query.editable === "true"
+      editable: req.query.editable == "true"
     },
     scopes: OAUTH_SCOPES,
     url: req.url

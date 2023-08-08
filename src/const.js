@@ -1,10 +1,3 @@
-export const SETTING_CATEGORIES = {
-  account: "Account",
-  customization: "Customization",
-  privacy: "Privacy",
-  api: "API"
-};
-
 export const OAUTH_SCOPES = {
   "identify": "Read your user information",
   "mood.read": "Read your current mood",

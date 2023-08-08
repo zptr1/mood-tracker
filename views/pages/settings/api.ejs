@@ -1,21 +1,10 @@
-<!-- indev; hardcoded data for testing -->
-
-<%#
-  todo: there's now specific api routes
-        but still need to update the page
-%>
-
 <h3>Authorized Applications</h3>
-<ul class="authorized_apps">
-  <% for (const auth of extras.authed) { %>
+<ul id="authed_apps">
+  <% for (const auth of auths) { %>
     <li data-app-id="<%= auth.app_id %>">
       <div>
         <p><%= auth.app_name %></p>
-        <!-- TODO -->
-        <form action="/oauth2/revoke" method="post">
-          <input type="text" name="client_id" value="<%= auth.app_id %>" style="display: none">
-          <button class="danger app_deauthorize_btn">Deauthorize</button>
-        </form>
+        <button class="app_deauthorize_btn danger">Deauthorize</button>
       </div>
       <ul class="permissions">
         <% for (const perm of auth.scopes) { %>
@@ -24,40 +13,22 @@
       </ul>
     </li>
   <% } %>
-
-  <% if (!extras.authed.length) { %>
-    <p class="gray">There's nothing here yet.</p>
+  <% if (!auths.length) { %>
+    <p class="gray">There's nothing here yet</p>
   <% } %>
 </ul>
-
 <h3>My Applications</h3>
-<ul class="apps">
-  <% for (const app of extras.apps) { %>
-    <li data-app-id="<%= app.id %>">
-      <p class="app_name"><%= app.name %> <span class="app_id">(<%= app.id %>)</span></p>
-      <div class="expand column_container">
-        <button onclick="navigator.clipboard.writeText('<%= app.id %>')">Copy ID</button>
-        <button class="app_copy_secret_btn" onclick="navigator.clipboard.writeText('<%= app.secret %>')">Copy Secret</button>
-        <!-- TODO -->
-        <form action="/settings/api/delete-app" method="post">
-          <input type="text" name="app_id" value="<%= app.id %>" style="display: none">
-          <button class="app_delete_btn danger">Delete</button>
-        </form>
-      </div>
-    </li>
+<ul id="app_list">
+  <% for (const app of apps) { %>
+    <a href="/settings/api/app/<%= app.id %>">
+      <li class="app">
+        <%= app.name %>
+      </li>
+    </a>
   <% } %>
-  <!-- TODO -->
-  <a href="/settings/api/create-app"><button class="app_create_btn">Create</button></a>
+  <% if (apps.length < 10) { %>
+    <a href="/settings/api/create-app" class="btn">
+      <button id="app_create_btn">Create</button>
+    </a>
+  <% } %>
 </ul>
-
-<script>
-  document.addEventListener("click", (e) => {
-    if (e.target.classList.contains("app_name")) {
-      const selected = document.querySelector(".apps li.active");
-      if (selected)
-        selected.classList.remove("active");
-      if (selected != e.target.parentElement)
-        e.target.parentElement.classList.add("active");
-    }
-  })
-</script>

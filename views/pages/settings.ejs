@@ -15,14 +15,14 @@
     <ul class="settings_nav">
       <% for (const id in categories) { %>
         <% if (id == category) { %>
-          <li class="active"><a><%= categories[id] %></a></li>
+          <li class="active"><a href="/settings/<%= id %>"><%= categories[id] %></a></li>
         <% } else { %>
           <li><a href="/settings/<%= id %>"><%= categories[id] %></a></li>
         <% } %>
       <% } %>
     </ul>
     <div class="setting_container">
-      <%- include(`./settings/${category}`) %>
+      <%- include(`./settings/${locals.file || category}`) %>
     </div>
     <style>
       :root {

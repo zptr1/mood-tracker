@@ -30,7 +30,7 @@
         <% } %>
       </ul>
 
-      <p class="gray">Once you authorize, you will be redirected to: <b><%= params.redirect_uri.host %></b></p>
+      <p class="gray">Once you authorize, you will be redirected to: <b id="redirect_uri"><%= params.redirect_uri.origin %></b></p>
       <p class="gray">You can revoke access at any time from your <a href="/settings/api">API settings</a>.</p>
       <% if (user.is_profile_private) { %>
         <p id="status_warn">This app will be able to access your data even if your profile is private</p>
@@ -45,6 +45,17 @@
         </a>
       </div>
     </form>
+    <style>
+      p, ul li { max-width: 570px; }
+      h1 { max-width: 500px; }
+      #redirect_uri {
+        display: block;
+        max-width: 570px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    </style>
   </main>
 </body>
 </html>

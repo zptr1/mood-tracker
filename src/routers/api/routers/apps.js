@@ -12,7 +12,7 @@ router.get(
   async (req, res) => {
     const apps = await exec$(
       "select * from apps where owner_id=$1",
-      [req.body.user_id]
+      [req.user.id]
     );
 
     res.json({
@@ -35,8 +35,22 @@ router.post(
   }),
   async (req, res) => {
     const id = createId();
+    const secret = crypto.randomBytes(32).toString("base64url");
+
     const urls = req.body.redirect_uris
       .map((x) => new URL(x));
+
+    const apps = await fetch$(
+      "select count(*) from apps where owner_id=$1",
+      [req.user.id]
+    );
+
+    if (apps.length >= 10) {
+      return res.status(400).json({
+        status: "error",
+        message: "Too many created apps"
+      });
+    }
 
     urls.forEach((url) => {
       url.searchParams.delete("error");
@@ -48,18 +62,116 @@ router.post(
     await exec$(
       "insert into apps values ($1, $2, $3, $4, $5, $6)",
       [
-        id, req.body.name,
-        crypto.randomBytes(32).toString("base64"),
+        id, req.body.name, secret,
         urls, Date.now(), req.user.id,
       ]
     );
 
     res.json({
       status: "ok",
-      id
+      id, secret
     });
   }
 );
+
+router.patch(
+  "/:id", auth(),
+  validateBody({
+    redirect_uris: z.array(z.string().max(255).url())
+      .min(1).max(5)
+  }),
+  async (req, res, next) => {
+    if (!req.params.id.match(/^[a-z\d]{16}$/))
+      return next();
+
+    const urls = req.body.redirect_uris
+      .map((x) => new URL(x));
+
+    urls.forEach((url) => {
+      url.searchParams.delete("error");
+      url.searchParams.delete("code");
+      url.searchParams.delete("state");
+      url.hash = "";
+    });
+
+    if (!await fetch$("select 1 from apps where owner_id=$1 and id=$2", [req.user.id, req.params.id])) {
+      return res.status(404).json({
+        status: "error",
+        message: "Unknown application"
+      });
+    }
+
+    await exec$(
+      "update apps set redirect_uris=$1 where id=$3",
+      [urls, req.params.id]
+    );
+
+    res.json({
+      status: "ok"
+    });
+  }
+);
+
+router.delete(
+  "/:id", auth(),
+  async (req, res, next) => {
+    if (!req.params.id.match(/^[a-z\d]{16}$/))
+      return next();
+
+    if (!await fetch$("select 1 from apps where owner_id=$1 and id=$2", [req.user.id, req.params.id])) {
+      return res.status(404).json({
+        status: "error",
+        message: "Unknown application"
+      });
+    }
+
+    await exec$(
+      "delete from apps where id=$1",
+      [req.params.id]
+    );
+
+    res.json({
+      status: "ok"
+    });
+  }
+);
+
+router.patch(
+  "/:id/secret", auth(),
+  validateBody({
+    password: z.string().min(1)
+  }),
+  async (req, res, next) => {
+    if (!req.params.id.match(/^[a-z\d]{16}$/))
+      return next();
+
+    if (!await fetch$("select 1 from apps where owner_id=$1 and id=$2", [req.user.id, req.params.id])) {
+      return res.status(404).json({
+        status: "error",
+        message: "Unknown application"
+      });
+    }
+
+    if (!await bcrypt.compare(req.body.password, req.user.password_hash)) {
+      return res.status(401).json({
+        status: "error",
+        message: ""
+      })
+    }
+
+    const secret = crypto.randomBytes(32).toString("base64url");
+
+    await exec$(
+      "update apps set secret=$1 where id=$2",
+      [secret, req.params.id]
+    );
+
+    res.json({
+      status: "ok",
+      secret
+    });
+  }
+)
 
 router.get(
   "/authorized", auth(),
@@ -91,7 +203,7 @@ router.delete(
       return next();
 
     if (!await fetch$("select 1 from authorized_apps where user_id=$1 and app_id=$2", [req.user.id, req.params.id])) {
-      res.status(404).json({
+      return res.status(404).json({
         status: "error",
         message: "Unknown application"
       });
@@ -100,68 +212,6 @@ router.delete(
     await exec$(
       "delete from authorized_apps where user_id=$1 and app_id=$2",
       [req.user.id, req.params.id]
-    );
-
-    res.json({
-      status: "ok"
-    });
-  }
-)
-
-router.patch(
-  "/:id", auth(),
-  validateBody({
-    redirect_uris: z.array(z.string().max(255).url())
-      .min(1).max(5)
-  }),
-  async (req, res, next) => {
-    if (!req.params.id.match(/^[a-z\d]{16}$/))
-      return next();
-
-    const urls = req.body.redirect_uris
-      .map((x) => new URL(x));
-
-    urls.forEach((url) => {
-      url.searchParams.delete("error");
-      url.searchParams.delete("code");
-      url.searchParams.delete("state");
-      url.hash = "";
-    });
-
-    if (!await fetch$("select 1 from apps where owner_id=$1 and id=$2", [req.user.id, req.params.id])) {
-      res.status(404).json({
-        status: "error",
-        message: "Unknown application"
-      });
-    }
-
-    await exec$(
-      "update apps set redirect_uris=$1 where id=$3",
-      [urls, req.params.id]
-    );
-
-    res.json({
-      status: "ok"
-    });
-  }
-)
-
-router.delete(
-  "/:id", auth(),
-  async (req, res, next) => {
-    if (!req.params.id.match(/^[a-z\d]{16}$/))
-      return next();
-
-    if (!await fetch$("select 1 from apps where owner_id=$1 and id=$2", [req.user.id, req.params.id])) {
-      res.status(404).json({
-        status: "error",
-        message: "Unknown application"
-      });
-    }
-
-    await exec$(
-      "delete from apps where id=$1",
-      [req.params.id]
     );
 
     res.json({

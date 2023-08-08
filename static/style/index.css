@@ -464,52 +464,27 @@ hr {
   padding: 8px;
 }
 
-.apps, .authorized_apps {
+#app_list, #authed_apps {
   padding: 2px;
   margin: 0;
   list-style: none;
   user-select: none;
 }
 
-.apps li, .authorized_apps > li {
+#app_list li {
+  cursor: pointer;
+}
+
+.app {
   background-color: var(--secondary-background);
   border: 2px solid var(--secondary-foreground);
+  text-decoration: none;
   padding: 8px;
   margin: 8px 0;
 }
 
-.apps li:hover, .apps li.active, .authorized_apps > li:hover {
+.app:hover {
   border-color: var(--foreground);
-}
-
-.app_name {
-  cursor: pointer;
-}
-
-.app_id {
-  display: none;
-  color: var(--secondary-foreground);
-}
-
-.expand {
-  display: none;
-}
-
-.apps li.active .expand {
-  display: grid;
-}
-
-.apps li.active .app_id {
-  display: inline-block;
-}
-
-.expand p {
-  color: var(--secondary-foreground);
-}
-
-.app_id {
-  user-select: all;
-  cursor: pointer;
 }
 
 .permissions {
@@ -525,30 +500,34 @@ hr {
   margin: 0 .4em;
 }
 
-.app_create_btn {
-  opacity: 0.5;
+#app_create_btn {
+  opacity: 0.65;
 }
 
-.authorized_apps div {
+#authed_apps div {
   display: grid;
   align-items: center;
   grid-auto-flow: column;
   grid-auto-columns: 1fr max-content;
 }
 
-.authorized_apps div p {
+#authed_apps div p {
   margin-left: 4px;
   padding: 6px 0;
 }
 
-.authorized_apps div button {
-  margin: 0;
-  padding: 4px 8px;
+#authed_apps div button {
   display: none;
+  padding: 4px 8px;
+  margin: 0;
 }
 
-.authorized_apps li:hover div button {
+#authed_apps li:hover div button {
   display: block;
+}
+
+#app_id {
+  color: var(--secondary-foreground);
 }
 
 a.dev {
@@ -572,4 +551,16 @@ a.dev {
 
 .scopes li:hover {
   background: var(--secondary-background);
+}
+
+#created {
+  background: rgba(216, 157, 47, 0.15);
+  user-select: none;
+}
+
+#created span {
+  background: rgb(216, 157, 47);
+  color: #1c1c1c;
+  user-select: all;
+  padding: 4px;
 }
