@@ -550,3 +550,26 @@ hr {
 .authorized_apps li:hover div button {
   display: block;
 }
+
+a.dev {
+  color: var(--secondary-foreground);
+  text-decoration-color: var(--secondary-foreground);
+}
+
+.scopes {
+  margin: 16px 0;
+  font-size: 1.2em;
+  list-style: none;
+}
+
+.scopes li {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: max-content 1fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.scopes li:hover {
+  background: var(--secondary-background);
+}

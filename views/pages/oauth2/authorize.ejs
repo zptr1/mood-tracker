@@ -2,26 +2,6 @@
 <html lang="en">
 <head>
   <%- include('../../partials/head') %>
-  <style>
-    a.dev {
-      color: var(--secondary-foreground);
-      text-decoration-color: var(--secondary-foreground);
-    }
-
-    .scopes {
-      margin: 10px 0;
-      list-style: none;
-    }
-
-    .scopes li {
-      display: grid;
-      grid-auto-flow: column;
-      grid-auto-columns: max-content;
-      align-items: center;
-      gap: 10px;
-    }
-  </style>
-
 </head>
 <body>
   <main>
@@ -49,26 +29,22 @@
           </li>
         <% } %>
       </ul>
-      <p class="gray">Once you authorize, you will be redirected to: <%= params.redirect_uri.host %></p>
-      <p class="gray">You can revoke access at any time from your <a href="/settings/api">API settings</a>.</p>
 
-      <button type="submit">Authorize</button>
-      <a rel="noopener noreferrer" referrerpolicy="no-referrer" href="<%= params.redirect_uri.toString() + '?error=access_denied' + (params.state ? `&state=${params.state}`: '') %>" style="text-decoration: none"><button type="button" class="danger">Cancel</button></a>
+      <p class="gray">Once you authorize, you will be redirected to: <b><%= params.redirect_uri.host %></b></p>
+      <p class="gray">You can revoke access at any time from your <a href="/settings/api">API settings</a>.</p>
+      <% if (user.is_profile_private) { %>
+        <p id="status_warn">This app will be able to access your data even if your profile is private</p>
+      <% } else if (params.scope.includes("history.read") && user.is_history_private) { %>
+        <p id="status_warn">This app will be able to read your mood history even if it is private</p>
+      <% } %>
+
+      <div class="column_container">
+        <button type="submit">Authorize</button>
+        <a href="<%= params.redirect_uri.toString()%>?error=access_denied<%= params.state ? `&state=${params.state}`: "" %>" rel="noopener noreferrer" referrerpolicy="no-referrer" style="text-decoration: none">
+          <button type="button" class="danger">Cancel</button>
+        </a>
+      </div>
     </form>
   </main>
-
-  <script defer>
-    const cancelButton = document.getElementById('cancel-button');
-
-    cancelButton.addEventListener('click', (event) => {
-      event.preventDefault();
-
-      const actionInput = document.querySelector('#oauth2-consent-form input[name="action"]');
-      actionInput.value = 'deny';
-
-      const form = document.getElementById('oauth2-consent-form');
-      form.submit();
-    });
-  </script>
 </body>
 </html>
