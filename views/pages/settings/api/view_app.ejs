@@ -37,17 +37,16 @@
 
 <script>
   const redirectURIs = <%- JSON.stringify(app.redirect_uris) %>;
-  document.addEventListener("click", (e) => e.target.blur());
-
-  app_copy_id.addEventListener("click", () => {
+  app_copy_id.addEventListener("click", (e) => {
     navigator.clipboard.writeText("<%= app.id %>");
+    e.target.blur();
   });
 
-  app_reset_secret.addEventListener("click", () => {
-
+  app_reset_secret.addEventListener("click", (e) => {
+    e.target.blur();
   });
 
-  delete_app.addEventListener("click", () => {
-
+  delete_app.addEventListener("click", (e) => {
+    e.target.blur();
   })
 </script>
