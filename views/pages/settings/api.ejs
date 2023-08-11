@@ -13,23 +13,21 @@
       </ul>
     </li>
   <% } %>
-  <% if (!auths.length) { %>
-    <p class="gray">There's nothing here yet</p>
-  <% } %>
+  <p class="gray">There's nothing here yet</p>
 </ul>
 <h3>My Applications</h3>
 <ul id="app_list">
   <% for (const app of apps) { %>
     <a href="/settings/api/app/<%= app.id %>">
       <li class="app">
-        <span class="app_name"><%= app.name %></span>
-        <span class="arrow">&gt;</span>
+        <span><%= app.name %></span>
+        <span>&gt;</span>
       </li>
     </a>
   <% } %>
   <% if (apps.length < 10) { %>
     <a href="/settings/api/create-app" class="btn">
-      <button id="app_create_btn">Create</button>
+      <button style="opacity: 0.65">Create</button>
     </a>
   <% } %>
 </ul>
@@ -53,6 +51,32 @@
     } else {
       token.value = document.cookie.match(/token=([A-Za-z0-9_-]{64})/)[1];
       reveal_token.textContent = "Hide";
+    }
+  });
+
+  document.addEventListener("click", async (e) => {
+    if (e.target.classList.contains("app_deauthorize_btn")) {
+      const id = e.target.parentElement.parentElement.getAttribute("data-app-id");
+      const token = document.cookie.match(/token=([A-Za-z0-9_-]{64})/)[1];
+
+      const req = await fetch(`/api/apps/authorized/${id}`, {
+        method: "DELETE",
+        headers: { "Authorization": token  }
+      });
+
+      const res = await req.json();
+      if (res.status == "error") {
+        alert(res.message);
+      } else {
+        e.target.parentElement.parentElement.remove();
+
+        if (authed_apps.childElementCount == 0) {
+          const p = document.createElement("p");
+          p.textContent = "There's nothing here yet";
+          p.classList.add("gray");
+          authed_apps.appendElement(p);
+        }
+      }
     }
   });
 </script>

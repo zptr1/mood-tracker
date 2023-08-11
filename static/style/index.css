@@ -506,10 +506,6 @@ hr {
   margin: 0 .4em;
 }
 
-#app_create_btn {
-  opacity: 0.65;
-}
-
 #authed_apps div {
   display: grid;
   align-items: center;
@@ -530,6 +526,14 @@ hr {
 
 #authed_apps li:hover div button {
   display: block;
+}
+
+#authed_apps > li + p {
+  display: none;
+}
+
+#app_copy_id {
+  transition: .2s color;
 }
 
 #app_id {
@@ -559,12 +563,16 @@ a.dev {
   background: var(--secondary-background);
 }
 
-#created {
+#highlight {
   background: rgba(216, 157, 47, 0.15);
   user-select: none;
 }
 
-#created span {
+#highlight:empty {
+  display: none;
+}
+
+#highlight span {
   background: rgb(216, 157, 47);
   color: #1c1c1c;
   user-select: all;

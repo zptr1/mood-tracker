@@ -2,9 +2,9 @@
   <h3>Create Application</h3>
   <p class="gray">Create an OAuth2-compatible application</p>
   <label for="app_name">Name</label>
-  <input type="text" name="name" id="app_name" placeholder="My Cool App" required minlength="3" maxlength="32">
+  <input type="text" name="name" id="app_name" placeholder="My Cool App" required minlength="3" maxlength="32" autocomplete="off">
   <label for="redirect_uri">Redirect URI</label>
-  <input type="text" name="redirect_uri" id="redirect_uri" placeholder="https://example.com/callback" required maxlength="250">
+  <input type="text" name="redirect_uri" id="redirect_uri" placeholder="https://example.com/callback" required maxlength="250" autocomplete="off">
   <p id="status_error"><%= locals.error || "" %></p>
 
   <input type="submit" id="submit" value="Create">
