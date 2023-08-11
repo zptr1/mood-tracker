@@ -1,5 +1,9 @@
 <div id="form">
-  <h2><%= app.name %></h2>
+  <h3>
+    <a href="/settings/api" class="gray">Apps</a>
+    <span>&gt;</span>
+    <span><%= app.name %></span>
+  </h3>
   <div id="highlight">
     <% if (locals.new_app_secret) { %>
       <p>The app has been successfully created!</p>
@@ -27,6 +31,13 @@
   </ul>
 </div>
 <div id="confirm_form" style="display: none">
+  <h3>
+    <a href="/settings/api" class="gray">Apps</a>
+    <span>&gt;</span>
+    <a href="/settings/api/app/<%= app.id %>" class="gray"><%= app.name %></a>
+    <span>&gt;</span>
+    <span id="confirm_action"></span>
+  </h3>
   <p id="status_warn"></p>
   <p id="status_error"></p>
   <p class="gray">Enter your password to confirm.</p>

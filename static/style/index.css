@@ -608,3 +608,16 @@ a.dev {
 #add_redirect_uri {
   opacity: 0.7;
 }
+
+select {
+  font-family: var(--font);
+  font-size: 0.9em;
+  border: 1px solid var(--secondary-foreground);
+  background: var(--secondary-background);
+  color: var(--foreground);
+  outline: none;
+}
+
+select option {
+  font-size: 0.8rem;
+}

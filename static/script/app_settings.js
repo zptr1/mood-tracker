@@ -102,6 +102,7 @@ app_reset_secret.addEventListener("click", () => {
   confirm_btn.disabled = true;
   password_confirm.value = "";
   confirmAction = "reset_secret";
+  confirm_action.textContent = "Reset Secret";
 });
 
 delete_app.addEventListener("click", () => {
@@ -111,6 +112,7 @@ delete_app.addEventListener("click", () => {
   confirm_btn.disabled = true;
   password_confirm.value = "";
   confirmAction = "delete_app";
+  confirm_action.textContent = "Delete";
 });
 
 password_confirm.addEventListener("keyup", () => {
