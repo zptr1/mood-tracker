@@ -446,6 +446,7 @@ hr {
 .config_options_container div {
   display: grid;
   grid-template-columns: 1fr max-content;
+  align-items: center;
   gap: 0.5em;
 }
 
@@ -611,8 +612,10 @@ a.dev {
 
 select {
   font-family: var(--font);
-  font-size: 0.9em;
-  border: 1px solid var(--secondary-foreground);
+  font-size: 1em;
+  padding: 4px;
+  margin: 0;
+  border: 2px solid var(--secondary-foreground);
   background: var(--secondary-background);
   color: var(--foreground);
   outline: none;
