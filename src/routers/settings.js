@@ -42,9 +42,13 @@ router.get("/api/app/:id", async (req, res, next) => {
   if (!app)
     return next();
 
+  const new_app_secret = req.cookies.new_app_secret;
+  if (new_app_secret) res.clearCookie("new_app_secret");
+
   res.render("pages/settings", {
     category: "api",
     file: "api/view_app",
+    new_app_secret,
     app
   });
 });
@@ -82,8 +86,8 @@ router.post(
     url.searchParams.delete("state");
     url.hash = "";
 
-    const app = await fetch$(
-      "insert into apps values ($1, $2, $3, $4, $5, $6) returning *",
+    await exec$(
+      "insert into apps values ($1, $2, $3, $4, $5, $6)",
       [
         id, req.body.name, secret,
         [url.toString()],
@@ -92,12 +96,8 @@ router.post(
       ]
     );
 
-    res.render("pages/settings", {
-      category: "api",
-      file: "api/view_app",
-      created: true,
-      app,
-    });
+    res.cookie("new_app_secret", secret);
+    res.redirect(`/settings/api/app/${id}`);
   }
 );
 
