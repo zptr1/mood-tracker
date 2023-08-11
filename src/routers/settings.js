@@ -53,6 +53,23 @@ router.get("/api/app/:id", async (req, res, next) => {
   });
 });
 
+router.get("/api/app/:id/url_generator", async (req, res, next) => {
+  const app = await fetch$(
+    "select * from apps where id=$1 and owner_id=$2",
+    [req.params.id, req.user.id]
+  );
+
+  if (!app)
+    return next();
+
+  res.render("pages/settings", {
+    category: "api",
+    file: "api/app_url_generator",
+    scopes: OAUTH_SCOPES,
+    app
+  });
+});
+
 router.get("/api/create-app", (req, res) => {
   res.render("pages/settings", {
     category: "api",

@@ -1,0 +1,61 @@
+<h3>
+  <a href="/settings/api" class="gray">Apps</a>
+  <span>&gt;</span>
+  <a href="/settings/api/app/<%= app.id%>" class="gray"><%= app.name %></a>
+  <span>&gt;</span>
+  <span>URL Generator</span>
+</h3>
+<p class="gray">Generate a link for your application by picking the scopes it needs to function</p>
+<br>
+<b class="gray">Scopes</b>
+<ul class="scopes" style="display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:max-content;margin:4px 0">
+  <% for (const scope in scopes) { %>
+    <li>
+      <input type="checkbox" class="scope" id="<%= scope %>" autocomplete="off">
+      <label for="<%= scope %>"><%= scope %></label>
+    </li>
+  <% } %>
+</ul><br>
+<b class="gray">Redirect URI</b>
+<div class="column_container">
+  <select id="redirect_uri" autocomplete="off">
+    <% for (const uri of app.redirect_uris) { %>
+      <option value="<%= uri %>"><%= uri %></option>
+    <% } %>
+    <option disabled selected value style="display:none">Select...</option>
+  </select>
+</div><br>
+
+<b class="gray">Generated URL</b>
+<div class="column_container" style="grid-template-columns:1fr 3em;">
+  <input id="generated_url" type="text" style="font-size:1rem" readonly autocomplete="off">
+  <button id="copy_generated_url">Copy</button>
+</div>
+
+<script>
+  function generateURL() {
+    if (!redirect_uri.value) return;
+
+    const scopes = [...document.querySelectorAll(".scope:checked")].map((x) => x.id);
+    const url = new URL(location.origin);
+
+    url.pathname = "/oauth2/authorize";
+    url.searchParams.set("client_id", "<%= app.id %>");
+    url.searchParams.set("scope", scopes.join("+"));
+    url.searchParams.set("redirect_uri", redirect_uri.value);
+    url.searchParams.set("response_type", "code");
+
+    generated_url.value = url.toString();
+  }
+
+  document.addEventListener("change", (e) => {
+    if (e.target.classList.contains("scope") || e.id == "redirect_uri") {
+      generateURL();
+    }
+  })
+
+  copy_generated_url.addEventListener("click", () => {
+    navigator.clipboard.writeText(generated_url.value);
+    copy_generated_url.blur();
+  });
+</script>
