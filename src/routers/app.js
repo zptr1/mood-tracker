@@ -26,7 +26,7 @@ router.get("/:username", getAuth(), async (req, res, next) => {
   if (user.is_profile_private && req.user?.id != user.id)
     return next();
 
-  res.render("pages/view", {
+  res.render("pages/profile/view", {
     auth: req.user,
     user: user,
     username: user.username,
@@ -52,7 +52,7 @@ router.get("/:username/analytics", getAuth(), async (req, res, next) => {
   if (user.is_profile_private && req.user?.id != user.id)
     return next();
 
-  res.render("pages/analytics", {
+  res.render("pages/profile/analytics", {
     username: user.username,
 
     labels: user.custom_labels.length > 0
@@ -96,5 +96,5 @@ router.get("/mydata", getAuth(true), async (req, res) => {
 
 router.get("/500", (req, res) => {
   // easter egg
-  res.status(500).render("error/500");
+  res.status(500).render("pages/error/500");
 });

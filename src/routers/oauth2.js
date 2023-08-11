@@ -12,19 +12,19 @@ router.get(
   "/authorize", getAuth(true),
   async (req, res) => {
   if (!req.query.client_id) {
-    return res.status(400).render("error/400.ejs", {
+    return res.status(400).render("pages/error/400.ejs", {
       error: "The app did not provide sufficient identification"
     });
   }
 
   if (!req.query.redirect_uri) {
-    return res.status(400).render("error/400.ejs", {
+    return res.status(400).render("pages/error/400.ejs", {
       error: "The app did not provide a redirect URI"
     });
   }
 
   if (!req.query.response_type || req.query.response_type !== "code") {
-    return res.status(400).render("error/400.ejs", {
+    return res.status(400).render("pages/error/400.ejs", {
       error: "The app did not provide a valid response type"
     });
   }
@@ -35,7 +35,7 @@ router.get(
         .split(/[-, ]+/g)
         .some((scope) => !SCOPE_TYPES.includes(scope))
   ) {
-    return res.status(400).render("error/400.ejs", {
+    return res.status(400).render("pages/error/400.ejs", {
       error: "The app did not provide a valid scope"
     });
   }
@@ -46,13 +46,13 @@ router.get(
   );
 
   if (!app) {
-    return res.status(400).render("error/400.ejs", {
+    return res.status(400).render("pages/error/400.ejs", {
       error: "The app does not exist"
     });
   }
 
   if (!app.redirect_uris.includes(req.query.redirect_uri)) {
-    return res.status(400).render("error/400.ejs", {
+    return res.status(400).render("pages/error/400.ejs", {
       error: "The app did not provide a valid redirect URI"
     });
   }
@@ -87,7 +87,7 @@ router.post("/authorize", getAuth(true), async (req, res) => {
     .map((x) => x.slice(7));
 
   if (!client) {
-    return res.render("error/400.ejs", {
+    return res.render("pages/error/400.ejs", {
       error: "The app does not exist"
     });
   }
@@ -173,7 +173,7 @@ router.post("/authorize", getAuth(true), async (req, res) => {
 
 router.post("/revoke", getAuth(true), async (req, res) => {
   if (typeof req.body.client_id != "string") {
-    return res.status(400).render("error/400.ejs", {
+    return res.status(400).render("pages/error/400.ejs", {
       error: "Invalid app id"
     });
   }

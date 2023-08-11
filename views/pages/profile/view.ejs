@@ -2,7 +2,7 @@
 <html lang="en" class="<%= auth?.id == user.id ? '' : 'unauthorized' %>">
 <head>
   <% locals.title = `${username}'${username.endsWith("s") ? "" : "s"} mood` %>
-  <%- include('../partials/head') %>
+  <%- include('../../partials/head') %>
   <meta name="og:title" content="<%= mood.status %>">
   <meta name="og:description" content="Pleasantness: <%= Math.floor(mood.pleasantness * 100) %>% | Energy: <%= Math.floor(mood.energy * 100) %>%">
   <script src="/static/script/view.js" async defer></script>

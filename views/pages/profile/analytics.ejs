@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <% locals.title = `${username}'${username.endsWith("s") ? "" : "s"} mood analytics` %>
-  <%- include('../partials/head') %>
+  <%- include('../../partials/head') %>
   <script src="/static/script/chart.js" async defer></script>
   <script src="/static/script/moment.min.js" async defer></script>
   <script src="/static/script/analytics.js" async defer></script>
@@ -59,6 +59,7 @@
         </div>
         <span>Unpleasant &lt;--&gt; Pleasant</span>
       </div>
+      <br>
       <canvas id="line_chart_canvas"></canvas>
     </div>
     <style>

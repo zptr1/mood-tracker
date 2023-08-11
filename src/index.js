@@ -17,10 +17,10 @@ router.use("/auth", authRouter);
 router.use("/oauth2", oauthRouter);
 router.use("/settings", settingsRouter);
 
-router.use((req, res, next) => res.status(404).render("error/404"));
+router.use((req, res, next) => res.status(404).render("pages/error/404"));
 router.use((err, req, res, next) => {
   console.error(err);
-  res.status(500).render("error/500", {
+  res.status(500).render("pages/error/500", {
     comment: errorComments[Math.floor(Math.random() * errorComments.length)]
   });
 });
