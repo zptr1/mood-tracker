@@ -3,6 +3,8 @@ import { createId } from "../../../util.js";
 import { validateBody } from "../util.js";
 import { auth } from "../util.js";
 import express from "express";
+import crypto from "crypto";
+import bcrypt from "bcrypt";
 import { z } from "zod";
 
 export const router = express.Router();
@@ -114,6 +116,9 @@ router.patch(
 
 router.delete(
   "/:id", auth(),
+  validateBody({
+    password: z.string().min(1)
+  }),
   async (req, res, next) => {
     if (!req.params.id.match(/^[a-z\d]{16}$/))
       return next();
@@ -123,6 +128,13 @@ router.delete(
         status: "error",
         message: "Unknown application"
       });
+    }
+
+    if (!await bcrypt.compare(req.body.password, req.user.password_hash)) {
+      return res.status(401).json({
+        status: "error",
+        message: "Passwords do not match"
+      })
     }
 
     await exec$(
@@ -155,7 +167,7 @@ router.patch(
     if (!await bcrypt.compare(req.body.password, req.user.password_hash)) {
       return res.status(401).json({
         status: "error",
-        message: ""
+        message: "Passwords do not match"
       })
     }
 
