@@ -4,23 +4,16 @@
   <label for="app_name">Name</label>
   <input type="text" name="name" id="app_name" placeholder="My Cool App" required minlength="3" maxlength="32">
   <label for="redirect_uri">Redirect URI</label>
-  <input type="text" name="redirect_uri" id="redirect_uri" placeholder="https://example.com/callback" required maxlength="255">
+  <input type="text" name="redirect_uri" id="redirect_uri" placeholder="https://example.com/callback" required maxlength="250">
   <p id="status_error"><%= locals.error || "" %></p>
 
   <input type="submit" id="submit" value="Create">
 </form>
 <script>
   app_name.addEventListener("keyup", () => {
-    const error =
-      app_name.value.length < 3
-        ? "Name is too short"
-      : app_name.value.length > 32
-        ? "Name is too long"
-      : null;
-
-    if (error) {
+    if (app_name.value.length < 3) {
+      status_error.textContent = "The name is too short";
       submit.disabled = true;
-      status_error.textContent = error;
     } else {
       submit.disabled = false;
       status_error.textContent = "";

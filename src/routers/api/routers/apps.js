@@ -79,7 +79,7 @@ router.post(
 router.patch(
   "/:id", auth(),
   validateBody({
-    redirect_uris: z.array(z.string().max(255).url())
+    redirect_uris: z.array(z.string().max(250).url())
       .min(1).max(5)
   }),
   async (req, res, next) => {
