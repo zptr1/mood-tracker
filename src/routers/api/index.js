@@ -17,14 +17,14 @@ router.use("/oauth2", oauth2Router);
 router.use("/history", historyRouter);
 router.use("/metrics", prometheusRouter);
 
-router.use((req, res) => {
+router.use((req, res, next) => {
   res.status(404).json({
     status: "error",
     message: "Route not found"
   });
 });
 
-router.use((err, req, res) => {
+router.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({
     status: "error",
