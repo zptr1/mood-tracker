@@ -1,5 +1,5 @@
 export const OAUTH_SCOPES = {
-  "identify": "Read your user information",
+  "user.read": "Read your user information",
   "mood.read": "Read your current mood",
   "mood.write": "Update your current mood",
   "history.read": "Read your mood history"

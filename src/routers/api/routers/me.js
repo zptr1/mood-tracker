@@ -9,7 +9,7 @@ import { z } from "zod";
 export const router = express.Router();
 
 router.get(
-  "/", auth('identify'),
+  "/", auth('user.read'),
   (req, res) => {
     res.json({
       username: req.user.username,
