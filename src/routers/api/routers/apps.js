@@ -104,8 +104,11 @@ router.patch(
     }
 
     await exec$(
-      "update apps set redirect_uris=$1 where id=$3",
-      [urls, req.params.id]
+      "update apps set redirect_uris=$1 where id=$2",
+      [
+        [...new Set(urls.map((x) => x.toString()))],
+        req.params.id
+      ]
     );
 
     res.json({
