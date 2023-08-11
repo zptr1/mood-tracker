@@ -34,11 +34,17 @@
         <input type="date" id="end_date">
       </div>
       <p id="status_warn" style="font-size:1rem"></p>
-      <hr>
-      <select id="htype">
-        <option value="scatter">Scatter</option>
-        <option value="heatmap">Heatmap</option>
-      </select>
+      <br>
+      <div class="config_options_container">
+        <div>
+          <span>Mood Graph Type</span>
+          <select id="htype" class="smaller">
+            <option value="scatter">Scatter</option>
+            <option value="heatmap">Heatmap</option>
+          </select>
+        </div>
+      </div>
+      <br>
       <div class="mood">
         <span>Low Energy &lt;--&gt; High Energy</span>
         <div id="moods">
@@ -53,12 +59,7 @@
         </div>
         <span>Unpleasant &lt;--&gt; Pleasant</span>
       </div>
-      <hr>
       <canvas id="line_chart_canvas"></canvas>
-      <br>
-      <div class="column_container">
-        <canvas id="pie_chart_canvas"></canvas>
-      </div>
     </div>
     <style>
       :root {

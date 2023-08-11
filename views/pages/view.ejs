@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="<%= self ? '' : 'unauthorized' %>">
+<html lang="en" class="<%= auth?.id == user.id ? '' : 'unauthorized' %>">
 <head>
   <% locals.title = `${username}'${username.endsWith("s") ? "" : "s"} mood` %>
   <%- include('../partials/head') %>
@@ -9,15 +9,20 @@
   <script src="/static/script/moment.min.js" async defer></script>
 </head>
 <body>
-  <main style="padding: 0">
+  <main style="padding-left:0;padding-right:0">
     <div class="view_header">
       <div>
-        <a href="/">mood tracker</a>
-        <% if (self) { %>
+        <a href="/">home</a>
+        <% if (auth) { %>
+          <% if (auth.id == user.id) { %>
+            &squarf; <b>profile</b>
+          <% } else { %>
+            &squarf; <a href="/<%= auth.username %>">profile</a>
+          <% } %>
           &squarf; <a href="/settings">settings</a>
-        <% } %>
-        <% if (!user.is_history_private || self) { %>
-          &squarf; <a href="/<%= username %>/analytics">analytics</a>
+        <% } else { %>
+          &squarf; <a href="/auth/login">login</a>
+          &squarf; <a href="/auth/register">register</a>
         <% } %>
       </div>
       <h1><span><%= username %></span>'<%= username.endsWith("s") ? "" : "s" %> mood</h1>
@@ -37,16 +42,27 @@
       </div>
       <span>Unpleasant &lt;--&gt; Pleasant</span>
     </div>
-    <p>Pleasantness: <span id="status_pleasantness"><%= Math.floor(mood.pleasantness * 100) %></span>%</p>
-    <p>Energy: <span id="status_energy"><%= Math.floor(mood.energy * 100) %></span>%</p>
-    <p></p>
-    <p style="color: var(--secondary-foreground)">
-      Last Update: <span id="status_last_update" data-timestamp="<%= mood.timestamp %>">
-        <%= mood.timestamp ? new Date(parseInt(mood.timestamp)).toLocaleString() + " UTC+0" : "-" %>
-      </span>
-    </p>
-    <p></p>
+    <div class="gray">
+      <p>
+        Pleasantness: <span id="status_pleasantness"><%= Math.floor(mood.pleasantness * 100) %></span>%
+      </p>
+      <p>
+        Energy: <span id="status_energy"><%= Math.floor(mood.energy * 100) %></span>%
+      </p>
+      <p>
+        Last Update: <span id="status_last_update" data-timestamp="<%= mood.timestamp %>">
+          <%= mood.timestamp ? new Date(parseInt(mood.timestamp)).toLocaleString() + " UTC+0" : "-" %>
+        </span>
+      </p>
+    </div>
     <button id="submit" style="display: none">Submit</button>
+
+    <% if (auth?.id == user.id) { %>
+      <a href="/<%= user.username %>/analytics">View your analytics!</a><br>
+    <% } else { %>
+      <a href="/<%= user.username %>/analytics">View <b><%= user.username %>'<%= user.username.endsWith("s") ? "" : "s" %></b> analytics!</a><br>
+    <% } %>
+
     <style>
       :root {
         --background: <%= colors[0] %>;

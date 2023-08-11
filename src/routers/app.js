@@ -27,7 +27,7 @@ router.get("/:username", getAuth(), async (req, res, next) => {
     return next();
 
   res.render("pages/view", {
-    self: req.user?.id == user.id,
+    auth: req.user,
     user: user,
     username: user.username,
     mood: await fetchMood(user),
