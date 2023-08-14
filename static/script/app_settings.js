@@ -88,7 +88,7 @@ async function _patch() {
 }
 
 app_copy_id.addEventListener("click", (e) => {
-  navigator.clipboard.writeText("<%= app.id %>");
+  navigator.clipboard.writeText(appID);
   e.target.style.color = "#8bdf7a";
   setTimeout(() => {
     e.target.style = null;
