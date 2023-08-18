@@ -633,3 +633,35 @@ select.smaller, input[type=date].smaller {
 select option {
   font-size: 0.8rem;
 }
+
+.activity_graph {
+  display: grid;
+  padding: 4px;
+  margin: .5em 0;
+  justify-content: center;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(7, max-content);
+  grid-auto-columns: max-content;
+}
+
+.ag {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  background: var(--secondary-background);
+  padding: 6px;
+  border: 4px solid var(--background);
+}
+
+.activity_graph.ag-active .ag {
+  opacity: 0.25;
+}
+
+.activity_graph.ag-active .ag.ag-active {
+  opacity: 1;
+}
+
+.ag.level-1 { background: #0e4429; }
+.ag.level-2 { background: #006d32; }
+.ag.level-3 { background: #26a641; }
+.ag.level-4 { background: #39d353; }

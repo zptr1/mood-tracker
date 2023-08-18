@@ -18,6 +18,21 @@
     <div id="hover_tooltip"></div>
     <div id="loading">Loading data ...</div>
     <div id="analytics" style="display:none">
+      <p><span id="mood_update_count"></span> mood updates</p>
+      <div class="activity_graph">
+        <% for (let i = 0; i < 196; i++) { %>
+          <div data-hover-text="<%= i %>" class="ag" id="ag-<%= i %>">
+            <div class="red"></div><div class="yellow"></div><div class="blue"></div><div class="green"></div>
+          </div>
+        <% } %>
+
+        <% const now = new Date().getDay(); %>
+        <% for (let i = 196; i < 196 + now; i++) { %>
+          <div data-hover-text="<%= i %>" class="ag" id="ag-<%= i %>">
+            <div class="red"></div><div class="yellow"></div><div class="blue"></div><div class="green"></div>
+          </div>
+        <% } %>
+      </div>
       <div class="column_container">
         <select id="timespan">
           <option value="0">All time</option>
