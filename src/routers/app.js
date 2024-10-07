@@ -26,8 +26,8 @@ router.get("/:username", getAuth(), async (req, res, next) => {
   if (user.is_profile_private && req.user?.id != user.id)
     return next();
 
-  res.render("pages/view", {
-    self: req.user?.id == user.id,
+  res.render("pages/profile/view", {
+    auth: req.user,
     user: user,
     username: user.username,
     mood: await fetchMood(user),
@@ -51,10 +51,10 @@ router.get("/:username/analytics", getAuth(), async (req, res, next) => {
   if (!user) return next();
   if (user.is_profile_private && req.user?.id != user.id)
     return next();
-  
-  res.render("pages/analytics", {
+
+  res.render("pages/profile/analytics", {
     username: user.username,
-    
+
     labels: user.custom_labels.length > 0
       ? user.custom_labels
       : DEFAULT_MOODS,
@@ -62,33 +62,6 @@ router.get("/:username/analytics", getAuth(), async (req, res, next) => {
       ? user.custom_colors.map((x) => `#${x.toString(16).padStart(6, "0")}`)
       : DEFAULT_COLORS,
     font_size: user.custom_font_size || 1.2
-  })
-});
-
-router.get("/settings/:category?", getAuth(true), async (req, res, next) => {
-  const categories = {
-    account: "Account",
-    customization: "Customization",
-    privacy: "Privacy",
-    api: "API"
-  };
-
-  if (req.params.category && !Object.keys(categories).includes(req.params.category))
-    return next();
-
-  res.render("pages/settings", {
-    user: {
-      ...req.user,
-      custom_labels: req.user.custom_labels.length > 0
-        ? req.user.custom_labels
-        : DEFAULT_MOODS,
-      custom_colors: req.user.custom_colors.length > 0
-        ? req.user.custom_colors.map((x) => `#${x.toString(16).padStart(6, "0")}`)
-        : DEFAULT_COLORS,
-      custom_font_size: req.user.custom_font_size || 1.2
-    },
-    category: req.params.category || "account",
-    categories,
   })
 });
 
@@ -123,5 +96,5 @@ router.get("/mydata", getAuth(true), async (req, res) => {
 
 router.get("/500", (req, res) => {
   // easter egg
-  res.status(500).render("error/500");
+  res.status(500).render("pages/error/500");
 });

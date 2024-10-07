@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <% locals.title = "Register" %>
-  <%- include('../partials/head') %>
+  <%- include('../../partials/head') %>
 
   <% if (turnstile_site_key) { %>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
@@ -10,23 +10,30 @@
 </head>
 <body>
   <main>
-    <h1><a href="/">mood tracker</a></h1>
+    <div class="view_header">
+      <div>
+        <a href="/">home</a>
+        &squarf; <a href="/auth/login">login</a>
+        &squarf; <b>register</b>
+      </div>
+      <h1>Register</h1>
+    </div>
     <form action="/auth/register" method="post">
       <label for="username">Username</label>
       <input name="username" id="username" type="text" placeholder="Username" minlength="3" maxlength="32" pattern="^[a-z0-9_-]{3,32}$" required>
-      
+
       <label for="password">Password</label>
       <input name="password" id="password" type="password" placeholder="Password" required>
-      
+
       <p id="status_error"><%= locals.error || "" %></p>
-      
+
       <% if (turnstile_site_key) { %>
         <div class="cf-turnstile" data-sitekey="<%= turnstile_site_key %>"></div>
       <% } %>
 
       <input type="checkbox" id="confirm_privacy_policy" name="confirm_privacy_policy" required>
       <label for="confirm_privacy_policy">I have read and agree to the <a href="/privacy">Privacy Policy</a></label>
-      
+
       <input type="submit" value="Register">
     </form>
     <p class="gray">Already have an account? <a href="/auth/login" class="gray">Sign in</a></p>

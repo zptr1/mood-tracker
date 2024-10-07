@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <% locals.title = `${username}'${username.endsWith("s") ? "" : "s"} mood analytics` %>
-  <%- include('../partials/head') %>
+  <%- include('../../partials/head') %>
   <script src="/static/script/chart.js" async defer></script>
   <script src="/static/script/moment.min.js" async defer></script>
   <script src="/static/script/analytics.js" async defer></script>
@@ -18,6 +18,21 @@
     <div id="hover_tooltip"></div>
     <div id="loading">Loading data ...</div>
     <div id="analytics" style="display:none">
+      <p><span id="mood_update_count"></span> mood updates</p>
+      <div class="activity_graph">
+        <% for (let i = 0; i < 196; i++) { %>
+          <div data-hover-text="<%= i %>" class="ag" id="ag-<%= i %>">
+            <div class="red"></div><div class="yellow"></div><div class="blue"></div><div class="green"></div>
+          </div>
+        <% } %>
+
+        <% const now = new Date().getDay(); %>
+        <% for (let i = 196; i < 196 + now; i++) { %>
+          <div data-hover-text="<%= i %>" class="ag" id="ag-<%= i %>">
+            <div class="red"></div><div class="yellow"></div><div class="blue"></div><div class="green"></div>
+          </div>
+        <% } %>
+      </div>
       <div class="column_container">
         <select id="timespan">
           <option value="0">All time</option>
@@ -34,11 +49,17 @@
         <input type="date" id="end_date">
       </div>
       <p id="status_warn" style="font-size:1rem"></p>
-      <hr>
-      <select id="htype">
-        <option value="scatter">Scatter</option>
-        <option value="heatmap">Heatmap</option>
-      </select>
+      <br>
+      <div class="config_options_container">
+        <div>
+          <span>Mood Graph Type</span>
+          <select id="htype" class="smaller">
+            <option value="scatter">Scatter</option>
+            <option value="heatmap">Heatmap</option>
+          </select>
+        </div>
+      </div>
+      <br>
       <div class="mood">
         <span>Low Energy &lt;--&gt; High Energy</span>
         <div id="moods">
@@ -53,12 +74,8 @@
         </div>
         <span>Unpleasant &lt;--&gt; Pleasant</span>
       </div>
-      <hr>
-      <canvas id="line_chart_canvas"></canvas>
       <br>
-      <div class="column_container">
-        <canvas id="pie_chart_canvas"></canvas>
-      </div>
+      <canvas id="line_chart_canvas"></canvas>
     </div>
     <style>
       :root {

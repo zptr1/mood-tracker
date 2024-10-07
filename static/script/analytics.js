@@ -14,7 +14,7 @@ window.addEventListener("load", async () => {
     pleasantness: x[1],
     energy: x[2]
   }));
-  
+
   if (req.status != 200 || data.status == "error") {
     loading.textContent = "Could not load data.";
     return;
@@ -48,6 +48,58 @@ window.addEventListener("load", async () => {
     }
   });
 
+  function displayActivityGraph() {
+    mood_update_count.textContent = entries.length;
+
+    const day = 24 * 3600 * 1000;
+    const today = new Date();
+    today.setHours(0);
+    today.setMinutes(0);
+    today.setSeconds(0);
+    today.setMilliseconds(0);
+
+    const todayTs = today.getTime();
+    const displayCount = document.querySelectorAll(".ag").length;
+    const days = {};
+
+    for (let i = 0; i < displayCount; i++) {
+      const start = todayTs - i * day;
+      const end = start + day;
+
+      const count = entries
+        .filter((x) => x.timestamp >= start && x.timestamp <= end)
+        .length;
+
+      days[i] = count;
+    }
+
+    const max = Math.max(...Object.values(days));
+
+    for (let i = 0; i < displayCount; i++) {
+      const e = document.getElementById(`ag-${displayCount - i - 1}`);
+      const p = days[i] / max;
+
+      if (p) {
+        e.classList.add(
+          p >= 0.75
+            ? "level-4"
+          : p >= 0.5
+            ? "level-3"
+          : p >= 0.25
+            ? "level-2"
+          : "level-1"
+        );
+      }
+
+      e.setAttribute(
+        "data-hover-text",
+        `${days[i]} mood update${days[i] == 1 ? "" : "s"} on ${
+          moment(todayTs - i * day).format("ddd, MMM D")
+        }`
+      );
+    }
+  }
+
   function displayEntries(entries) {
     document.querySelectorAll("#moods > div > div").forEach((x) => {
       x.removeAttribute("data-hover-text");
@@ -64,8 +116,8 @@ window.addEventListener("load", async () => {
     } else {
       status_warn.textContent = "";
     }
-    
-    if (htype.value == "scatter") {
+
+    if (htype.value == "scatter" && entries.length > 0) {
       const oldestAt = entries[Math.min(entries.length - 1, 200)].timestamp;
       const latestAt = entries[0].timestamp - oldestAt;
 
@@ -73,7 +125,7 @@ window.addEventListener("load", async () => {
         const point = entries[i];
         const decay = (point.timestamp - oldestAt) / latestAt;
         if (decay < 0.01) break;
-  
+
         const dot = document.createElement("span");
         dot.classList.add("dot");
         dot.style.left = `${(point.pleasantness + 1) / 2 * 100}%`;
@@ -87,7 +139,7 @@ window.addEventListener("load", async () => {
       for (const entry of entries) {
         moods[moodInfo(entry.pleasantness, entry.energy)]++;
       }
-      
+
       const highest = Math.max(...moods);
       const sum = moods.reduce((p, c) => p + c, 0);
 
@@ -98,13 +150,13 @@ window.addEventListener("load", async () => {
         sq.setAttribute("data-hover-text", `${x} (${(x / sum * 100).toFixed(2)}%)`);
       })
     }
-    
+
     const today = new Date();
     today.setHours(0);
     today.setMinutes(0);
     today.setSeconds(0);
     today.setMilliseconds(0);
-    
+
     lineChart.data.datasets[0].data = entries.slice(0, 150).map((x) => x.energy).reverse();
     lineChart.data.datasets[1].data = entries.slice(0, 150).map((x) => x.pleasantness).reverse();
     lineChart.data.labels = entries.slice(0, 150)
@@ -166,9 +218,10 @@ window.addEventListener("load", async () => {
 
   start_date.min = end_date.min = formatDate(new Date(entries[entries.length - 1].timestamp));
   start_date.max = end_date.max = formatDate(new Date(entries[0].timestamp));
-  
+
   display();
-  
+  displayActivityGraph();
+
   timespan.addEventListener("change", () => {
     if (timespan.value != "-") {
       displayFilterDays(parseInt(timespan.value));
@@ -182,8 +235,38 @@ window.addEventListener("load", async () => {
     display();
   });
 
+  document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("ag")) {
+      if (e.target.classList.contains("ag-active")) {
+        e.target.classList.remove("ag-active");
+        e.target.parentElement.classList.remove("ag-active");
+        timespan.value = "3";
+        displayFilterDays(3);
+      } else {
+        const a = document.querySelector(".ag.ag-active");
+        if (a) a.classList.remove("ag-active");
+        e.target.classList.add("ag-active");
+        e.target.parentElement.classList.add("ag-active");
+
+        const displayCount = document.querySelectorAll(".ag").length;
+        const day = 24 * 3600 * 1000;
+        const today = new Date();
+        today.setHours(0);
+        today.setMinutes(0);
+        today.setSeconds(0);
+        today.setMilliseconds(0);
+
+        start_date.valueAsNumber = end_date.valueAsNumber = (
+          today - (displayCount - parseInt(e.target.id.split("-")[1]) - 1) * day
+        );
+
+        displayFilterCustomRange();
+      }
+    }
+  })
+
   document.addEventListener("mousemove", (e) => {
-    if (e.target.hasAttribute('data-hover-text')) {
+    if (e.target.hasAttribute("data-hover-text")) {
       const rect = e.target.getBoundingClientRect();
       hover_tooltip.textContent = e.target.getAttribute("data-hover-text");
       hover_tooltip.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
@@ -238,5 +321,5 @@ function moodInfo(pleasantness, energy) {
     if (pleasantness >= -0.33) return 33;
     if (pleasantness >= -0.67) return 34;
     return 35;
-  }  
+  }
 }

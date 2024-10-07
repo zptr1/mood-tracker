@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../../partials/head') %>
+</head>
+<body>
+  <main>
+    <h1><span><%= clientData.name %></span> wants access to <span>@<%= user.username %></span></h1>
+    <p class="gray">
+      The <a href="/<%= owner.username %>" class="dev">developer of this app (<span class="username">@<%= owner.username %></span>)</a> will be able to:
+    </p>
+
+    <form action="/oauth2<%= url %>" method="post" id="oauth2-consent-form">
+      <input type="text" value="<%= clientData.id %>" name="client_id" style="display: none">
+      <input type="text" value="<%= params.redirect_uri %>" name="redirect_uri" style="display: none">
+      <input type="text" value="<%= params.state %>" name="state" style="display: none">
+      <input type="text" value="<%= params.response_type %>" name="response_type" style="display: none">
+      <input type="text" value="allow" name="action" style="display: none">
+
+      <ul class="scopes">
+        <% for (const scope of params.scope) { %>
+          <li>
+            <% if (params.editable) { %>
+              <input type="checkbox" name="scopes.<%= scope %>" id="<%= scope %>" checked>
+              <label for="<%= scope %>"><%= scopes[scope] %></label>
+            <% } else { %>
+              <input type="checkbox" name="scopes.<%= scope %>" checked class="disabled" tabindex="-1">
+              <label><%= scopes[scope] %></label>
+            <% } %>
+          </li>
+        <% } %>
+      </ul>
+
+      <p class="gray">Once you authorize, you will be redirected to: <b id="redirect_uri"><%= params.redirect_uri.origin %></b></p>
+      <p class="gray">You can revoke access at any time from your <a href="/settings/api">API settings</a>.</p>
+      <% if (user.is_profile_private) { %>
+        <p id="status_warn">This app will be able to access your data even if your profile is private</p>
+      <% } else if (params.scope.includes("history.read") && user.is_history_private) { %>
+        <p id="status_warn">This app will be able to read your mood history even if it is private</p>
+      <% } %>
+
+      <div class="column_container">
+        <button type="submit">Authorize</button>
+        <a href="<%= params.redirect_uri.toString()%>?error=access_denied<%= params.state ? `&state=${params.state}`: "" %>" rel="noopener noreferrer" referrerpolicy="no-referrer" style="text-decoration: none">
+          <button type="button" class="danger">Cancel</button>
+        </a>
+      </div>
+    </form>
+    <style>
+      p, ul li { max-width: 570px; }
+      h1 { max-width: 500px; }
+      input[type=checkbox].disabled {
+        pointer-events: none;
+        opacity: 0.5;
+      }
+      #redirect_uri {
+        display: block;
+        max-width: 570px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    </style>
+  </main>
+</body>
+</html>

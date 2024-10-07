@@ -1,0 +1,57 @@
+<div id="form">
+  <h3>
+    <a href="/settings/api" class="gray">Apps</a>
+    <span>&gt;</span>
+    <span><%= app.name %></span>
+  </h3>
+  <div id="highlight" class="noselect">
+    <% if (locals.new_app_secret) { %>
+      <p>The app has been successfully created!</p>
+      <p>Secret: <span><%= new_app_secret %></span></p>
+      <p>Make sure to save it somewhere!</p>
+    <% } %>
+  </div>
+  <div class="column_container">
+    <button id="app_copy_id">Copy ID</button>
+    <button id="app_reset_secret">Reset Secret</button>
+    <button id="delete_app" class="danger">Delete App</button>
+  </div>
+  <h3 class="gray">Redirect URIs</h3>
+  <ul id="redirect_uris">
+    <% for (const uri of app.redirect_uris) { %>
+      <li data-uri="<%= uri %>">
+        <span><%= uri %></span>
+        <button class="remove_redirect_uri_btn">Remove</button>
+      </li>
+    <% } %>
+    <li id="add_redirect_uri">
+      <input id="add_redirect_uri_input" type="text" placeholder="https://example.com" maxlength="250" autocomplete="off">
+      <button id="add_redirect_uri_btn">Add</button>
+    </li>
+  </ul>
+  <br>
+  <a href="/settings/api/app/<%= app.id %>/url_generator">URL Generator</a>
+</div>
+<div id="confirm_form" style="display: none">
+  <h3>
+    <a href="/settings/api" class="gray">Apps</a>
+    <span>&gt;</span>
+    <a href="/settings/api/app/<%= app.id %>" class="gray"><%= app.name %></a>
+    <span>&gt;</span>
+    <span id="confirm_action"></span>
+  </h3>
+  <p id="status_warn"></p>
+  <p id="status_error"></p>
+  <p class="gray">Enter your password to confirm.</p>
+  <input type="password" id="password_confirm">
+  <div class="column_container">
+    <button id="confirm_btn" class="danger" disabled>Confirm</button>
+    <button id="cancel_btn">Cancel</button>
+  </div>
+</div>
+
+<script>
+  const redirectURIs = <%- JSON.stringify(app.redirect_uris) %>;
+  const appID = "<%= app.id %>";
+</script>
+<script src="/static/script/app_settings.js" async defer></script>

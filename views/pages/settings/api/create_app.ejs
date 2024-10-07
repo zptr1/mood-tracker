@@ -1,0 +1,43 @@
+<form method="post">
+  <h3>
+    <a href="/settings/api" class="gray">Apps</a>
+    <span>&gt;</span>
+    <span>Create</span>
+  </h3>
+  <p class="gray">Create an OAuth2-compatible application</p>
+  <label for="app_name">Name</label>
+  <input type="text" name="name" id="app_name" placeholder="My Cool App" required minlength="3" maxlength="32" autocomplete="off">
+  <label for="redirect_uri">Redirect URI</label>
+  <input type="text" name="redirect_uri" id="redirect_uri" placeholder="https://example.com/callback" required maxlength="250" autocomplete="off">
+  <p id="status_error"><%= locals.error || "" %></p>
+
+  <div class="column_container">
+    <input type="submit" id="submit" value="Create">
+    <button onclick="location.href='/settings/api'">Cancel</button>
+  </div>
+</form>
+<script>
+  app_name.addEventListener("keyup", () => {
+    if (app_name.value.length < 3) {
+      status_error.textContent = "The name is too short";
+      submit.disabled = true;
+    } else {
+      submit.disabled = false;
+      status_error.textContent = "";
+    }
+  });
+
+  redirect_uri.addEventListener("keyup", () => {
+    try {
+      if (!redirect_uri.value.match(/^https?:\/\//))
+        throw 0;
+
+      new URL(redirect_uri.value);
+      submit.disabled = false;
+      status_error.textContent = "";
+    } catch (e) {
+      submit.disabled = true;
+      status_error.textContent = "Invalid URI!";
+    }
+  })
+</script>

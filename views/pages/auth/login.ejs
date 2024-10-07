@@ -2,11 +2,18 @@
 <html lang="en">
 <head>
   <% locals.title = "Login" %>
-  <%- include('../partials/head') %>
+  <%- include('../../partials/head') %>
 </head>
 <body>
   <main>
-    <h1><a href="/">mood tracker</a></h1>
+    <div class="view_header">
+      <div>
+        <a href="/">home</a>
+        &squarf; <b>login</b>
+        &squarf; <a href="/auth/register">register</a>
+      </div>
+      <h1>Login</h1>
+    </div>
     <form action="/auth/login" method="post">
       <label for="username">Username</label>
       <input name="username" id="username" type="text" placeholder="Username" required>
