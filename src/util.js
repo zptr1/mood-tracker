@@ -54,7 +54,7 @@ export async function fetchMood(user) {
   );
 
   return mood ? {
-    status: moodInfo(mood.pleasantness, mood.energy, user.custom_labels || DEFAULT_MOODS),
+    status: moodInfo(mood.pleasantness, mood.energy, user.custom_labels?.length ? user.custom_labels : DEFAULT_MOODS),
     pleasantness: mood.pleasantness,
     energy: mood.energy,
     timestamp: mood.timestamp
