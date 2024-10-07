@@ -20,7 +20,7 @@
       <label for="password">Password</label>
       <input name="password" id="password" type="password" placeholder="Password" required>
       <% if (locals.error) { %>
-        <p style="color:#ee5858"><%- error %></p>
+        <p style="color:#ee5858"><%= error %></p>
       <% } %>
 
       <input type="submit" value="Login">
