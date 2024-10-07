@@ -1,7 +1,86 @@
-<p>This section is under construction.</p>
-<p>Here's a random image of a cat for you while you wait!</p>
-<a href="https://media.zptr.cc/">
-  <img src="https://media.zptr.cc/cats/<%= Math.floor(Math.random() * 987) %>.png?width=400&height=400&fit=inside">
-</a>
-<hr>
+<p id="highlight">
+  OAuth2 is currently experimental and under development.
+</p>
 
+<h3>Authorized Applications</h3>
+<ul id="authed_apps">
+  <% for (const auth of auths) { %>
+    <li class="app" data-app-id="<%= auth.app_id %>">
+      <div>
+        <p><%= auth.name %></p>
+        <button class="app_deauthorize_btn danger">Deauthorize</button>
+      </div>
+      <ul class="permissions">
+        <% for (const perm of auth.scopes) { %>
+          <li><%= scopes[perm] %></li>
+        <% } %>
+      </ul>
+    </li>
+  <% } %>
+  <p class="gray">There's nothing here yet</p>
+</ul>
+<h3>My Applications</h3>
+<ul id="app_list">
+  <% for (const app of apps) { %>
+    <a href="/settings/api/app/<%= app.id %>">
+      <li class="app">
+        <span><%= app.name %></span>
+        <span>&gt;</span>
+      </li>
+    </a>
+  <% } %>
+  <% if (apps.length < 10) { %>
+    <a href="/settings/api/create-app" class="btn">
+      <button style="opacity: 0.65">Create</button>
+    </a>
+  <% } %>
+</ul>
+<h3>API Token</h3>
+<p class="gray">
+  Used to access the API.
+  Never share it with anyone, as it might grant others access to your account!
+  <br>
+  You can regenerate the token by changing your password.
+</p>
+<div class="column_container" style="grid-template-columns: 1fr 5em">
+  <input id="token" type="text" placeholder="**************************" readonly autocomplete="off">
+  <button id="reveal_token">Reveal</button>
+</div>
+
+<script>
+  reveal_token.addEventListener("click", () => {
+    if (token.value) {
+      token.value = null;
+      reveal_token.textContent = "Reveal";
+    } else {
+      token.value = document.cookie.match(/token=([A-Za-z0-9_-]{64})/)[1];
+      reveal_token.textContent = "Hide";
+    }
+  });
+
+  document.addEventListener("click", async (e) => {
+    if (e.target.classList.contains("app_deauthorize_btn")) {
+      const id = e.target.parentElement.parentElement.getAttribute("data-app-id");
+      const token = document.cookie.match(/token=([A-Za-z0-9_-]{64})/)[1];
+
+      const req = await fetch(`/api/apps/authorized/${id}`, {
+        method: "DELETE",
+        headers: { "Authorization": token  }
+      });
+
+      const res = await req.json();
+      if (res.status == "error") {
+        alert(res.message);
+      } else {
+        e.target.parentElement.parentElement.remove();
+
+        if (authed_apps.childElementCount == 0) {
+          const p = document.createElement("p");
+          p.textContent = "There's nothing here yet";
+          p.classList.add("gray");
+          authed_apps.appendElement(p);
+        }
+      }
+    }
+  });
+</script>

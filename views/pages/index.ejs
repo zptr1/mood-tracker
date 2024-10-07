@@ -9,17 +9,14 @@
   <main>
     <div class="view_header">
       <div>
+        <b>home</b>
         <% if (user) { %>
-          <a href="/<%= user.username %>">profile</a>
+          &squarf; <a href="/<%= user.username %>">profile</a>
           &squarf; <a href="/settings">settings</a>
         <% } else { %>
-          <a href="/auth/login">login</a>
+          &squarf; <a href="/auth/login">login</a>
           &squarf; <a href="/auth/register">register</a>
         <% } %>
-        <span style="float: right">
-          <a href="https://github.com/zptr1/mood-tracker">github</a>
-          &squarf; <a href="/privacy">privacy</a>
-        </span>
       </div>
       <h1 id="secret_cookie_clicker">mood tracker</h1><div id="sccs"></div>
     </div>
@@ -27,7 +24,7 @@
       <p>
         <% const feelings = ["good", "alright", "okay", "well", "happy"] %>
         <% const days = ["an awesome", "an amazing", "a good", "a happy", "a wonderful", "a great", "a nice"] %>
-        
+
         <% const feeling = feelings[Math.floor(Math.random() * feelings.length)] %>
         <% const day = days[Math.floor(Math.random() * days.length)] %>
 
@@ -37,19 +34,24 @@
           `Hope you're doing ${feeling}`,
           `Hope you're ${feeling}`,
           `Hope you feel ${feeling}`,
-        ] %>
+        ]; %>
 
         <%= greetings[Math.floor(Math.random() * greetings.length)] %>,
         <a class="username" href="/<%= user.username %>">@<%= user.username %></a>!
       </p>
     <% } else { %>
       <p>A simple mood tracker</p>
-      <a style="font-size: 1.1em" class="gradient" href="/auth/register">Create your own profile!</a>
+      <a style="font-size: 1.2em" class="gradient" href="/auth/register">Create your own profile!</a>
+      <br>
     <% } %>
-    <hr>
-    <p>
+    <br>
+    <p id="highlight">
       The site is currently in development and is still unfinished.<br>
-      Any help would be appreciated! >>> <a target="_blank" href="https://github.com/zptr1/mood-tracker">GitHub</a>
+      Any help would be appreciated! >>> <a href="https://github.com/zptr1/mood-tracker">GitHub</a>
+    </p>
+    <br>
+    <p class="gray noselect">
+      <a class="gray" href="https://github.com/zptr1/mood-tracker">GitHub</a> &squarf; <a class="gray" href="/privacy">Privacy Policy</a>
     </p>
   </main>
 </body>

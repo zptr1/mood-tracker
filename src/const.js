@@ -1,3 +1,10 @@
+export const OAUTH_SCOPES = {
+  "user.read": "Read your user information",
+  "mood.read": "Read your current mood",
+  "mood.write": "Update your current mood",
+  "history.read": "Read your mood history"
+};
+
 export const DEFAULT_MOODS = [
   "Ecstatic", "Festive", "Manic", "Shocked", "Angry", "Enraged",
   "Excited", "Motivated", "Energized", "Restless", "Stressed", "Fuming",

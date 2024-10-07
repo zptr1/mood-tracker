@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <% locals.title = "Change your password" %>
+  <%- include('../../partials/head') %>
+</head>
+<body>
+  <main>
+    <div class="view_header">
+      <div>Sorry for the inconvenience</div>
+      <h1>As a security measure, you have to change your password</h1>
+    </div>
+    <form action="/auth/changepass" method="post">
+      <label for="oldpass">Old password</label>
+      <input name="oldpass" id="oldpass" type="password" placeholder="Old password" required>
+
+      <label for="newpass">New password</label>
+      <input name="newpass" id="newpass" type="password" placeholder="New password" required>
+      
+      <label for="newpassconfirm">Confirm new password</label>
+      <input name="newpassconfirm" id="newpassconfirm" type="password" placeholder="New password" required>
+
+      <p id="status_error"><%- locals.error || "" %></p>
+
+      <input type="submit" value="Change">
+    </form>
+  </main>
+</body>
+</html>

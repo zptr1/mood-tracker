@@ -48,6 +48,10 @@ body, html {
   -webkit-text-fill-color: var(--background) !important;
 }
 
+.noselect {
+  user-select: none;
+}
+
 body {
   display: grid;
   justify-items: center;
@@ -58,7 +62,7 @@ main {
   padding: 1em;
 }
 
-h1, h2, ul, p {
+h1, h2, h3, ul, p {
   padding: 0;
   margin: 0;
 }
@@ -76,7 +80,7 @@ ul {
   margin-left: 1.5em;
 }
 
-h2 {
+h2, h3 {
   margin-top: 10px;
   margin-bottom: 5px;
 }
@@ -142,7 +146,7 @@ button.danger:focus, input[type=submit].danger:focus {
 .mood {
   position: relative;
   width: max-content;
-  padding-left: 0.5em;
+  padding-left: 1em;
   font-size: 0.8em;
 }
 
@@ -218,7 +222,6 @@ button.danger:focus, input[type=submit].danger:focus {
 .mood > span:first-of-type {
   position: absolute;
   transform: rotate(-90deg);
-  padding-top: 0.5em;
   left: -50%;
   top: 45%;
 }
@@ -346,6 +349,7 @@ hr {
   width: 100%;
   padding: 0;
   margin: 0;
+  margin-top: 16px;
   gap: 0;
 }
 
@@ -446,6 +450,7 @@ hr {
 .config_options_container div {
   display: grid;
   grid-template-columns: 1fr max-content;
+  align-items: center;
   gap: 0.5em;
 }
 
@@ -463,3 +468,200 @@ hr {
   font-size: 1rem;
   padding: 8px;
 }
+
+#app_list, #authed_apps {
+  padding: 2px;
+  margin: 0;
+  list-style: none;
+  user-select: none;
+}
+
+#app_list li {
+  cursor: pointer;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr 0.65em;
+}
+
+#app_list a {
+  text-decoration: none;
+}
+
+.app {
+  background-color: var(--secondary-background);
+  border: 2px solid var(--secondary-foreground);
+  padding: 8px;
+  margin: 8px 0;
+}
+
+.app:hover {
+  border-color: var(--foreground);
+}
+
+.permissions {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  color: var(--secondary-foreground);
+}
+
+.permissions li::before {
+  content: "✔";
+  color: #76bd61;
+  margin: 0 .4em;
+}
+
+#authed_apps div {
+  display: grid;
+  align-items: center;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr max-content;
+}
+
+#authed_apps div p {
+  margin-left: 4px;
+  padding: 6px 0;
+}
+
+#authed_apps div button {
+  display: none;
+  padding: 4px 8px;
+  margin: 0;
+}
+
+#authed_apps li:hover div button {
+  display: block;
+}
+
+#authed_apps > li + p {
+  display: none;
+}
+
+#app_copy_id {
+  transition: .2s color;
+}
+
+#app_id {
+  color: var(--secondary-foreground);
+}
+
+a.dev {
+  color: var(--secondary-foreground);
+  text-decoration-color: var(--secondary-foreground);
+}
+
+.scopes {
+  margin: 16px 0;
+  font-size: 1.2em;
+  list-style: none;
+}
+
+.scopes li {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: max-content 1fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.scopes li:hover {
+  background: var(--secondary-background);
+}
+
+#highlight {
+  background: rgba(216, 157, 47, 0.15);
+}
+
+#highlight:empty {
+  display: none;
+}
+
+#highlight span {
+  background: rgb(216, 157, 47);
+  color: #1c1c1c;
+  user-select: all;
+  padding: 4px;
+}
+
+#redirect_uris {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#redirect_uris li {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: 1fr 4em;
+  width: 560px;
+  margin: 0 4px;
+  padding: 0;
+}
+
+#redirect_uris li span {
+  user-select: all;
+  background: var(--secondary-background);
+  border: 2px solid var(--secondary-foreground);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin: 8px 0;
+  padding: 4px;
+}
+
+#add_redirect_uri {
+  opacity: 0.7;
+}
+
+select, input[type=date] {
+  font-family: var(--font);
+  font-size: 1em;
+  padding: 4px;
+  margin: 0;
+  border: 2px solid var(--secondary-foreground);
+  background: var(--secondary-background);
+  color: var(--foreground);
+  outline: none;
+}
+
+select.smaller, input[type=date].smaller {
+  font-family: unset;
+  font-size: 1rem;
+  padding: 1px;
+}
+
+select option {
+  font-size: 0.8rem;
+}
+
+.activity_graph {
+  display: grid;
+  padding: 4px;
+  margin: .5em 0;
+  justify-content: center;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(7, max-content);
+  grid-auto-columns: max-content;
+}
+
+.ag {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  background: var(--secondary-background);
+  padding: 6px;
+  border: 4px solid var(--background);
+}
+
+.activity_graph.ag-active .ag {
+  opacity: 0.25;
+}
+
+.activity_graph.ag-active .ag.ag-active {
+  opacity: 1;
+}
+
+.ag.level-1 { background: #0e4429; }
+.ag.level-2 { background: #006d32; }
+.ag.level-3 { background: #26a641; }
+.ag.level-4 { background: #39d353; }

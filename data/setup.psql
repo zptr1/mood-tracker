@@ -12,7 +12,7 @@ create table if not exists users (
   password_hash varchar(60), -- bcrypt
   token varchar(64),
   created_at bigint,
-  
+
   stats_mood_sets int default 0,
 
   custom_labels varchar(64)[] default array[]::varchar[],
@@ -21,9 +21,37 @@ create table if not exists users (
 
   is_profile_private bool default false,
   is_history_private bool default false,
-  history_threshold_days int default -1
+  history_threshold_days int default -1,
+
+  changepass bool default false
+);
+
+create table if not exists apps (
+  id varchar(16) primary key,
+  name varchar(32),
+  secret varchar(64) unique,
+  redirect_uris varchar(255)[],
+  created_at bigint,
+
+  owner_id int references users(id) on delete cascade
+);
+
+create table if not exists authorized_apps (
+  id varchar(16) primary key,
+  access_token varchar(64) unique,
+  refresh_token varchar(32) unique,
+  scopes varchar(32)[],
+  created_at bigint,
+
+  app_id varchar(16) references apps(id) on delete cascade,
+  user_id int references users(id) on delete cascade,
+
+  redirect_uri varchar(255) -- for security
 );
 
 create index if not exists mood_user_id_idx on mood(user_id);
 create index if not exists users_username_idx on users(username);
 create index if not exists users_token_idx on users(token);
+create index if not exists apps_owner_id_idx on apps(owner_id);
+create index if not exists authorized_apps_access_token_idx on authorized_apps(access_token);
+create index if not exists authorized_apps_user_id_idx on authorized_apps(user_id);

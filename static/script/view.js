@@ -18,6 +18,20 @@ window.addEventListener("load", () => {
     submit.style.display = "block";
   });
 
+  // EXPERIMENT
+  
+  // let $vagueness = 0.01;
+  // moods.addEventListener("wheel", (e) => {
+  //   e.preventDefault();
+  //   $vagueness += Math.sign(e.deltaY) * 0.05;
+  //   $vagueness = Math.max(Math.min($vagueness, 1), 0.01);
+  //   status_vagueness.textContent = Math.floor($vagueness * 100);
+  //   dot.style.scale = $vagueness * 4 + 1;
+  //   dot.style.borderWidth = `${3 - $vagueness * 2}px`;
+  //   dot.style.opacity = 1 - $vagueness * 0.3;
+  //   dot.style.translate = `${$vagueness * 200}% ${$vagueness * 200}%`;
+  // });
+
   submit.addEventListener("click", (e) => {
     const token = document.cookie.match(/token=([A-Za-z0-9_-]{64})/)[1];
 

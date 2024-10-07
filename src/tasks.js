@@ -7,12 +7,13 @@ export async function cleanMoodHistory() {
 
   for (const { id, days } of users) {
     await exec$(
-      "delete from mood where user_id=$1 and timestamp<$1",
+      "delete from mood where user_id=$1 and timestamp<$2",
       [id, now - day * days]
     );
   }
 }
 
 export async function initTasks() {
+  cleanMoodHistory();
   setInterval(cleanMoodHistory, 3600 * 1000); // every 1 hour
 }

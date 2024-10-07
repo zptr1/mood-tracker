@@ -3,6 +3,8 @@ import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import express from "express";
 
+import "express-async-errors";
+
 import { initDatabase } from "./src/db.js";
 import { initTasks } from "./src/tasks.js";
 import { router } from "./src/index.js";

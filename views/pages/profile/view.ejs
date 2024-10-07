@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" class="<%= auth?.id == user.id ? '' : 'unauthorized' %>">
+<head>
+  <% locals.title = `${username}'${username.endsWith("s") ? "" : "s"} mood` %>
+  <%- include('../../partials/head') %>
+  <meta name="og:title" content="<%= mood.status %>">
+  <meta name="og:description" content="Pleasantness: <%= Math.floor(mood.pleasantness * 100) %>% | Energy: <%= Math.floor(mood.energy * 100) %>%">
+  <script src="/static/script/view.js" async defer></script>
+  <script src="/static/script/moment.min.js" async defer></script>
+</head>
+<body>
+  <main style="padding-left:0;padding-right:0">
+    <div class="view_header">
+      <div>
+        <a href="/">home</a>
+        <% if (auth) { %>
+          <% if (auth.id == user.id) { %>
+            &squarf; <b>profile</b>
+          <% } else { %>
+            &squarf; <a href="/<%= auth.username %>">profile</a>
+          <% } %>
+          &squarf; <a href="/settings">settings</a>
+        <% } else { %>
+          &squarf; <a href="/auth/login">login</a>
+          &squarf; <a href="/auth/register">register</a>
+        <% } %>
+      </div>
+      <h1><span><%= username %></span>'<%= username.endsWith("s") ? "" : "s" %> mood</h1>
+    </div>
+    <div class="mood">
+      <span>Low Energy &lt;--&gt; High Energy</span>
+      <div id="moods">
+        <% for (let i = 0; i < 6; i++) { %>
+          <div>
+            <% for (let j = 0; j < 6; j++) { %>
+              <div style="--color: var(--color-<%= 6 * (i >= 3) + j + 1 %>)"><%= labels[i * 6 + (5 - j)] %></div>
+            <% } %>
+          </div>
+        <% } %>
+        <span id="dot" style="--left: <%= (mood.pleasantness + 1) / 2 * 100 %>%; --top: <%= (-mood.energy + 1) / 2 * 100 %>%"></span>
+        <%# Had to use variables instead of setting the properties directly because vscode keeps showing me an error %>
+      </div>
+      <span>Unpleasant &lt;--&gt; Pleasant</span>
+    </div>
+    <div class="gray">
+      <p>Pleasantness: <span id="status_pleasantness"><%= Math.floor(mood.pleasantness * 100) %></span>%</p>
+      <p>Energy: <span id="status_energy"><%= Math.floor(mood.energy * 100) %></span>%</p>
+      <%# <p>Vagueness: <span id="status_vagueness">1</span>%</p> %>
+      <p>
+        Last Update: <span id="status_last_update" data-timestamp="<%= mood.timestamp %>">
+          <%= mood.timestamp ? new Date(parseInt(mood.timestamp)).toLocaleString() + " UTC+0" : "-" %>
+        </span>
+      </p>
+    </div>
+    <button id="submit" style="display: none">Submit</button>
+
+    <% if (auth?.id == user.id) { %>
+      <a href="/<%= user.username %>/analytics">View your analytics!</a><br>
+    <% } else { %>
+      <a href="/<%= user.username %>/analytics">View <b><%= user.username %>'<%= user.username.endsWith("s") ? "" : "s" %></b> analytics!</a><br>
+    <% } %>
+
+    <style>
+      :root {
+        --background: <%= colors[0] %>;
+        --secondary-background: <%= colors[1] %>;
+        --foreground: <%= colors[2] %>;
+        --secondary-foreground: <%= colors[3] %>;
+        --color-1: <%= colors[4] %>;
+        --color-2: <%= colors[5] %>;
+        --color-3: <%= colors[6] %>;
+        --color-4: <%= colors[7] %>;
+        --color-5: <%= colors[8] %>;
+        --color-6: <%= colors[9] %>;
+        --color-7: <%= colors[10] %>;
+        --color-8: <%= colors[11] %>;
+        --color-9: <%= colors[12] %>;
+        --color-10: <%= colors[13] %>;
+        --color-11: <%= colors[14] %>;
+        --color-12: <%= colors[15] %>;
+        --font-size: <%= font_size %>rem;
+      }
+    </style>
+  </main>
+</body>
+</html>
