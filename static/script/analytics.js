@@ -279,47 +279,19 @@ window.addEventListener("load", async () => {
 });
 
 function moodInfo(pleasantness, energy) {
-  if (energy >= 0.67) {
-    if (pleasantness >= 0.67) return 0;
-    if (pleasantness >= 0.33) return 1;
-    if (pleasantness >= 0) return 2;
-    if (pleasantness >= -0.33) return 3;
-    if (pleasantness >= -0.67) return 4;
-    return 5;
-  } else if (energy >= 0.33) {
-    if (pleasantness >= 0.67) return 6;
-    if (pleasantness >= 0.33) return 7;
-    if (pleasantness >= 0) return 8;
-    if (pleasantness >= -0.33) return 9;
-    if (pleasantness >= -0.67) return 10;
-    return 11;
-  } else if (energy >= 0) {
-    if (pleasantness >= 0.67) return 12;
-    if (pleasantness >= 0.33) return 13;
-    if (pleasantness >= 0) return 14;
-    if (pleasantness >= -0.33) return 15;
-    if (pleasantness >= -0.67) return 16;
-    return 17;
-  } else if (energy >= -0.33) {
-    if (pleasantness >= 0.67) return 18;
-    if (pleasantness >= 0.33) return 19;
-    if (pleasantness >= 0) return 20;
-    if (pleasantness >= -0.33) return 21;
-    if (pleasantness >= -0.67) return 22;
-    return 23;
-  } else if (energy >= -0.67) {
-    if (pleasantness >= 0.67) return 24;
-    if (pleasantness >= 0.33) return 25;
-    if (pleasantness >= 0) return 26;
-    if (pleasantness >= -0.33) return 27;
-    if (pleasantness >= -0.67) return 28;
-    else return 29;
-  } else {
-    if (pleasantness >= 0.67) return 30;
-    if (pleasantness >= 0.33) return 31;
-    if (pleasantness >= 0) return 32;
-    if (pleasantness >= -0.33) return 33;
-    if (pleasantness >= -0.67) return 34;
-    return 35;
-  }
+  const moodRow = energy >= 0.67 ? 0
+                : energy >= 0.33 ? 1
+                : energy >= 0 ? 2
+                : energy >= -0.33 ? 3
+                : energy >= -0.67 ? 4
+                : 5;
+
+  const moodColumn = pleasantness >= 0.67 ? 0
+                   : pleasantness >= 0.33 ? 1
+                   : pleasantness >= 0 ? 2
+                   : pleasantness >= -0.33 ? 3
+                   : pleasantness >= -0.67 ? 4
+                   : 5;
+
+  return moodRow * 6 + moodColumn;
 }
